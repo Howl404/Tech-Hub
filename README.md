@@ -1,58 +1,58 @@
 # Project "Digital Equipment Store"
-RS School eCommerce project - это командное задание, в ходе выполнения которого необходимо разработать приложение eCommerce. 
+RS School eCommerce project - is a team task in which the team needs to develop an eCommerce application.
 
-### Описание проекта
-Проект "Магазин цифровой техники" представляет собой веб-приложение, которое позволяет пользователям просматривать, выбирать, добавлять в корзину и покупать различную цифровую технику. Основная цель проекта - научиться использовать frontend-технологии и предоставить удобную платформу для покупки техники.
+### Project description
+"Digital Equipment Store" is a web application that allows users to browse, select, add to basket and buy various digital appliances. The main goal of the project is to learn how to use frontend technologies and provide a convenient platform for buying equipment.
 
-### Цели проекта
-#### Основные цели проекта состоят в следующем:
-* Создать удобный интерфейс для просмотра и выбора товаров
-* Предоставить детальную информацию о каждом товаре, включая характеристики и отзывы пользователей
-* Реализовать механизм сравнения товаров
-* Разработать систему онлайн-платежей
-* Обеспечить удобный процесс оформления заказа и доставку товара
+### Project goals
+#### Main goals of the project are:
+* Create a user-friendly interface for browsing and selecting products
+* Provide a detailed description of every product, including characteristics and users reviews
+* Implement a product comparison mechanism
+* Implement a payment system
+* Ensure a convenient order process and product delivery
 
-### Используемый стек технологий
-1. Фронтенд:
+### Technology stack
+1. Frontend:
    * HTML/CSS/TypeScript
-   * React.js - для создания пользовательского интерфейса
-   * Axios - для выполнения HTTP-запросов к серверу
-2. Бэкенд:
+   * React.js - for user interface creation
+   * Axios - for HTTP request to the server
+2. Backend:
    * commercetools
-3. Дополнительные инструменты и технологии:
-   * Vite - сборка проекта
-   * SASS - расширенные возможностей для CSS
-   * Prettier - автоматическое форматирование кода по единому стилю
-   * ESLint - обнаружение ошибок и поддержка одного стиля кода
-   * Jest - тестирования кода
-   * Husky - выполнение определенных скриптов перед коммитами\пушами
-   * Git - для контроля версий и управления репозиторием проекта
-   * GitHub - для хостинга репозитория
-   * VS Code - редактор кода
+3. Additional instruments and technologies:
+   * Vite - project builder
+   * SASS - CSS framework with additional features
+   * Prettier - automatic code formatting to a single style
+   * ESLint - detecting errors and enforcing a consistent code style
+   * Jest - code testing
+   * Husky - running certain scripts before commits/pushes
+   * Git - for version control and project repository management
+   * GitHub - for hosting the repository
+   * VS Code - code editor
 
-### Команда проекта
+### Project team
 * [Howl](https://github.com/Howl404)
 * [Mikhail Ignatovich](https://github.com/academeg1)
 * [Rashit Safiev](https://github.com/capapa)
 
-### Скрипты для запуска ESLint, Prettier, Jest и инициализации Husky
-* ESLint - npm run lint для проверки кода, npm run lint:fix автоматически исправит возможные ошибки после проверки
-* Prettier - npm run format для автоматического форматирование всего кода
-* Jest - npm run test для запуска тестов, npm run test:watch запускает тесты в режиме наблюдателя, позволяя взаимодействовать с Jest и перезапускает их при изменении кода.
-* Husky - npm run prepare для инициализации Husky.
+### Scripts for running ESLint, Prettier, Jest, and initializing Husky:
+* ESLint - npm run lint to check the code, npm run lint:fix will automatically fix possible errors after the check
+* Prettier - npm run format for automatic formatting of the entire codebase
+* Jest - npm run test to run tests, npm run test:watch runs tests in watch mode, allowing interaction with Jest and restarting tests on code changes
+* Husky - npm run prepare to initialize Husky
 
-### Установка и запуск проекта
-1. Склонируйте репозиторий проекта на свой компьютер: git clone https://github.com/Howl404/eCommerce-Application.git
+### Project Installation and Launch
+1. Clone the project repository to your computer: git clone  https://github.com/Howl404/eCommerce-Application.git
 
-2. Установите зависимости для проекта командой npm install
+2. Install project dependencies with the command: npm install
 
-3. Для запуска приложения выполните команду npm run dev
+3. To run the application, execute the command: npm run dev
 
-### Сборка проекта
-1. Выполните 1 и 2 шаг из [Установка и запуск проекта](#установка-и-запуск-проекта)
+### Project build
+1. Perform steps 1 and 2 from [Project Installation and Launch](#project-installation-and-launch)
    
-2. Соберите проект командой npm run build
+2. Build the project with the command: npm run build
    
-3. Используйте npm run preview для запуска проекта
+3. Use npm run preview to launch the project
 
-#### Перед коммитами выполните скрипт для [инициализации Husky](#скрипты-для-запуска-eslint-prettier-jest-и-инициализации-husky)
+#### Before commits, run the script for [Husky initialization](#scripts-for-running-eslint-prettier-jest-and-initializing-husky)
