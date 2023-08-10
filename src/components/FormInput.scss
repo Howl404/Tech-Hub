@@ -1,0 +1,22 @@
+.form-input {
+  input {
+    padding: 1rem;
+    margin: 1rem;
+    border-radius: 8px;
+    border: 1px solid gray;
+
+    &:invalid {
+      border: 1px solid red;
+    }
+
+    &:invalid ~ span {
+      display: block;
+    }
+  }
+
+  span {
+    padding: 0.5rem;
+    color: red;
+    display: none;
+  }
+}
