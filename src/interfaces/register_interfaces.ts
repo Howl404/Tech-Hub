@@ -9,3 +9,7 @@ export interface RegistrationFormData {
   postalCode: string;
   country: string;
 }
+
+export interface PostalCodePattern {
+  [key: string]: string;
+}
