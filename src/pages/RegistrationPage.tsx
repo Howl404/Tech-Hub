@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import FormInput from '../components/FormInput';
 import { PostalCodePattern, RegistrationFormData } from '../interfaces/register_interfaces';
+import { getAnonymousAccessToken, registerUser } from '../services/AuthService';
 
 const postalCodePattern: PostalCodePattern = {
   USA: '\\d{5}-\\d{4}|\\d{5}',
@@ -18,7 +19,7 @@ function RegistrationPage(): JSX.Element {
     password: '',
     firstName: '',
     lastName: '',
-    dob: '',
+    dateOfBirth: '',
     street: '',
     city: '',
     postalCode: '',
@@ -27,7 +28,7 @@ function RegistrationPage(): JSX.Element {
 
   const [isFormComplete, setIsFormComplete] = useState(false);
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>): void => {
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     const { id, value } = event.target;
     setFormData({ ...formData, [id]: value });
   };
@@ -45,9 +46,31 @@ function RegistrationPage(): JSX.Element {
     }
   }, [formData]);
 
-  const handleSubmit = (event: React.FormEvent): void => {
-    event.preventDefault();
-    console.log('submit');
+  const handleSubmit = async (e: React.FormEvent): Promise<void> => {
+    e.preventDefault();
+
+    getAnonymousAccessToken()
+      .then((response) => {
+        if (response?.accessToken) {
+          localStorage.setItem('alchemists-token', response.accessToken);
+        }
+      })
+      .then(() => {
+        const { email, password, firstName, lastName, dateOfBirth } = formData;
+        const token = localStorage.getItem('alchemists-token');
+        if (token) {
+          registerUser(
+            {
+              email,
+              password,
+              firstName,
+              lastName,
+              dateOfBirth,
+            },
+            token,
+          );
+        }
+      });
   };
 
   return (
@@ -94,7 +117,7 @@ function RegistrationPage(): JSX.Element {
           label="Date of birth"
           errorMessage="You need to be older than 13 years old"
           onChange={handleInputChange}
-          id="dob"
+          id="dateOfBirth"
           type="date"
           pattern=".*"
           title="You need to be older than 13 years old"

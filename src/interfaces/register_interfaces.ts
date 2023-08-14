@@ -3,7 +3,7 @@ export interface RegistrationFormData {
   password: string;
   firstName: string;
   lastName: string;
-  dob: string;
+  dateOfBirth: string;
   street: string;
   city: string;
   postalCode: string;
