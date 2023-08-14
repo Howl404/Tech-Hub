@@ -5,7 +5,7 @@ export default function RegistrationPage(): JSX.Element {
   return (
     <div>
       <Header />
-      <p>Login</p>
+      <p>Register</p>
     </div>
   );
 }

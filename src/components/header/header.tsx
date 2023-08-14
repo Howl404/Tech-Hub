@@ -1,13 +1,14 @@
 import React, { MouseEventHandler } from 'react';
 import './header.scss';
+import { Link } from 'react-router-dom';
 import logoIcon from '../../assets/logo.svg';
 import cartIcon from '../../assets/cart.svg';
 import searchIcon from '../../assets/search.svg';
 
 const buttonsData = [
-  { name: 'home', label: 'home' },
-  { name: 'catalog', label: 'catalog' },
-  { name: 'about us', label: 'about us' },
+  { name: 'home', label: 'home', path: '/' },
+  { name: 'catalog', label: 'catalog', path: '/catalog' },
+  { name: 'about us', label: 'about us', path: '/about' },
 ];
 
 function Header(): JSX.Element {
@@ -17,22 +18,24 @@ function Header(): JSX.Element {
     target.previousElementSibling?.classList.toggle('active');
   };
 
-  const buttons = buttonsData.map(({ name, label }) => (
+  const buttons = buttonsData.map(({ name, label, path }) => (
     <li className="nav__list_item item" key={name}>
-      <button className="btn btn__home" type="button" onClick={(): void => {}} key={name}>
-        {label}
-      </button>
+      <Link to={path}>
+        <button className="btn btn__home" type="button" key={name}>
+          {label}
+        </button>
+      </Link>
     </li>
   ));
 
   return (
     <header className="header">
       <div className="container">
-        <a className="header__logo" href="/">
+        <Link to="/">
           <div className="header_logo-container">
             <img src={logoIcon} alt="logo" />
           </div>
-        </a>
+        </Link>
 
         <div className="burger-menu" />
 
@@ -49,12 +52,16 @@ function Header(): JSX.Element {
         </div>
 
         <div className="header__account-info">
-          <button type="button" className="header__account-in">
-            SIGN IN
-          </button>
-          <button type="button" className="header__account-create">
-            CREATE ACCOUNT
-          </button>
+          <Link to="/login">
+            <button type="button" className="header__account-in">
+              SIGN IN
+            </button>
+          </Link>
+          <Link to="/register">
+            <button type="button" className="header__account-create">
+              CREATE ACCOUNT
+            </button>
+          </Link>
         </div>
 
         <div className="header__cart">
