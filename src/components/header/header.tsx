@@ -1,23 +1,23 @@
-import React from 'react';
+import React, { MouseEventHandler } from 'react';
 import './header.scss';
 import logoIcon from '../../assets/logo.svg';
 import cartIcon from '../../assets/cart.svg';
 import searchIcon from '../../assets/search.svg';
 
-const buttonsonsData = [
+const buttonsData = [
   { name: 'home', label: 'home' },
   { name: 'catalog', label: 'catalog' },
   { name: 'about us', label: 'about us' },
 ];
 
 function Header(): JSX.Element {
-  const onToggleActiveSearch = (event: Event): void => {
+  const onToggleActiveSearch: MouseEventHandler<HTMLButtonElement> = (event): void => {
     const target = event.target as HTMLElement;
     target.parentElement?.classList.toggle('active');
     target.previousElementSibling?.classList.toggle('active');
   };
 
-  const buttons = buttonsonsData.map(({ name, label }) => (
+  const buttons = buttonsData.map(({ name, label }) => (
     <li className="nav__list_item item" key={name}>
       <button className="btn btn__home" type="button" onClick={(): void => {}} key={name}>
         {label}
