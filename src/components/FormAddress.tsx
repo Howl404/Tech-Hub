@@ -29,21 +29,11 @@ function FormAddress(props: {
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     const { id, value } = event.target;
     handleCB(id, value);
-
-    // const { value } = event.target;
-    // let { id } = event.target;
-    // id = id.replace(prefix, '');
-    // onInputChange({ [id]: value });
   };
 
   const handleCountryChange = (event: React.ChangeEvent<HTMLSelectElement>): void => {
     const { id, value } = event.target;
     handleCB(id, value);
-
-    // const { value } = event.target;
-    // let { id } = event.target;
-    // id = id.replace(prefix, '');
-    // onInputChange({ [id]: value });
   };
 
   return (
@@ -51,7 +41,13 @@ function FormAddress(props: {
       <div className="form-input">
         <label htmlFor="country">
           Country:
-          <select name="country" value={country} disabled={disabled} id="country" onChange={handleCountryChange}>
+          <select
+            id={`${prefix}country`}
+            name="country"
+            value={country}
+            disabled={disabled}
+            onChange={handleCountryChange}
+          >
             <option value="" label="Select a country ... ">
               Select a country ...
             </option>
@@ -88,7 +84,7 @@ function FormAddress(props: {
         label="Postal Code"
         errorMessage="Invalid Postal Code"
         onChange={handleInputChange}
-        id="postalCode"
+        id={`${prefix}postalCode`}
         type="text"
         pattern={postalCodePattern[country] || '.*'}
         title="Must be a valid postal code of a selected country"
@@ -99,7 +95,7 @@ function FormAddress(props: {
         label="Street name"
         errorMessage="Less than 1 character"
         onChange={handleInputChange}
-        id="streetName"
+        id={`${prefix}streetName`}
         type="text"
         pattern=".*"
         title="Must contain more than 1 character"

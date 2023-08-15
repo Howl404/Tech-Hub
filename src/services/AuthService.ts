@@ -1,5 +1,8 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
+import Toastify from 'toastify-js';
 import { CustomerData, CustomerDraft } from '../interfaces/Customer';
+import { ResponseErrorItem } from '../interfaces/Errors';
+import 'toastify-js/src/toastify.css';
 
 const authHost = 'https://auth.europe-west1.gcp.commercetools.com';
 const apiUrl = 'https://api.europe-west1.gcp.commercetools.com';
@@ -7,19 +10,53 @@ const clientId = 'CBJ0upgR5dDSi7L9JIOeY-Ba';
 const clientSecret = '2uZuBnnoXOtyVe8v_1oXCKybDsqEgAtS';
 const projectKey = 'rs-alchemists-ecommerce';
 
-const registerUser = async (userData: CustomerDraft, token: string): Promise<CustomerData> => {
-  const response = await axios.post(`${apiUrl}/${projectKey}/me/signup`, userData, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-  });
+const registerUser = async (userData: CustomerDraft, token: string): Promise<CustomerData | boolean> => {
+  let errorText = '';
 
-  if (response.status === 201) {
-    const result = response.data;
-    return result;
+  try {
+    const response = await axios.post(`${apiUrl}/${projectKey}/me/signup`, userData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (response.status === 201) {
+      const result = response.data;
+      return result;
+    }
+    errorText = response.data.message;
+  } catch (e) {
+    if (e instanceof AxiosError && e.response?.data) {
+      if (e.response.data?.errors.length) {
+        errorText = e.response.data.errors
+          .map((errItem: ResponseErrorItem) => errItem.detailedErrorMessage || errItem.message)
+          .join('\r\n');
+      } else {
+        errorText = e.response.data?.message;
+      }
+    } else if (e instanceof Error) {
+      errorText = e.message;
+    } else if (typeof e === 'string') {
+      errorText = e;
+    }
   }
-  throw new Error('User registration failed');
+
+  Toastify({
+    text: errorText,
+    duration: 3000,
+    newWindow: true,
+    close: true,
+    gravity: 'bottom', // `top` or `bottom`
+    position: 'right', // `left`, `center` or `right`
+    stopOnFocus: true,
+    style: {
+      background: 'linear-gradient(to right, #ff0000, #fdacac)',
+    },
+  }).showToast();
+  // throw new Error('User registration failed');
+
+  return false;
 };
 
 const getAnonymousAccessToken = async (): Promise<

@@ -1,6 +1,6 @@
 // pages/RegistrationPage.tsx
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import FormInput from '../components/FormInput';
 import { AddressData, RegistrationFormData } from '../interfaces/register_interfaces';
 import { getAnonymousAccessToken, registerUser } from '../services/AuthService';
@@ -26,6 +26,8 @@ function RegistrationPage(): JSX.Element {
     },
     shippingAddress: { city: '', postalCode: '', streetName: '', country: '' },
   });
+
+  const navigate = useNavigate();
 
   const [isFormComplete, setIsFormComplete] = useState(false);
 
@@ -72,48 +74,51 @@ function RegistrationPage(): JSX.Element {
   const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
 
-    getAnonymousAccessToken()
-      .then((response) => {
-        if (response?.accessToken) {
-          localStorage.setItem('alchemists-token', response.accessToken);
-        }
-      })
-      .then(() => {
-        const {
-          email,
-          password,
-          firstName,
-          lastName,
-          dateOfBirth,
-          shippingAddress,
-          billingAddress,
-          defaultShippingAddress,
-          defaultBillingAddress,
-        } = formData;
+    const response = await getAnonymousAccessToken();
 
-        const registerData: CustomerDraft = {
-          email,
-          password,
-          firstName,
-          lastName,
-          dateOfBirth,
-          addresses: [shippingAddress, billingAddress],
-          shippingAddresses: [0],
-          billingAddresses: [1],
-        };
+    if (response?.accessToken) {
+      localStorage.setItem('alchemists-token', response.accessToken);
+    }
 
-        if (defaultShippingAddress) {
-          registerData.defaultShippingAddress = 0;
-        }
-        if (defaultBillingAddress) {
-          registerData.defaultBillingAddress = 1;
-        }
+    const {
+      email,
+      password,
+      firstName,
+      lastName,
+      dateOfBirth,
+      shippingAddress,
+      billingAddress,
+      defaultShippingAddress,
+      defaultBillingAddress,
+    } = formData;
 
-        const token = localStorage.getItem('alchemists-token');
-        if (token) {
-          registerUser(registerData, token);
-        }
-      });
+    const registerData: CustomerDraft = {
+      email,
+      password,
+      firstName,
+      lastName,
+      dateOfBirth,
+      addresses: [shippingAddress, billingAddress],
+      shippingAddresses: [0],
+      billingAddresses: [1],
+    };
+
+    if (defaultShippingAddress) {
+      registerData.defaultShippingAddress = 0;
+    }
+    if (defaultBillingAddress) {
+      registerData.defaultBillingAddress = 1;
+    }
+
+    const token = localStorage.getItem('alchemists-token');
+    if (token) {
+      const result = await registerUser(registerData, token);
+      if (result !== false) {
+        // TODO: set cookie token
+
+        navigate('/');
+      }
+    }
   };
 
   return (
