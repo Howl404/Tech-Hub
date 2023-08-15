@@ -37,7 +37,7 @@ function RegistrationPage(): JSX.Element {
   };
 
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-    const { id, checked } = event.target as HTMLInputElement;
+    const { id, checked } = event.target;
     if ((id !== 'sameBillingShipping' && formData.sameBillingShipping) || (id === 'sameBillingShipping' && checked)) {
       setFormData({ ...formData, [id]: checked, billingAddress: formData.shippingAddress });
 
