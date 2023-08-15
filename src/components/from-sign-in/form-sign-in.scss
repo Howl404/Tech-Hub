@@ -1,0 +1,85 @@
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=ABeeZee&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap');
+
+.has-error {
+  box-shadow: 0 0 2px 2px red;
+}
+
+.login-form__title {
+  color: #000;
+  text-align: center;
+  font-family: 'Oswald', sans-serif;
+  font-size: 48px;
+  font-style: normal;
+  font-weight: 400;
+}
+
+.form-group {
+  max-width: 380px;
+  gap: 5px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: left;
+  margin-bottom: 15px;
+  label {
+    width: 100px;
+    text-align: left;
+    color: #3f3f3f;
+    font-family: 'Roboto', sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    span {
+      color: red;
+    }
+  }
+}
+
+.btn {
+  cursor: pointer;
+}
+.btn-sign-in:hover {
+  background: #000000c5;
+}
+
+.btn:disabled {
+  cursor: default;
+  background: #646464;
+  color: #fff;
+  transition: all 0.3s;
+}
+
+.btn-sign-in {
+  border: none;
+  margin-right: 66px;
+  background: #000;
+  color: #fff;
+  text-align: center;
+  font-family: 'Oswald', sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  width: 270px;
+  height: 50px;
+  transition: all 0.3s;
+}
+
+.btn-register {
+  color: black;
+  text-align: center;
+  font-family: 'Oswald', sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  width: 270px;
+  height: 50px;
+}
