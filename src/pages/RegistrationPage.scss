@@ -1,0 +1,13 @@
+.form-address {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 20px;
+  gap: 15px;
+
+  .form-billing-address,
+  .form-shipping-address {
+    padding: 10px;
+    border: 1px solid #7a7a7a;
+    border-radius: 5px;
+  }
+}

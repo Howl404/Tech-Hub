@@ -8,6 +8,8 @@ export interface CustomerDraft {
   addresses?: BaseAddress[];
   defaultShippingAddress?: number;
   defaultBillingAddress?: number;
+  billingAddresses: number[];
+  shippingAddresses: number[];
 }
 
 export interface BaseAddress {

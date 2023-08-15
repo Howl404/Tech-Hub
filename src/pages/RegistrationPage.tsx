@@ -2,16 +2,11 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import FormInput from '../components/FormInput';
-import { PostalCodePattern, RegistrationFormData } from '../interfaces/register_interfaces';
+import { AddressData, RegistrationFormData } from '../interfaces/register_interfaces';
 import { getAnonymousAccessToken, registerUser } from '../services/AuthService';
-
-const postalCodePattern: PostalCodePattern = {
-  USA: '\\d{5}-\\d{4}|\\d{5}',
-  RU: '\\d{6}',
-  GB: '[A-Za-z]{1,2}\\d{1,2}[A-Za-z]?\\s?\\d[A-Za-z]{2}',
-  DE: '\\d{5}',
-  FR: '\\d{5}',
-};
+import FormAddress from '../components/FormAddress';
+import './RegistrationPage.scss';
+import { CustomerDraft } from '../interfaces/Customer';
 
 function RegistrationPage(): JSX.Element {
   const [formData, setFormData] = useState<RegistrationFormData>({
@@ -20,10 +15,16 @@ function RegistrationPage(): JSX.Element {
     firstName: '',
     lastName: '',
     dateOfBirth: '',
-    street: '',
-    city: '',
-    postalCode: '',
-    country: '',
+    defaultShippingAddress: false,
+    defaultBillingAddress: false,
+    sameBillingShipping: false,
+    billingAddress: {
+      city: '',
+      postalCode: '',
+      streetName: '',
+      country: '',
+    },
+    shippingAddress: { city: '', postalCode: '', streetName: '', country: '' },
   });
 
   const [isFormComplete, setIsFormComplete] = useState(false);
@@ -33,13 +34,35 @@ function RegistrationPage(): JSX.Element {
     setFormData({ ...formData, [id]: value });
   };
 
-  const handleCountryChange = (event: React.ChangeEvent<HTMLSelectElement>): void => {
-    const { id, value } = event.target;
-    setFormData({ ...formData, [id]: value });
+  const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    const { id, checked } = event.target as HTMLInputElement;
+    if ((id !== 'sameBillingShipping' && formData.sameBillingShipping) || (id === 'sameBillingShipping' && checked)) {
+      setFormData({ ...formData, [id]: checked, billingAddress: formData.shippingAddress });
+
+      return;
+    }
+    setFormData({ ...formData, [id]: checked });
+  };
+
+  const handleBillingAddressChange = (address: Partial<AddressData>): void => {
+    const newAddress = { ...formData.billingAddress, ...address };
+    setFormData({ ...formData, billingAddress: newAddress });
+  };
+
+  const handleShippingAddressChange = (address: Partial<AddressData>): void => {
+    const newAddress = { ...formData.shippingAddress, ...address };
+    setFormData({ ...formData, shippingAddress: newAddress });
   };
 
   useEffect(() => {
-    if (Object.values(formData).every((value) => value !== '')) {
+    if (
+      Object.values(formData).every((value) => {
+        if (typeof value !== 'object') {
+          return value !== '';
+        }
+        return Object.values(value).every((objValue) => objValue !== '');
+      })
+    ) {
       setIsFormComplete(true);
     } else {
       setIsFormComplete(false);
@@ -56,19 +79,39 @@ function RegistrationPage(): JSX.Element {
         }
       })
       .then(() => {
-        const { email, password, firstName, lastName, dateOfBirth } = formData;
+        const {
+          email,
+          password,
+          firstName,
+          lastName,
+          dateOfBirth,
+          shippingAddress,
+          billingAddress,
+          defaultShippingAddress,
+          defaultBillingAddress,
+        } = formData;
+
+        const registerData: CustomerDraft = {
+          email,
+          password,
+          firstName,
+          lastName,
+          dateOfBirth,
+          addresses: [shippingAddress, billingAddress],
+          shippingAddresses: [0],
+          billingAddresses: [1],
+        };
+
+        if (defaultShippingAddress) {
+          registerData.defaultShippingAddress = 0;
+        }
+        if (defaultBillingAddress) {
+          registerData.defaultBillingAddress = 1;
+        }
+
         const token = localStorage.getItem('alchemists-token');
         if (token) {
-          registerUser(
-            {
-              email,
-              password,
-              firstName,
-              lastName,
-              dateOfBirth,
-            },
-            token,
-          );
+          registerUser(registerData, token);
         }
       });
   };
@@ -85,6 +128,7 @@ function RegistrationPage(): JSX.Element {
           type="text"
           pattern="[A-Za-z0-9._+\-']+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}"
           title="Must contain a valid email"
+          value={formData.email}
         />
         <FormInput
           label="Password"
@@ -94,6 +138,7 @@ function RegistrationPage(): JSX.Element {
           type="password"
           pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$"
           title="Minimum 8 characters, at least 1 uppercase letter, 1 lowercase letter, and 1 number"
+          value={formData.password}
         />
         <FormInput
           label="First name"
@@ -103,6 +148,7 @@ function RegistrationPage(): JSX.Element {
           type="text"
           pattern="[A-Za-z]+"
           title="Must contain at least one character and no special characters or numbers"
+          value={formData.firstName}
         />
         <FormInput
           label="Last name"
@@ -112,6 +158,7 @@ function RegistrationPage(): JSX.Element {
           type="text"
           pattern="[A-Za-z]+"
           title="Must contain at least one character and no special characters or numbers"
+          value={formData.lastName}
         />
         <FormInput
           label="Date of birth"
@@ -122,59 +169,58 @@ function RegistrationPage(): JSX.Element {
           pattern=".*"
           title="You need to be older than 13 years old"
           max="2010-01-01"
+          value={formData.dateOfBirth}
         />
-        <div className="form-input">
-          <label htmlFor="country">
-            Country:
-            <select name="country" id="country" defaultValue="" onChange={handleCountryChange}>
-              <option value="" label="Select a country ... ">
-                Select a country ...
-              </option>
-              <option value="USA" label="United States">
-                United States
-              </option>
-              <option value="RU" label="Russia">
-                Russia
-              </option>
-              <option value="GB" label="United Kingdom">
-                United Kingdom
-              </option>
-              <option value="DE" label="Germany">
-                Germany
-              </option>
-              <option value="FR" label="France">
-                France
-              </option>
-            </select>
-          </label>
+        <div className="form-address">
+          <div className="form-shipping-address">
+            <label htmlFor="defaultShippingAddress">
+              <input id="defaultShippingAddress" onChange={handleCheckboxChange} type="checkbox" />
+              Default shipping address
+            </label>
+
+            <FormAddress
+              prefix="shipping"
+              city={formData.shippingAddress.city}
+              country={formData.shippingAddress.country}
+              postalCode={formData.shippingAddress.postalCode}
+              streetName={formData.shippingAddress.streetName}
+              onInputChange={handleShippingAddressChange}
+            />
+            <label htmlFor="sameBillingShipping">
+              <input id="sameBillingShipping" onChange={handleCheckboxChange} type="checkbox" />
+              Billing address same shipping address
+            </label>
+          </div>
+
+          <div className="form-billing-address">
+            <label htmlFor="defaultBillingAddress">
+              <input id="defaultBillingAddress" onChange={handleCheckboxChange} type="checkbox" />
+              Default billing address
+            </label>
+
+            {formData.sameBillingShipping ? (
+              <FormAddress
+                prefix="billing"
+                city={formData.shippingAddress.city}
+                country={formData.shippingAddress.country}
+                postalCode={formData.shippingAddress.postalCode}
+                streetName={formData.shippingAddress.streetName}
+                disabled
+                onInputChange={handleBillingAddressChange}
+              />
+            ) : (
+              <FormAddress
+                prefix="billing"
+                city={formData.billingAddress.city}
+                country={formData.billingAddress.country}
+                postalCode={formData.billingAddress.postalCode}
+                streetName={formData.billingAddress.streetName}
+                onInputChange={handleBillingAddressChange}
+              />
+            )}
+          </div>
         </div>
-        <FormInput
-          label="City"
-          errorMessage="City is not valid"
-          onChange={handleInputChange}
-          id="city"
-          type="text"
-          pattern="[A-Za-z]+"
-          title="Must contain only letters"
-        />
-        <FormInput
-          label="Postal Code"
-          errorMessage="Invalid Postal Code"
-          onChange={handleInputChange}
-          id="postalCode"
-          type="text"
-          pattern={postalCodePattern[formData.country] || '.*'}
-          title="Must be a valid postal code of a selected country"
-        />
-        <FormInput
-          label="Street"
-          errorMessage="Less than 1 character"
-          onChange={handleInputChange}
-          id="street"
-          type="text"
-          pattern=".*"
-          title="Must contain more than 1 character"
-        />
+
         <div className="buttons-container">
           <button type="submit" id="submit" disabled={!isFormComplete}>
             Register
