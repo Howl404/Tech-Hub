@@ -1,7 +1,7 @@
 import React from 'react';
 import Header from '../components/header/header';
 
-function NotFound(): JSX.Element {
+export default function NotFound(): JSX.Element {
   return (
     <div>
       <Header />
@@ -10,4 +10,3 @@ function NotFound(): JSX.Element {
   );
 }
 
-export default NotFound;
