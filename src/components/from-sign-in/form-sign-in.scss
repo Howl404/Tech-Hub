@@ -17,6 +17,13 @@
   font-weight: 400;
 }
 
+.login-form {
+  .wrapper-btn {
+    display: flex;
+    justify-content: center;
+  }
+}
+
 .form-group {
   max-width: 380px;
   gap: 5px;
@@ -24,6 +31,7 @@
   display: flex;
   justify-content: left;
   margin-bottom: 15px;
+  font-family: 'Oswald', sans-serif;
   label {
     width: 100px;
     text-align: left;
@@ -34,6 +42,12 @@
     font-weight: 400;
     span {
       color: red;
+    }
+  }
+  .btn__show-pass {
+    border: 1px solid black;
+    &:hover {
+      background-color: #3f3f3f4d;
     }
   }
 }
@@ -82,4 +96,5 @@
   text-transform: uppercase;
   width: 270px;
   height: 50px;
+  border: 1px solid black;
 }

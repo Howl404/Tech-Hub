@@ -1,12 +1,16 @@
 import React from 'react';
 
-function FormErrors({ formErrors }: { formErrors: { [email: string]: string; password: string } }): JSX.Element {
+interface FormErrorsInterface {
+  formErrors: { [email: string]: string; password: string };
+}
+
+function FormErrors({ formErrors }: FormErrorsInterface): JSX.Element {
   return (
     <div className="formErrors">
-      {Object.keys(formErrors).map((fieldName, i) => {
+      {Object.keys(formErrors).map((fieldName) => {
         if (formErrors[fieldName].length > 0) {
           return (
-            <p key={i}>
+            <p key={fieldName}>
               {fieldName} {formErrors[fieldName]}
             </p>
           );

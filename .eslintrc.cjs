@@ -39,7 +39,5 @@ module.exports = {
     '@typescript-eslint/no-unnecessary-type-assertion': 'error',
     '@typescript-eslint/no-non-null-assertion': 'error',
     '@typescript-eslint/no-inferrable-types': 'off',
-    'jsx-a11y/label-has-associated-control': 'off',
-    'react/no-array-index-key': 'off',
   },
 };

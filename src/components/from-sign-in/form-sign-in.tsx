@@ -3,9 +3,10 @@ import axios from 'axios';
 import FormErrors from '../FormErrors/FormErrors';
 import './form-sign-in.scss';
 
-function isValidEmail(email: string): string | boolean {
+function isValidEmail(email: string): string {
   const atIndex = email.indexOf('@');
   const dotIndex = email.lastIndexOf('.');
+
   if (atIndex < 1) {
     return 'missing symbol @';
   }
@@ -30,10 +31,10 @@ function isValidEmail(email: string): string | boolean {
     return 'the top-level domain is written with an error';
   }
 
-  return true;
+  return 'true';
 }
 
-function isValidatePassword(password: string): boolean | string {
+function isValidatePassword(password: string): string {
   if (password.length < 8) {
     return 'the password must be more than 8 characters long';
   }
@@ -54,7 +55,7 @@ function isValidatePassword(password: string): boolean | string {
     return 'contains spaces';
   }
 
-  return true;
+  return 'true';
 }
 
 const PROJECT_KEY = 'rs-alchemists-ecommerce';
@@ -67,54 +68,50 @@ function SignInForm(): JSX.Element {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [formErrors, setFormErrors] = useState({ email: '', password: '' });
-  const [emailValid, setEmailValid] = useState(false);
-  const [passwordValid, setPasswordValid] = useState(false);
+  const [emailValid, setEmailValid] = useState('');
+  const [passwordValid, setPasswordValid] = useState('');
   const [formValid, setFormValid] = useState(false);
 
   const validateField = (fieldName: string, value: string): void => {
     const fieldValidationErrors = formErrors;
-    let emailValidate = emailValid as boolean | string;
-    let passwordValidate = passwordValid as boolean | string;
-    switch (fieldName) {
-      case 'email':
-        setEmail(value);
-        emailValidate = isValidEmail(value);
-        if (typeof emailValidate === 'boolean') {
-          fieldValidationErrors.email = '';
-        } else {
-          fieldValidationErrors.email = emailValidate;
-        }
-
-        break;
-      case 'password':
-        setPassword(value);
-        passwordValidate = isValidatePassword(value);
-        if (typeof passwordValidate === 'boolean') {
-          fieldValidationErrors.password = '';
-        } else {
-          fieldValidationErrors.password = passwordValidate;
-        }
-        break;
-      default:
-        break;
+    let emailValidate = emailValid;
+    let passwordValidate = passwordValid;
+    if (fieldName === 'email') {
+      setEmail(value);
+      emailValidate = isValidEmail(value);
+      if (emailValidate === 'true') {
+        fieldValidationErrors.email = '';
+      } else {
+        fieldValidationErrors.email = emailValidate;
+      }
     }
+
+    if (fieldName === 'password') {
+      setPassword(value);
+      passwordValidate = isValidatePassword(value);
+      if (passwordValidate === 'true') {
+        fieldValidationErrors.password = '';
+      } else {
+        fieldValidationErrors.password = passwordValidate;
+      }
+    }
+
     setFormErrors(fieldValidationErrors);
-    if (typeof emailValidate === 'boolean') {
+
+    if (emailValidate === 'true') {
       setEmailValid(emailValidate);
     }
-    if (typeof passwordValidate === 'boolean') {
+    if (passwordValidate === 'true') {
       setPasswordValid(passwordValidate);
     }
-    setFormValid(emailValid && passwordValid);
+
+    if (passwordValidate && emailValidate) setFormValid(false);
+    if (passwordValidate === 'true' && emailValidate === 'true') setFormValid(true);
   };
 
   const handleUserInput = (e: ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
-    if (name === 'email') {
-      validateField(name, value);
-    } else if (name === 'password') {
-      validateField(name, value);
-    }
+    validateField(name, value);
   };
 
   function errorClass(error: string): string {
@@ -122,16 +119,16 @@ function SignInForm(): JSX.Element {
   }
 
   const onShowPass = (e: MouseEvent<HTMLButtonElement>): void => {
-    const targetElement = e.target as HTMLButtonElement;
-    if (targetElement !== null) {
+    const targetElement = e.target;
+    if (targetElement !== null && targetElement instanceof HTMLButtonElement) {
       const node = targetElement.previousElementSibling as HTMLInputElement;
       node.type = 'text';
     }
   };
 
   const onBlurPass = (e: MouseEvent<HTMLButtonElement>): void => {
-    const targetElement = e.target as HTMLButtonElement;
-    if (targetElement !== null) {
+    const targetElement = e.target;
+    if (targetElement !== null && targetElement instanceof HTMLButtonElement) {
       const node = targetElement.previousElementSibling as HTMLInputElement;
       node.type = 'password';
     }
@@ -139,7 +136,7 @@ function SignInForm(): JSX.Element {
 
   const onSignIn = (event: MouseEvent<HTMLButtonElement>): void => {
     event.preventDefault();
-    const outhResourse: Promise<{
+    const authResourse: Promise<{
       data: {
         access_token: string;
         expires_in: number;
@@ -152,7 +149,7 @@ function SignInForm(): JSX.Element {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
     });
-    outhResourse
+    authResourse
       .then((item) => {
         console.log('key', item);
         //   const getCustomers = axios.get(`https://api.europe-west1.gcp.commercetools.com/${projectKey}/me`, {
@@ -186,32 +183,32 @@ function SignInForm(): JSX.Element {
   return (
     <div className="container__form">
       <form className="login-form">
-        <h2 className="login-form__title">Sign up</h2>
+        <h2 className="login-form__title">Sign in</h2>
         <div className="form-group">
           <label htmlFor="email">
             Email <span>*</span>
+            <input
+              type="email"
+              className={`form-control ${errorClass(formErrors.email)}`}
+              id="email"
+              value={email}
+              name="email"
+              onChange={handleUserInput}
+            />
           </label>
-          <input
-            type="email"
-            className={`form-control ${errorClass(formErrors.email)}`}
-            id="email"
-            value={email}
-            name="email"
-            onChange={handleUserInput}
-          />
         </div>
         <div className="form-group">
           <label htmlFor="password">
             Password <span>*</span>
+            <input
+              type="password"
+              className={`form-control ${errorClass(formErrors.password)}`}
+              id="password"
+              value={password}
+              name="password"
+              onChange={handleUserInput}
+            />
           </label>
-          <input
-            type="password"
-            className={`form-control ${errorClass(formErrors.password)}`}
-            id="password"
-            value={password}
-            name="password"
-            onChange={handleUserInput}
-          />
           <button
             type="button"
             className="btn btn__show-pass"
@@ -219,15 +216,17 @@ function SignInForm(): JSX.Element {
             onMouseUp={onBlurPass}
             disabled={!password.length}
           >
-            Показать пароль
+            show
           </button>
         </div>
-        <button type="submit" className="btn btn-sign-in" disabled={!formValid} onClick={onSignIn}>
-          Sign up
-        </button>
-        <button type="submit" className="btn btn-register">
-          register
-        </button>
+        <div className="wrapper-btn">
+          <button type="submit" className="btn btn-sign-in" disabled={!formValid} onClick={onSignIn}>
+            Sign in
+          </button>
+          <button type="submit" className="btn btn-register">
+            register
+          </button>
+        </div>
       </form>
       <div className="panel panel-default">
         <FormErrors formErrors={formErrors} />
