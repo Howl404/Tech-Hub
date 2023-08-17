@@ -59,13 +59,10 @@ const registerUser = async (userData: CustomerDraft, token: string): Promise<Cus
   return false;
 };
 
-const getAnonymousAccessToken = async (): Promise<
-  | {
-      accessToken: string;
-      refreshToken: string;
-    }
-  | undefined
-> => {
+const getAnonymousAccessToken = async (): Promise<{
+  accessToken: string;
+  refreshToken: string;
+}> => {
   const scope = `create_anonymous_token:${projectKey} manage_my_orders:${projectKey} manage_my_profile:${projectKey}`;
   const authHeader = `Basic ${btoa(`${clientId}:${clientSecret}`)}`;
   const response = await axios.post(
@@ -84,4 +81,27 @@ const getAnonymousAccessToken = async (): Promise<
   return { accessToken, refreshToken };
 };
 
-export { registerUser, getAnonymousAccessToken };
+const logInUser = async (
+  email: string,
+  password: string,
+): Promise<{
+  accessToken: string;
+  refreshToken: string;
+}> => {
+  const scope = `manage_my_orders:${projectKey} manage_my_profile:${projectKey}`;
+  const authHeader = `Basic ${btoa(`${clientId}:${clientSecret}`)}`;
+  const requestBody = `grant_type=password&username=${email}&password=${password}&scope=${scope}`;
+
+  const response = await axios.post(`${authHost}/oauth/${projectKey}/customers/token`, requestBody, {
+    headers: {
+      Authorization: authHeader,
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+  });
+
+  const accessToken = response.data.access_token;
+  const refreshToken = response.data.refresh_token;
+  return { accessToken, refreshToken };
+};
+
+export { registerUser, logInUser, getAnonymousAccessToken };

@@ -1,9 +1,10 @@
 // pages/RegistrationPage.tsx
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import Cookies from 'js-cookie';
 import FormInput from '../components/FormInput';
 import { AddressData, RegistrationFormData } from '../interfaces/register_interfaces';
-import { getAnonymousAccessToken, registerUser } from '../services/AuthService';
+import { getAnonymousAccessToken, logInUser, registerUser } from '../services/AuthService';
 import FormAddress from '../components/FormAddress';
 import './RegistrationPage.scss';
 import { CustomerDraft } from '../interfaces/Customer';
@@ -76,9 +77,11 @@ function RegistrationPage(): JSX.Element {
 
     const response = await getAnonymousAccessToken();
 
-    if (response?.accessToken) {
-      localStorage.setItem('alchemists-token', response.accessToken);
-    }
+    const threeHours = 180 / (24 * 60);
+
+    Cookies.set('access-token', response.accessToken, { expires: threeHours });
+    Cookies.remove('refresh-token');
+    Cookies.set('auth-type', 'anon', { expires: threeHours });
 
     const {
       email,
@@ -110,13 +113,16 @@ function RegistrationPage(): JSX.Element {
       registerData.defaultBillingAddress = 1;
     }
 
-    const token = localStorage.getItem('alchemists-token');
+    const token = Cookies.get('access-token');
     if (token) {
       const result = await registerUser(registerData, token);
       if (result !== false) {
-        // TODO: set cookie token
-
-        navigate('/');
+        logInUser(email, password).then((results) => {
+          Cookies.set('access-token', results.accessToken, { expires: 2 });
+          Cookies.set('refresh-token', results.refreshToken, { expires: 200 });
+          Cookies.set('auth-type', 'password', { expires: 2 });
+          navigate('/');
+        });
       }
     }
   };
