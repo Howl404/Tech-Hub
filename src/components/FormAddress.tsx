@@ -17,7 +17,7 @@ function FormAddress(props: {
   streetName: string;
   country: string;
   disabled?: boolean;
-  onInputChange: (arddress: Partial<AddressData>) => void;
+  onInputChange: (address: Partial<AddressData>) => void;
 }): JSX.Element {
   const { prefix, city, postalCode, streetName, country, disabled, onInputChange } = props;
 
