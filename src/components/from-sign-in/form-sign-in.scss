@@ -24,24 +24,34 @@
   }
 }
 
+.panel {
+  text-align: center;
+}
+
 .form-group {
-  max-width: 380px;
-  gap: 5px;
+  max-width: 450px;
   margin: 0 auto;
   display: flex;
   justify-content: left;
   margin-bottom: 15px;
   font-family: 'Oswald', sans-serif;
   label {
-    width: 100px;
+    width: 100%;
     text-align: left;
     color: #3f3f3f;
     font-family: 'Roboto', sans-serif;
     font-size: 16px;
     font-style: normal;
     font-weight: 400;
+    .form-control {
+      margin: 0 30px;
+    }
+    #email {
+      margin-left: 60px;
+    }
     span {
       color: red;
+      margin-left: 5px;
     }
   }
   .btn__show-pass {
@@ -54,16 +64,6 @@
 
 .btn {
   cursor: pointer;
-}
-.btn-sign-in:hover {
-  background: #000000c5;
-}
-
-.btn:disabled {
-  cursor: default;
-  background: #646464;
-  color: #fff;
-  transition: all 0.3s;
 }
 
 .btn-sign-in {
@@ -82,6 +82,19 @@
   width: 270px;
   height: 50px;
   transition: all 0.3s;
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.291);
+    transition: all 0.3s;
+    border-radius: 10px;
+  }
+}
+
+.btn:disabled {
+  cursor: default;
+  background: #646464;
+  color: #fff;
+  transition: all 0.3s;
+  border-radius: 0;
 }
 
 .btn-register {
@@ -97,4 +110,10 @@
   width: 270px;
   height: 50px;
   border: 1px solid black;
+  transition: all 0.3s;
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.291);
+    transition: all 0.3s;
+    border-radius: 10px;
+  }
 }

@@ -81,16 +81,16 @@ function SignInForm(): JSX.Element {
       emailValidate = isValidEmail(value);
       if (emailValidate === 'true') {
         fieldValidationErrors.email = '';
+        setEmailValid(emailValidate);
       } else {
         fieldValidationErrors.email = emailValidate;
       }
-    }
-
-    if (fieldName === 'password') {
+    } else {
       setPassword(value);
       passwordValidate = isValidatePassword(value);
       if (passwordValidate === 'true') {
         fieldValidationErrors.password = '';
+        setPasswordValid(passwordValidate);
       } else {
         fieldValidationErrors.password = passwordValidate;
       }
@@ -98,15 +98,12 @@ function SignInForm(): JSX.Element {
 
     setFormErrors(fieldValidationErrors);
 
-    if (emailValidate === 'true') {
-      setEmailValid(emailValidate);
+    // if (passwordValidate && emailValidate);
+    if (passwordValidate === 'true' && emailValidate === 'true') {
+      setFormValid(true);
+    } else {
+      setFormValid(false);
     }
-    if (passwordValidate === 'true') {
-      setPasswordValid(passwordValidate);
-    }
-
-    if (passwordValidate && emailValidate) setFormValid(false);
-    if (passwordValidate === 'true' && emailValidate === 'true') setFormValid(true);
   };
 
   const handleUserInput = (e: ChangeEvent<HTMLInputElement>): void => {
@@ -136,7 +133,7 @@ function SignInForm(): JSX.Element {
 
   const onSignIn = (event: MouseEvent<HTMLButtonElement>): void => {
     event.preventDefault();
-    const authResourse: Promise<{
+    const authResource: Promise<{
       data: {
         access_token: string;
         expires_in: number;
@@ -149,7 +146,7 @@ function SignInForm(): JSX.Element {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
     });
-    authResourse
+    authResource
       .then((item) => {
         console.log('key', item);
         //   const getCustomers = axios.get(`https://api.europe-west1.gcp.commercetools.com/${projectKey}/me`, {
@@ -208,16 +205,16 @@ function SignInForm(): JSX.Element {
               name="password"
               onChange={handleUserInput}
             />
+            <button
+              type="button"
+              className="btn btn__show-pass"
+              onMouseDown={onShowPass}
+              onMouseUp={onBlurPass}
+              disabled={!password.length}
+            >
+              show
+            </button>
           </label>
-          <button
-            type="button"
-            className="btn btn__show-pass"
-            onMouseDown={onShowPass}
-            onMouseUp={onBlurPass}
-            disabled={!password.length}
-          >
-            show
-          </button>
         </div>
         <div className="wrapper-btn">
           <button type="submit" className="btn btn-sign-in" disabled={!formValid} onClick={onSignIn}>
