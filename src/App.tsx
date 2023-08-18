@@ -1,6 +1,7 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import './App.scss';
+import SigninPage from './pages/Signin/SigninPage';
 import Header from './components/header/header';
 import Home from './pages/Home';
 import LoginPage from './pages/LoginPage';
@@ -17,6 +18,7 @@ function App(): JSX.Element {
         <Route path="/login" element={<LoginPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
+<!--       <SigninPage /> -->
     </>
   );
 }
