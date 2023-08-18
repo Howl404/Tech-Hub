@@ -1,5 +1,4 @@
-import { CreatedBy, LastModifiedBy } from './Customer';
-import { AddressData } from './register_interfaces';
+import { BaseAddress, CreatedBy, LastModifiedBy } from './Customer';
 
 export interface Cart {
   type: string;
@@ -27,5 +26,5 @@ export interface Cart {
   deleteDaysAfterLastModification: number;
   refusedGifts: string[];
   origin: string;
-  itemShippingAddresses: AddressData[];
+  itemShippingAddresses: BaseAddress[];
 }

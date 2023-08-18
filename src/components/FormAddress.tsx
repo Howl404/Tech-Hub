@@ -1,6 +1,7 @@
 import React from 'react';
 import FormInput from './FormInput';
-import { PostalCodePattern, AddressData } from '../interfaces/register_interfaces';
+import { PostalCodePattern } from '../interfaces/Register';
+import { BaseAddress } from '../interfaces/Customer';
 
 const postalCodePattern: PostalCodePattern = {
   US: '\\d{5}-\\d{4}|\\d{5}',
@@ -17,7 +18,7 @@ function FormAddress(props: {
   streetName: string;
   country: string;
   disabled?: boolean;
-  onInputChange: (address: Partial<AddressData>) => void;
+  onInputChange: (address: Partial<BaseAddress>) => void;
 }): JSX.Element {
   const { prefix, city, postalCode, streetName, country, disabled, onInputChange } = props;
 
@@ -40,7 +41,7 @@ function FormAddress(props: {
     <>
       <div className="form-input">
         <label htmlFor="country">
-          Country:
+          Country
           <select
             id={`${prefix}country`}
             name="country"

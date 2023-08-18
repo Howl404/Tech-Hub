@@ -16,10 +16,3 @@ export interface RegistrationFormData {
 export interface PostalCodePattern {
   [key: string]: string;
 }
-
-export interface AddressData {
-  streetName: string;
-  city: string;
-  postalCode: string;
-  country: string;
-}

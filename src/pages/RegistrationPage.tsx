@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import FormInput from '../components/FormInput';
-import { AddressData, RegistrationFormData } from '../interfaces/register_interfaces';
-import { getAnonymousAccessToken, logInUser, registerUser } from '../services/AuthService';
+import { RegistrationFormData } from '../interfaces/Register';
+import { createCart, getAnonymousAccessToken, logInUser, registerUser } from '../services/AuthService';
 import FormAddress from '../components/FormAddress';
 import './RegistrationPage.scss';
-import { CustomerDraft } from '../interfaces/Customer';
+import { BaseAddress, CustomerDraft } from '../interfaces/Customer';
 
 function RegistrationPage(): JSX.Element {
   const [formData, setFormData] = useState<RegistrationFormData>({
@@ -29,6 +29,21 @@ function RegistrationPage(): JSX.Element {
 
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const authType = Cookies.get('auth-type');
+    if (authType === 'password') {
+      navigate('/');
+    } else if (!authType) {
+      getAnonymousAccessToken().then((res) => {
+        const threeHours = 180 / (24 * 60);
+
+        Cookies.set('access-token', res.accessToken, { expires: threeHours });
+        Cookies.set('refresh-token', res.refreshToken, { expires: 200 });
+        Cookies.set('auth-type', 'anon', { expires: threeHours });
+      });
+    }
+  }, [navigate]);
+
   const [isFormComplete, setIsFormComplete] = useState(false);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
@@ -46,12 +61,12 @@ function RegistrationPage(): JSX.Element {
     setFormData({ ...formData, [id]: checked });
   };
 
-  const handleBillingAddressChange = (address: Partial<AddressData>): void => {
+  const handleBillingAddressChange = (address: Partial<BaseAddress>): void => {
     const newAddress = { ...formData.billingAddress, ...address };
     setFormData({ ...formData, billingAddress: newAddress });
   };
 
-  const handleShippingAddressChange = (address: Partial<AddressData>): void => {
+  const handleShippingAddressChange = (address: Partial<BaseAddress>): void => {
     if (formData.sameBillingShipping) {
       const newAddress = { ...formData.shippingAddress, ...address };
       setFormData({ ...formData, shippingAddress: newAddress, billingAddress: newAddress });
@@ -78,14 +93,6 @@ function RegistrationPage(): JSX.Element {
 
   const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
-
-    const response = await getAnonymousAccessToken();
-
-    const threeHours = 180 / (24 * 60);
-
-    Cookies.set('access-token', response.accessToken, { expires: threeHours });
-    Cookies.remove('refresh-token');
-    Cookies.set('auth-type', 'anon', { expires: threeHours });
 
     const {
       email,
@@ -117,17 +124,21 @@ function RegistrationPage(): JSX.Element {
       registerData.defaultBillingAddress = 1;
     }
 
-    const token = Cookies.get('access-token');
-    if (token) {
-      const result = await registerUser(registerData, token);
-      if (result !== false) {
-        logInUser(email, password).then((results) => {
-          Cookies.set('access-token', results.accessToken, { expires: 2 });
-          Cookies.set('refresh-token', results.refreshToken, { expires: 200 });
-          Cookies.set('auth-type', 'password', { expires: 2 });
-          navigate('/');
-        });
-      }
+    const accessToken = Cookies.get('access-token');
+
+    if (accessToken) {
+      createCart(accessToken).then(() =>
+        registerUser(registerData, accessToken).then((result) => {
+          if (result !== false) {
+            logInUser(email, password).then((results) => {
+              Cookies.set('access-token', results.accessToken, { expires: 2 });
+              Cookies.set('refresh-token', results.refreshToken, { expires: 200 });
+              Cookies.set('auth-type', 'password', { expires: 2 });
+              navigate('/');
+            });
+          }
+        }),
+      );
     }
   };
 

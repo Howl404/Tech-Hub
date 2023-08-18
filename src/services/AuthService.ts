@@ -3,6 +3,7 @@ import Toastify from 'toastify-js';
 import { CustomerData, CustomerDraft } from '../interfaces/Customer';
 import { ResponseErrorItem } from '../interfaces/Errors';
 import 'toastify-js/src/toastify.css';
+import { Cart } from '../interfaces/Cart';
 
 const authHost = 'https://auth.europe-west1.gcp.commercetools.com';
 const apiUrl = 'https://api.europe-west1.gcp.commercetools.com';
@@ -47,7 +48,7 @@ const registerUser = async (userData: CustomerDraft, token: string): Promise<Cus
     duration: 3000,
     newWindow: true,
     close: true,
-    gravity: 'bottom',
+    gravity: 'top',
     position: 'right',
     stopOnFocus: true,
     style: {
@@ -73,6 +74,8 @@ const getAnonymousAccessToken = async (): Promise<{
       },
     },
   );
+
+  console.log(response.data);
 
   const accessToken = response.data.access_token;
   const refreshToken = response.data.refresh_token;
@@ -102,4 +105,23 @@ const logInUser = async (
   return { accessToken, refreshToken };
 };
 
-export { registerUser, logInUser, getAnonymousAccessToken };
+const createCart = async (token: string): Promise<Cart> => {
+  const cartEndpoint = `${apiUrl}/${projectKey}/me/carts`;
+
+  const requestBody = {
+    currency: 'EUR',
+  };
+
+  const response = await axios.post(cartEndpoint, JSON.stringify(requestBody), {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  const cart: Cart = response.data;
+
+  return cart;
+};
+
+export { registerUser, logInUser, getAnonymousAccessToken, createCart };
