@@ -1,0 +1,53 @@
+.form-input {
+  display: flex;
+  justify-content: center;
+  position: relative;
+
+  input,
+  select {
+    box-sizing: border-box;
+    width: 175px;
+    height: 40px;
+    padding: 5px;
+    margin: 1rem;
+    border-radius: 8px;
+    border: 1px solid gray;
+
+    &:invalid {
+      border: 1px solid red;
+    }
+
+    &:invalid ~ span {
+      visibility: visible;
+    }
+  }
+
+  span {
+    color: red;
+    visibility: hidden;
+    display: block;
+    position: absolute;
+    bottom: 0;
+    font-size: 10px;
+    text-align: left;
+  }
+
+  label {
+    width: 25rem;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+#password {
+  -webkit-text-security: disc;
+  text-security: disc;
+}
+
+.buttons-container {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+}

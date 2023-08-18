@@ -1,0 +1,38 @@
+.form-address {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+  gap: 15px;
+
+  .form-billing-address,
+  .form-shipping-address {
+    padding: 10px;
+    border: 1px solid #7a7a7a;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 900px) {
+  .form-address {
+    .form-input label {
+      width: clamp(200px, 45vw, 400px);
+    }
+  }
+}
+
+@media (max-width: 600px) {
+  .form-address {
+    flex-direction: column;
+    .form-input label {
+      width: 25rem;
+    }
+  }
+}
+
+@media (max-width: 410px) {
+  .form-input label {
+    flex-direction: column;
+  }
+}

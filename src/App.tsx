@@ -1,4 +1,3 @@
-import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import './App.scss';
 import SigninPage from './pages/Signin/SigninPage';
@@ -15,10 +14,9 @@ function App(): JSX.Element {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/register" element={<RegistrationPage />} />
-        <Route path="/login" element={<LoginPage />} />
+        <Route path="/login" element={<SigninPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
-<!--       <SigninPage /> -->
     </>
   );
 }
