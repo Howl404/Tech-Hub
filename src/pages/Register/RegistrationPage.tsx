@@ -131,10 +131,12 @@ function RegistrationPage(): JSX.Element {
         registerUser(registerData, accessToken).then((result) => {
           if (result !== false) {
             logInUser(email, password).then((results) => {
-              Cookies.set('access-token', results.accessToken, { expires: 2 });
-              Cookies.set('refresh-token', results.refreshToken, { expires: 200 });
-              Cookies.set('auth-type', 'password', { expires: 2 });
-              navigate('/');
+              if (results) {
+                Cookies.set('access-token', results.accessToken, { expires: 2 });
+                Cookies.set('refresh-token', results.refreshToken, { expires: 200 });
+                Cookies.set('auth-type', 'password', { expires: 2 });
+                navigate('/');
+              }
             });
           }
         }),

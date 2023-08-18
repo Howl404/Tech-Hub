@@ -1,6 +1,7 @@
-import React, { useState, ChangeEvent, MouseEvent } from 'react';
-import axios from 'axios';
-import FormErrors from '../FormErrors/FormErrors';
+import React, { useState, ChangeEvent, MouseEvent, useEffect } from 'react';
+import Cookies from 'js-cookie';
+import { useNavigate } from 'react-router-dom';
+import FormErrors from '@components/FormErrors/FormErrors';
 import './LoginForm.scss';
 import { logInUser } from '@services/AuthService/AuthService';
 
@@ -59,13 +60,16 @@ function isValidatePassword(password: string): string {
   return 'true';
 }
 
-const PROJECT_KEY = 'rs-alchemists-ecommerce';
-const CLIENT_ID = 'Nj8bGpFcdhrQD12ajRSthmO5';
-const SECRET_ID = 'lGjHR6k3_epMGxDV0DCQSjy4rLG8t5CK';
-const OAUTH_HOST = `https://auth.europe-west1.gcp.commercetools.com/oauth/${PROJECT_KEY}/customers/token`;
-const LOGIN_HOST = `https://api.europe-west1.gcp.commercetools.com/${PROJECT_KEY}/me/login`;
-
 function SignInForm(): JSX.Element {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const authType = Cookies.get('auth-type');
+    if (authType === 'password') {
+      navigate('/');
+    }
+  }, [navigate]);
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [formErrors, setFormErrors] = useState({ email: '', password: '' });
@@ -133,48 +137,15 @@ function SignInForm(): JSX.Element {
 
   const onSignIn = (event: MouseEvent<HTMLButtonElement>): void => {
     event.preventDefault();
-    const authResource: Promise<{
-      data: {
-        access_token: string;
-        expires_in: number;
-        scope: string;
-        token_type: string;
-      };
-    }> = axios.post(OAUTH_HOST, `grant_type=password&username=${email}&password=${password}`, {
-      headers: {
-        Authorization: `Basic ${btoa(`${CLIENT_ID}:${SECRET_ID}`)}`,
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
+
+    logInUser(email, password).then((response) => {
+      if (response) {
+        Cookies.set('access-token', response.accessToken, { expires: 2 });
+        Cookies.set('refresh-token', response.refreshToken, { expires: 200 });
+        Cookies.set('auth-type', 'password', { expires: 2 });
+        navigate('/');
+      }
     });
-    authResource
-      .then((item) => {
-        console.log('key', item);
-        //   const getCustomers = axios.get(`https://api.europe-west1.gcp.commercetools.com/${projectKey}/me`, {
-        //     headers: { Authorization: `Bearer ${item.access_token}` },
-        //   });
-        //   getCustomers.then(console.log);
-        const getLogin = axios.post(
-          LOGIN_HOST,
-          {
-            email,
-            password,
-            anonymousCart: {
-              id: 77,
-              typeId: 'cart',
-            },
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${item.data.access_token}`,
-              'Content-Type': 'application/json',
-            },
-          },
-        );
-        getLogin.then(console.log);
-      })
-      .catch((err) => {
-        if (err.response.status === 400) console.error('email or password invalid');
-      });
   };
 
   return (
