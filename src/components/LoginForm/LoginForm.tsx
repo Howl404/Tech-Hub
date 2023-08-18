@@ -2,6 +2,7 @@ import React, { useState, ChangeEvent, MouseEvent } from 'react';
 import axios from 'axios';
 import FormErrors from '../FormErrors/FormErrors';
 import './LoginForm.scss';
+import { logInUser } from '@services/AuthService/AuthService';
 
 function isValidEmail(email: string): string {
   const atIndex = email.indexOf('@');

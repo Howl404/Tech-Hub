@@ -1,9 +1,9 @@
 import React, { MouseEventHandler } from 'react';
 import './Header.scss';
 import { Link } from 'react-router-dom';
-import logoIcon from '../../assets/logo.svg';
-import cartIcon from '../../assets/cart.svg';
-import searchIcon from '../../assets/search.svg';
+import logoIcon from '@assets/logo.svg';
+import cartIcon from '@assets/cart.svg';
+import searchIcon from '@assets/search.svg';
 
 const buttonsData = [
   { name: 'home', label: 'home', path: '/' },

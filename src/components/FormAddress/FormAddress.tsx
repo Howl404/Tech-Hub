@@ -1,7 +1,7 @@
 import React from 'react';
-import FormInput from '../FormInput/FormInput';
-import { PostalCodePattern } from '../../interfaces/Register';
-import { BaseAddress } from '../../interfaces/Customer';
+import FormInput from '@components/FormInput/FormInput';
+import { PostalCodePattern } from '@interfaces/Register';
+import { BaseAddress } from '@interfaces/Customer';
 
 const postalCodePattern: PostalCodePattern = {
   US: '\\d{5}-\\d{4}|\\d{5}',

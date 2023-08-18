@@ -1,8 +1,5 @@
+import { FormErrorsInterface } from '@src/interfaces/Errors';
 import React from 'react';
-
-interface FormErrorsInterface {
-  formErrors: { [email: string]: string; password: string };
-}
 
 function FormErrors({ formErrors }: FormErrorsInterface): JSX.Element {
   return (
