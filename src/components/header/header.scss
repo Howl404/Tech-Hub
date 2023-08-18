@@ -1,0 +1,168 @@
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=ABeeZee&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap');
+
+.header {
+  height: 115px;
+  background-color: black;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.container {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.nav__list {
+  display: flex;
+  gap: 20px;
+  list-style: none;
+}
+
+.btn__home {
+  color: #fff;
+  font-family: 'Oswald', sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+.header__cart {
+  display: flex;
+  gap: 12px;
+}
+
+.header__cart_icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.header__cart_icon img {
+  width: 18px;
+  height: 20px;
+}
+
+.cart__title {
+  font-family: 'ABeeZee', sans-serif;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+}
+
+.cart__sell {
+  color: #fff;
+  font-family: 'Roboto', sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 700;
+}
+
+.cart__title_container {
+  font-family: 'Oswald', sans-serif;
+  color: white;
+}
+
+.header__search {
+  width: 50px;
+  height: 50px;
+  background: #41484a;
+  text-align: center;
+  line-height: 45px;
+  padding-right: 55px;
+  transition: all 0.5s ease;
+  border-radius: 5px;
+  position: relative;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  .header__search_icon {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    position: absolute;
+    color: #ffffff;
+    right: 15px;
+    top: 15px;
+    font-size: 22px;
+    cursor: pointer;
+    img {
+      width: 16px;
+      height: 16px;
+      pointer-events: none;
+    }
+    .search__title {
+      font-family: 'Oswald', sans-serif;
+      color: white;
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 600;
+      line-height: normal;
+      text-transform: uppercase;
+      pointer-events: none;
+    }
+  }
+  .search-box {
+    border: 0px;
+    border-bottom: 2px solid #fff;
+    background: transparent;
+    width: 0%;
+    padding: 5px 0;
+    outline: none;
+    color: #fff;
+    font-weight: bold;
+    transition: all 0.3s ease;
+  }
+  .search-box.active {
+    width: 98%;
+    padding-left: 5px;
+    transition: all 0.5s 0.8s ease;
+  }
+
+  .search-box::placeholder {
+    color: #fff;
+  }
+}
+
+.header__search.active {
+  width: 250px;
+  padding-left: 25px;
+  padding-right: 100px;
+  transition: all 0.5s ease;
+}
+
+.header__account-info {
+  display: flex;
+  gap: 12px;
+}
+
+.header__account-in,
+.header__account-create {
+  color: #fff;
+  font-family: 'Oswald', sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  text-transform: uppercase;
+  transition: all 0.3s;
+}
+
+.header__account-in:hover,
+.header__account-create:hover,
+.header__cart_icon:hover {
+  transition: all 0.3s;
+  box-shadow: 0 0 4px 4px rgb(48, 48, 48);
+  color: rgba(255, 255, 255, 0.73);
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background-color: inherit;
+}
