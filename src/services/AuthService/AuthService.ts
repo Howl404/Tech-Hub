@@ -1,9 +1,9 @@
 import axios, { AxiosError } from 'axios';
 import Toastify from 'toastify-js';
-import { CustomerData, CustomerDraft } from '../interfaces/Customer';
-import { ResponseErrorItem } from '../interfaces/Errors';
+import { CustomerData, CustomerDraft } from '../../interfaces/Customer';
+import { ResponseErrorItem } from '../../interfaces/Errors';
 import 'toastify-js/src/toastify.css';
-import { Cart } from '../interfaces/Cart';
+import { Cart } from '../../interfaces/Cart';
 
 const authHost = 'https://auth.europe-west1.gcp.commercetools.com';
 const apiUrl = 'https://api.europe-west1.gcp.commercetools.com';

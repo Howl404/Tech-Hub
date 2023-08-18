@@ -1,5 +1,5 @@
 import React, { MouseEventHandler } from 'react';
-import './header.scss';
+import './Header.scss';
 import { Link } from 'react-router-dom';
 import logoIcon from '../../assets/logo.svg';
 import cartIcon from '../../assets/cart.svg';

@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
-import FormInput from '../components/FormInput';
-import { RegistrationFormData } from '../interfaces/Register';
-import { createCart, getAnonymousAccessToken, logInUser, registerUser } from '../services/AuthService';
-import FormAddress from '../components/FormAddress';
+import FormInput from '../../components/FormInput/FormInput';
+import { RegistrationFormData } from '../../interfaces/Register';
+import { createCart, getAnonymousAccessToken, logInUser, registerUser } from '../../services/AuthService/AuthService';
+import FormAddress from '../../components/FormAddress/FormAddress';
 import './RegistrationPage.scss';
-import { BaseAddress, CustomerDraft } from '../interfaces/Customer';
+import { BaseAddress, CustomerDraft } from '../../interfaces/Customer';
 
 function RegistrationPage(): JSX.Element {
   const [formData, setFormData] = useState<RegistrationFormData>({

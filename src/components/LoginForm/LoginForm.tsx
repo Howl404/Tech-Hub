@@ -1,7 +1,7 @@
 import React, { useState, ChangeEvent, MouseEvent } from 'react';
 import axios from 'axios';
 import FormErrors from '../FormErrors/FormErrors';
-import './form-sign-in.scss';
+import './LoginForm.scss';
 
 function isValidEmail(email: string): string {
   const atIndex = email.indexOf('@');
