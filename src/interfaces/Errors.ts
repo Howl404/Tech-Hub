@@ -3,3 +3,7 @@ export interface ResponseErrorItem {
   detailedErrorMessage: string;
   message: string;
 }
+
+export interface FormErrorsInterface {
+  formErrors: { [email: string]: string; password: string };
+}
