@@ -98,7 +98,6 @@ function SignInForm(): JSX.Element {
 
     setFormErrors(fieldValidationErrors);
 
-    // if (passwordValidate && emailValidate);
     if (passwordValidate === 'true' && emailValidate === 'true') {
       setFormValid(true);
     } else {
@@ -117,7 +116,7 @@ function SignInForm(): JSX.Element {
 
   const onShowPass = (e: MouseEvent<HTMLButtonElement>): void => {
     const targetElement = e.target;
-    if (targetElement !== null && targetElement instanceof HTMLButtonElement) {
+    if (targetElement instanceof HTMLButtonElement) {
       const node = targetElement.previousElementSibling as HTMLInputElement;
       node.type = 'text';
     }
@@ -125,7 +124,7 @@ function SignInForm(): JSX.Element {
 
   const onBlurPass = (e: MouseEvent<HTMLButtonElement>): void => {
     const targetElement = e.target;
-    if (targetElement !== null && targetElement instanceof HTMLButtonElement) {
+    if (targetElement instanceof HTMLButtonElement) {
       const node = targetElement.previousElementSibling as HTMLInputElement;
       node.type = 'password';
     }
