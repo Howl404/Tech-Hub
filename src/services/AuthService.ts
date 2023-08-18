@@ -47,15 +47,13 @@ const registerUser = async (userData: CustomerDraft, token: string): Promise<Cus
     duration: 3000,
     newWindow: true,
     close: true,
-    gravity: 'bottom', // `top` or `bottom`
-    position: 'right', // `left`, `center` or `right`
+    gravity: 'bottom',
+    position: 'right',
     stopOnFocus: true,
     style: {
       background: 'linear-gradient(to right, #ff0000, #fdacac)',
     },
   }).showToast();
-  // throw new Error('User registration failed');
-
   return false;
 };
 
