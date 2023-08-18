@@ -26,16 +26,8 @@ export interface CustomerData {
   lastMessageSequenceNumber: number;
   createdAt: string;
   lastModifiedAt: string;
-  lastModifiedBy: {
-    clientId: string;
-    isPlatformClient: boolean;
-    anonymousId: string;
-  };
-  createdBy: {
-    clientId: string;
-    isPlatformClient: boolean;
-    anonymousId: string;
-  };
+  lastModifiedBy: LastModifiedBy;
+  createdBy: CreatedBy;
   email: string;
   firstName: string;
   lastName: string;
@@ -47,4 +39,16 @@ export interface CustomerData {
   isEmailVerified: boolean;
   stores: [];
   authenticationMode: string;
+}
+
+export interface CreatedBy {
+  clientId: string;
+  isPlatformClient: boolean;
+  anonymousId: string;
+}
+
+export interface LastModifiedBy {
+  clientId: string;
+  isPlatformClient: boolean;
+  anonymousId: string;
 }
