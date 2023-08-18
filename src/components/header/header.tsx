@@ -54,12 +54,12 @@ function Header(): JSX.Element {
         <div className="header__account-info">
           <Link to="/login">
             <button type="button" className="header__account-in">
-              SIGN IN
+              LOG IN
             </button>
           </Link>
           <Link to="/register">
             <button type="button" className="header__account-create">
-              CREATE ACCOUNT
+              REGISTER
             </button>
           </Link>
         </div>

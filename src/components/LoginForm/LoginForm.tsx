@@ -1,8 +1,10 @@
 import React, { useState, ChangeEvent, MouseEvent, useEffect } from 'react';
 import Cookies from 'js-cookie';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import FormErrors from '@components/FormErrors/FormErrors';
 import './LoginForm.scss';
+import '@components/Button/Button.scss';
+import '@components/Heading/Heading.scss';
 import { logInUser } from '@services/AuthService/AuthService';
 
 function isValidEmail(email: string): string {
@@ -151,7 +153,7 @@ function SignInForm(): JSX.Element {
   return (
     <div className="container__form">
       <form className="login-form">
-        <h2 className="login-form__title">Sign in</h2>
+        <h2 className="login-form__title main-heading">Log in</h2>
         <div className="form-group">
           <label htmlFor="email">
             Email <span>*</span>
@@ -188,12 +190,14 @@ function SignInForm(): JSX.Element {
           </label>
         </div>
         <div className="wrapper-btn">
-          <button type="submit" className="btn btn-sign-in" disabled={!formValid} onClick={onSignIn}>
-            Sign in
+          <button type="submit" className="btn btn-enabled" disabled={!formValid} onClick={onSignIn}>
+            Log in
           </button>
-          <button type="submit" className="btn btn-register">
-            register
-          </button>
+          <Link to="/register">
+            <button type="button" className="btn btn-disabled">
+              register
+            </button>
+          </Link>
         </div>
       </form>
       <div className="panel panel-default">

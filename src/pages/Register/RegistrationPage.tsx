@@ -6,6 +6,8 @@ import { RegistrationFormData } from '@interfaces/Register';
 import { createCart, getAnonymousAccessToken, logInUser, registerUser } from '@services/AuthService/AuthService';
 import FormAddress from '@components/FormAddress/FormAddress';
 import './RegistrationPage.scss';
+import '@components/Heading/Heading.scss';
+import '@components/Button/Button.scss';
 import { BaseAddress, CustomerDraft } from '@interfaces/Customer';
 
 function RegistrationPage(): JSX.Element {
@@ -145,9 +147,9 @@ function RegistrationPage(): JSX.Element {
   };
 
   return (
-    <div>
-      <h1>Registration Page</h1>
-      <form onSubmit={handleSubmit}>
+    <div className="registration">
+      <h2 className="main-heading">Registration Page</h2>
+      <form onSubmit={handleSubmit} className="registration__form">
         <FormInput
           label="Email"
           errorMessage="Invalid email"
@@ -160,7 +162,7 @@ function RegistrationPage(): JSX.Element {
         />
         <FormInput
           label="Password"
-          errorMessage="Minimum 8 characters, at least 1 uppercase letter, 1 lowercase letter, and 1 number"
+          errorMessage="Minimum 8 characters, 1 uppercase letter, 1 lowercase, and 1 number"
           onChange={handleInputChange}
           id="password"
           type="password"
@@ -250,11 +252,13 @@ function RegistrationPage(): JSX.Element {
         </div>
 
         <div className="buttons-container">
-          <button type="submit" id="submit" disabled={!isFormComplete}>
+          <button type="submit" id="submit" disabled={!isFormComplete} className="btn btn-enabled">
             Register
           </button>
           <Link to="/login">
-            <button type="button">Log in</button>
+            <button type="button" className="btn btn-disabled">
+              Log in
+            </button>
           </Link>
         </div>
       </form>
