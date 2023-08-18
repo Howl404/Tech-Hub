@@ -52,8 +52,13 @@ function RegistrationPage(): JSX.Element {
   };
 
   const handleShippingAddressChange = (address: Partial<AddressData>): void => {
-    const newAddress = { ...formData.shippingAddress, ...address };
-    setFormData({ ...formData, shippingAddress: newAddress });
+    if (formData.sameBillingShipping) {
+      const newAddress = { ...formData.shippingAddress, ...address };
+      setFormData({ ...formData, shippingAddress: newAddress, billingAddress: newAddress });
+    } else {
+      const newAddress = { ...formData.shippingAddress, ...address };
+      setFormData({ ...formData, shippingAddress: newAddress });
+    }
   };
 
   useEffect(() => {
