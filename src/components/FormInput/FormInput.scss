@@ -39,11 +39,11 @@
     align-items: center;
     justify-content: space-between;
   }
-}
 
-#password {
-  -webkit-text-security: disc;
-  text-security: disc;
+  #password {
+    -webkit-text-security: disc;
+    text-security: disc;
+  }
 }
 
 .buttons-container {
