@@ -2,6 +2,7 @@
   display: flex;
   justify-content: center;
   position: relative;
+  font-family: 'Oswald', sans-serif;
 
   input,
   select {
@@ -28,7 +29,7 @@
     display: block;
     position: absolute;
     bottom: 0;
-    font-size: 10px;
+    font-size: 12px;
     text-align: left;
   }
 
@@ -39,15 +40,17 @@
     align-items: center;
     justify-content: space-between;
   }
-}
 
-#password {
-  -webkit-text-security: disc;
-  text-security: disc;
+  #password {
+    -webkit-text-security: disc;
+    text-security: disc;
+  }
 }
 
 .buttons-container {
   display: flex;
   gap: 20px;
   justify-content: center;
+  margin-bottom: 20px;
+  align-items: center;
 }

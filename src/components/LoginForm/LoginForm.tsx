@@ -1,7 +1,11 @@
-import React, { useState, ChangeEvent, MouseEvent } from 'react';
-import axios from 'axios';
-import FormErrors from '../FormErrors/FormErrors';
-import './form-sign-in.scss';
+import React, { useState, ChangeEvent, MouseEvent, useEffect } from 'react';
+import Cookies from 'js-cookie';
+import { Link, useNavigate } from 'react-router-dom';
+import FormErrors from '@components/FormErrors/FormErrors';
+import './LoginForm.scss';
+import '@components/Button/Button.scss';
+import '@components/Heading/Heading.scss';
+import { logInUser } from '@services/AuthService/AuthService';
 
 function isValidEmail(email: string): string {
   const atIndex = email.indexOf('@');
@@ -58,13 +62,16 @@ function isValidatePassword(password: string): string {
   return 'true';
 }
 
-const PROJECT_KEY = 'rs-alchemists-ecommerce';
-const CLIENT_ID = 'Nj8bGpFcdhrQD12ajRSthmO5';
-const SECRET_ID = 'lGjHR6k3_epMGxDV0DCQSjy4rLG8t5CK';
-const OAUTH_HOST = `https://auth.europe-west1.gcp.commercetools.com/oauth/${PROJECT_KEY}/customers/token`;
-const LOGIN_HOST = `https://api.europe-west1.gcp.commercetools.com/${PROJECT_KEY}/me/login`;
-
 function SignInForm(): JSX.Element {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const authType = Cookies.get('auth-type');
+    if (authType === 'password') {
+      navigate('/');
+    }
+  }, [navigate]);
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [formErrors, setFormErrors] = useState({ email: '', password: '' });
@@ -132,54 +139,21 @@ function SignInForm(): JSX.Element {
 
   const onSignIn = (event: MouseEvent<HTMLButtonElement>): void => {
     event.preventDefault();
-    const authResource: Promise<{
-      data: {
-        access_token: string;
-        expires_in: number;
-        scope: string;
-        token_type: string;
-      };
-    }> = axios.post(OAUTH_HOST, `grant_type=password&username=${email}&password=${password}`, {
-      headers: {
-        Authorization: `Basic ${btoa(`${CLIENT_ID}:${SECRET_ID}`)}`,
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
+
+    logInUser(email, password).then((response) => {
+      if (response) {
+        Cookies.set('access-token', response.accessToken, { expires: 2 });
+        Cookies.set('refresh-token', response.refreshToken, { expires: 200 });
+        Cookies.set('auth-type', 'password', { expires: 2 });
+        navigate('/');
+      }
     });
-    authResource
-      .then((item) => {
-        console.log('key', item);
-        //   const getCustomers = axios.get(`https://api.europe-west1.gcp.commercetools.com/${projectKey}/me`, {
-        //     headers: { Authorization: `Bearer ${item.access_token}` },
-        //   });
-        //   getCustomers.then(console.log);
-        const getLogin = axios.post(
-          LOGIN_HOST,
-          {
-            email,
-            password,
-            anonymousCart: {
-              id: 77,
-              typeId: 'cart',
-            },
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${item.data.access_token}`,
-              'Content-Type': 'application/json',
-            },
-          },
-        );
-        getLogin.then(console.log);
-      })
-      .catch((err) => {
-        if (err.response.status === 400) console.error('email or password invalid');
-      });
   };
 
   return (
     <div className="container__form">
       <form className="login-form">
-        <h2 className="login-form__title">Sign in</h2>
+        <h2 className="login-form__title main-heading">Log in</h2>
         <div className="form-group">
           <label htmlFor="email">
             Email <span>*</span>
@@ -216,12 +190,14 @@ function SignInForm(): JSX.Element {
           </label>
         </div>
         <div className="wrapper-btn">
-          <button type="submit" className="btn btn-sign-in" disabled={!formValid} onClick={onSignIn}>
-            Sign in
+          <button type="submit" className="btn btn-enabled" disabled={!formValid} onClick={onSignIn}>
+            Log in
           </button>
-          <button type="submit" className="btn btn-register">
-            register
-          </button>
+          <Link to="/register">
+            <button type="button" className="btn btn-disabled">
+              register
+            </button>
+          </Link>
         </div>
       </form>
       <div className="panel panel-default">

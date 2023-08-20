@@ -8,15 +8,6 @@
   box-shadow: 0 0 2px 2px red;
 }
 
-.login-form__title {
-  color: #000;
-  text-align: center;
-  font-family: 'Oswald', sans-serif;
-  font-size: 48px;
-  font-style: normal;
-  font-weight: 400;
-}
-
 .login-form {
   .wrapper-btn {
     display: flex;
@@ -62,58 +53,31 @@
   }
 }
 
-.btn {
-  cursor: pointer;
-}
-
-.btn-sign-in {
-  border: none;
-  margin-right: 66px;
-  background: #000;
-  color: #fff;
-  text-align: center;
-  font-family: 'Oswald', sans-serif;
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: normal;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  width: 270px;
-  height: 50px;
-  transition: all 0.3s;
-  &:hover {
-    background-color: rgba(0, 0, 0, 0.291);
-    transition: all 0.3s;
-    border-radius: 10px;
+@media (max-width: 615px) {
+  .wrapper-btn {
+    flex-direction: column;
+    margin-top: 20px;
+    gap: 20px;
+    align-items: center;
+    .btn {
+      margin: 0;
+    }
   }
 }
 
-.btn:disabled {
-  cursor: default;
-  background: #646464;
-  color: #fff;
-  transition: all 0.3s;
-  border-radius: 0;
-}
-
-.btn-register {
-  color: black;
-  text-align: center;
-  font-family: 'Oswald', sans-serif;
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: normal;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  width: 270px;
-  height: 50px;
-  border: 1px solid black;
-  transition: all 0.3s;
-  &:hover {
-    background-color: rgba(0, 0, 0, 0.291);
-    transition: all 0.3s;
-    border-radius: 10px;
+@media (max-width: 470px) {
+  .form-group {
+    label {
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      #email,
+      #password {
+        margin: 0;
+      }
+      .btn__show-pass {
+        margin-top: 10px;
+      }
+    }
   }
 }

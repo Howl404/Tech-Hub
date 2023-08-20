@@ -1,4 +1,4 @@
-import { BaseAddress, CreatedBy, LastModifiedBy } from './Customer';
+import { BaseAddress, CreatedBy, LastModifiedBy } from '@interfaces/Customer';
 
 export interface Cart {
   type: string;

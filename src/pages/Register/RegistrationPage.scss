@@ -4,6 +4,11 @@
   margin-bottom: 20px;
   gap: 15px;
 
+  label {
+    display: flex;
+    gap: 5px;
+  }
+
   .form-billing-address,
   .form-shipping-address {
     padding: 10px;
@@ -22,9 +27,20 @@
   }
 }
 
+@media (max-width: 700px) {
+  .buttons-container {
+    flex-direction: column;
+    margin-top: 20px;
+    .btn {
+      margin: 0;
+    }
+  }
+}
+
 @media (max-width: 600px) {
   .form-address {
     flex-direction: column;
+    margin: 0 2rem;
     .form-input label {
       width: 25rem;
     }

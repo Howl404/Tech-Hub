@@ -1,4 +1,4 @@
-import { BaseAddress } from './Customer';
+import { BaseAddress } from '@interfaces/Customer';
 
 export interface RegistrationFormData {
   email: string;

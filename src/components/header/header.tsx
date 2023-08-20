@@ -1,9 +1,9 @@
 import React, { MouseEventHandler } from 'react';
-import './header.scss';
+import './Header.scss';
 import { Link } from 'react-router-dom';
-import logoIcon from '../../assets/logo.svg';
-import cartIcon from '../../assets/cart.svg';
-import searchIcon from '../../assets/search.svg';
+import logoIcon from '@assets/logo.svg';
+import cartIcon from '@assets/cart.svg';
+import searchIcon from '@assets/search.svg';
 
 const buttonsData = [
   { name: 'home', label: 'home', path: '/' },
@@ -54,12 +54,12 @@ function Header(): JSX.Element {
         <div className="header__account-info">
           <Link to="/login">
             <button type="button" className="header__account-in">
-              SIGN IN
+              LOG IN
             </button>
           </Link>
           <Link to="/register">
             <button type="button" className="header__account-create">
-              CREATE ACCOUNT
+              REGISTER
             </button>
           </Link>
         </div>

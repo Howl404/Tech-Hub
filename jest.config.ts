@@ -10,3 +10,5 @@ module.exports = {
   },
   testMatch: ['**/__tests__/**/*.(ts|tsx|js)'],
 };
+
+export {};
