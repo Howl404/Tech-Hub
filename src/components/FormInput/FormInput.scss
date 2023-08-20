@@ -18,7 +18,8 @@
       border: 1px solid red;
     }
 
-    &:invalid ~ span {
+    &:invalid ~ span,
+    &.error ~ span {
       visibility: visible;
     }
   }
@@ -34,6 +35,7 @@
   }
 
   label {
+    position: relative;
     width: 25rem;
     height: 100px;
     display: flex;

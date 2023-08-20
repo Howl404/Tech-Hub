@@ -12,8 +12,10 @@ function FormInput(props: {
   max?: string;
   value?: string;
   disabled?: boolean;
+  button?: React.ReactNode;
 }): JSX.Element {
-  const { label, errorMessage, onChange, id, type, pattern, title, max, value, disabled } = props;
+  const { label, errorMessage, onChange, id, type, pattern, title, max, value, disabled, button } = props;
+  const spanClass = `${id}-error`;
 
   return (
     <div className="form-input">
@@ -29,7 +31,8 @@ function FormInput(props: {
           value={value}
           disabled={disabled}
         />
-        <span>{errorMessage}</span>
+        {button}
+        <span className={spanClass}>{errorMessage}</span>
       </label>
     </div>
   );
@@ -39,6 +42,7 @@ FormInput.defaultProps = {
   max: '',
   value: '',
   disabled: false,
+  button: null,
 };
 
 export default FormInput;
