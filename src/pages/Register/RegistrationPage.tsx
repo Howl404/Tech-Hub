@@ -10,7 +10,7 @@ import '@components/Heading/Heading.scss';
 import '@components/Button/Button.scss';
 import { BaseAddress, CustomerDraft } from '@interfaces/Customer';
 
-function RegistrationPage(): JSX.Element {
+function RegistrationPage({ checkLogIn }: { checkLogIn: () => void }): JSX.Element {
   const [formData, setFormData] = useState<RegistrationFormData>({
     email: '',
     password: '',
@@ -137,6 +137,7 @@ function RegistrationPage(): JSX.Element {
                 Cookies.set('access-token', results.accessToken, { expires: 2 });
                 Cookies.set('refresh-token', results.refreshToken, { expires: 200 });
                 Cookies.set('auth-type', 'password', { expires: 2 });
+                checkLogIn();
                 navigate('/');
               }
             });

@@ -62,7 +62,7 @@ function isValidatePassword(password: string): string {
   return 'true';
 }
 
-function SignInForm(): JSX.Element {
+function SignInForm({ checkLogIn }: { checkLogIn: () => void }): JSX.Element {
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -147,6 +147,7 @@ function SignInForm(): JSX.Element {
         Cookies.set('access-token', response.accessToken, { expires: 2 });
         Cookies.set('refresh-token', response.refreshToken, { expires: 200 });
         Cookies.set('auth-type', 'password', { expires: 2 });
+        checkLogIn();
         navigate('/');
       }
     });

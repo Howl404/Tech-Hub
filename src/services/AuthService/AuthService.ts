@@ -1,9 +1,10 @@
 import axios, { AxiosError } from 'axios';
 import Toastify from 'toastify-js';
 import { ResponseErrorItem } from '@interfaces/Errors';
-import { CustomerData, CustomerDraft } from '@interfaces/Customer';
+import { CustomerData, CustomerDraft, CustomersId } from '@interfaces/Customer';
 import 'toastify-js/src/toastify.css';
 import { Cart } from '@interfaces/Cart';
+import Cookies from 'js-cookie';
 
 const authHost = 'https://auth.europe-west1.gcp.commercetools.com';
 const apiUrl = 'https://api.europe-west1.gcp.commercetools.com';
@@ -156,4 +157,13 @@ const createCart = async (token: string): Promise<Cart> => {
   return cart;
 };
 
-export { registerUser, logInUser, getAnonymousAccessToken, createCart };
+const getCustomerId = async (): Promise<CustomersId> => {
+  const response = await axios.get(`${apiUrl}/${projectKey}/me`, {
+    headers: {
+      Authorization: `Bearer ${Cookies.get('access-token')}`,
+    },
+  });
+  return response.data;
+};
+
+export { registerUser, logInUser, getAnonymousAccessToken, createCart, getCustomerId };
