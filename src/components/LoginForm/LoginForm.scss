@@ -1,0 +1,71 @@
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=ABeeZee&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap');
+
+.has-error {
+  box-shadow: 0 0 2px 2px red;
+}
+
+.wrapper-btn {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.login-form {
+  .btn__show-pass {
+    width: 10px;
+    margin: 0;
+    padding: 0;
+    border: 1px solid black;
+    position: absolute;
+    right: 0;
+    &:hover {
+      background-color: #3f3f3f4d;
+    }
+  }
+}
+
+.panel {
+  text-align: center;
+}
+
+@media (max-width: 410px) {
+  .login-form {
+    .btn__show-pass {
+      position: relative;
+      right: -100px;
+      top: -40px;
+    }
+  }
+}
+
+@media (max-width: 615px) {
+  .wrapper-btn {
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+    .btn {
+      margin: 0;
+    }
+  }
+}
+
+@media (max-width: 470px) {
+  .form-group {
+    label {
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      #email,
+      #password {
+        margin: 0;
+      }
+      .btn__show-pass {
+        margin-top: 10px;
+      }
+    }
+  }
+}
