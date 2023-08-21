@@ -10,8 +10,21 @@
 
 .login-form {
   .wrapper-btn {
+    margin-top: 20px;
     display: flex;
     justify-content: center;
+  }
+
+  .btn__show-pass {
+    width: 10px;
+    margin: 0;
+    padding: 0;
+    border: 1px solid black;
+    position: absolute;
+    right: 0;
+    &:hover {
+      background-color: #3f3f3f4d;
+    }
   }
 }
 
@@ -19,36 +32,12 @@
   text-align: center;
 }
 
-.form-group {
-  max-width: 450px;
-  margin: 0 auto;
-  display: flex;
-  justify-content: left;
-  margin-bottom: 15px;
-  font-family: 'Oswald', sans-serif;
-  label {
-    width: 100%;
-    text-align: left;
-    color: #3f3f3f;
-    font-family: 'Roboto', sans-serif;
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 400;
-    .form-control {
-      margin: 0 30px;
-    }
-    #email {
-      margin-left: 60px;
-    }
-    span {
-      color: red;
-      margin-left: 5px;
-    }
-  }
-  .btn__show-pass {
-    border: 1px solid black;
-    &:hover {
-      background-color: #3f3f3f4d;
+@media (max-width: 410px) {
+  .login-form {
+    .btn__show-pass {
+      position: relative;
+      right: -100px;
+      top: -40px;
     }
   }
 }
@@ -56,7 +45,6 @@
 @media (max-width: 615px) {
   .wrapper-btn {
     flex-direction: column;
-    margin-top: 20px;
     gap: 20px;
     align-items: center;
     .btn {

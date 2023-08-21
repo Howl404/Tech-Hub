@@ -151,7 +151,7 @@ function RegistrationPage(): JSX.Element {
       <h2 className="main-heading">Registration Page</h2>
       <form onSubmit={handleSubmit} className="registration__form">
         <FormInput
-          label="Email"
+          label="Email *"
           errorMessage="Invalid email"
           onChange={handleInputChange}
           id="email"
@@ -161,7 +161,7 @@ function RegistrationPage(): JSX.Element {
           value={formData.email}
         />
         <FormInput
-          label="Password"
+          label="Password *"
           errorMessage="Minimum 8 characters, 1 uppercase letter, 1 lowercase, and 1 number"
           onChange={handleInputChange}
           id="password"
@@ -171,7 +171,7 @@ function RegistrationPage(): JSX.Element {
           value={formData.password}
         />
         <FormInput
-          label="First name"
+          label="First name *"
           errorMessage="Must contain at least one character and no special characters or numbers"
           onChange={handleInputChange}
           id="firstName"
@@ -181,7 +181,7 @@ function RegistrationPage(): JSX.Element {
           value={formData.firstName}
         />
         <FormInput
-          label="Last name"
+          label="Last name *"
           errorMessage="Must contain at least one character and no special characters or numbers"
           onChange={handleInputChange}
           id="lastName"
@@ -191,7 +191,7 @@ function RegistrationPage(): JSX.Element {
           value={formData.lastName}
         />
         <FormInput
-          label="Date of birth"
+          label="Date of birth *"
           errorMessage="You need to be older than 13 years old"
           onChange={handleInputChange}
           id="dateOfBirth"
