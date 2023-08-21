@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 import logoIcon from '@assets/logo.svg';
 import cartIcon from '@assets/cart.svg';
 import searchIcon from '@assets/search.svg';
+import ButtonsAccount from '../ButtonsAccount/ButtonsAccount';
+import NameAccount from '../NameAccount/NameAccount';
 
 const buttonsData = [
   { name: 'home', label: 'home', path: '/' },
@@ -11,13 +13,15 @@ const buttonsData = [
   { name: 'about us', label: 'about us', path: '/about' },
 ];
 
-function Header(): JSX.Element {
+function Header({ authh, logOut }: { authh: boolean; logOut: () => void }): JSX.Element {
   const [isOpen, setIsOpen] = useState(false);
+
   const toggleMenu = (event: MouseEvent<HTMLElement>): void => {
     const eventTarget = event.target as HTMLElement;
     if (!eventTarget.className.includes('header__search') && !eventTarget.className.includes('search-box'))
       setIsOpen(!isOpen);
   };
+
   const onToggleActiveSearch: MouseEventHandler<HTMLButtonElement> = (event): void => {
     const target = event.target as HTMLElement;
     target.parentElement?.classList.toggle('active');
@@ -54,18 +58,7 @@ function Header(): JSX.Element {
             </button>
           </div>
 
-          <div className="header__account-info">
-            <Link to="/login">
-              <button type="button" className="header__account-in">
-                LOG IN
-              </button>
-            </Link>
-            <Link to="/register">
-              <button type="button" className="header__account-create">
-                REGISTER
-              </button>
-            </Link>
-          </div>
+          <div className="header__account-info">{authh ? <NameAccount logOut={logOut} /> : <ButtonsAccount />}</div>
 
           <div className="header__cart">
             <button type="button" className="header__cart_icon">

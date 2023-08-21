@@ -52,3 +52,9 @@ export interface LastModifiedBy {
   isPlatformClient: boolean;
   anonymousId: string;
 }
+
+export interface CustomersId {
+  email: string;
+  firstName: string;
+  lastName: string;
+}
