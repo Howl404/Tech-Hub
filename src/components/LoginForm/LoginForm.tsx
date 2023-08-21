@@ -167,7 +167,7 @@ function SignInForm({ checkLogIn }: { checkLogIn: () => void }): JSX.Element {
           onChange={handleUserInput}
           id="email"
           type="email"
-          pattern="*"
+          pattern=".*"
           title="Valid email address"
           value={email}
         />
@@ -177,7 +177,7 @@ function SignInForm({ checkLogIn }: { checkLogIn: () => void }): JSX.Element {
           onChange={handleUserInput}
           id="password"
           type="password"
-          pattern="*"
+          pattern=".*"
           title="Valid password"
           value={password}
           button={showButton}
