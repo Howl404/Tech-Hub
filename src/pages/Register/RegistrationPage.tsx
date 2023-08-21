@@ -36,6 +36,18 @@ function RegistrationPage({ checkLogIn }: { checkLogIn: () => void }): JSX.Eleme
     const authType = Cookies.get('auth-type');
     if (authType === 'password') {
       navigate('/');
+      Toastify({
+        text: 'Log out to access this page',
+        duration: 3000,
+        newWindow: true,
+        close: true,
+        gravity: 'top',
+        position: 'right',
+        stopOnFocus: true,
+        style: {
+          background: 'linear-gradient(to right, #ff0000, #fdacac)',
+        },
+      }).showToast();
     } else if (!authType) {
       getAnonymousAccessToken().then((res) => {
         const threeHours = 180 / (24 * 60);
