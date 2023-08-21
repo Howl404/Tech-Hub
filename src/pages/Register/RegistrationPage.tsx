@@ -9,6 +9,7 @@ import './RegistrationPage.scss';
 import '@components/Heading/Heading.scss';
 import '@components/Button/Button.scss';
 import { BaseAddress, CustomerDraft } from '@interfaces/Customer';
+import Toastify from 'toastify-js';
 
 function RegistrationPage({ checkLogIn }: { checkLogIn: () => void }): JSX.Element {
   const [formData, setFormData] = useState<RegistrationFormData>({
@@ -139,6 +140,18 @@ function RegistrationPage({ checkLogIn }: { checkLogIn: () => void }): JSX.Eleme
                 Cookies.set('auth-type', 'password', { expires: 2 });
                 checkLogIn();
                 navigate('/');
+                Toastify({
+                  text: 'Account is successfully created!',
+                  duration: 3000,
+                  newWindow: true,
+                  close: true,
+                  gravity: 'top',
+                  position: 'right',
+                  stopOnFocus: true,
+                  style: {
+                    background: 'linear-gradient(315deg, #7ee8fa 0%, #80ff72 74%)',
+                  },
+                }).showToast();
               }
             });
           }
