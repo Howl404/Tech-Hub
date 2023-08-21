@@ -6,6 +6,7 @@ import '@components/Button/Button.scss';
 import '@components/Heading/Heading.scss';
 import { logInUser } from '@services/AuthService/AuthService';
 import FormInput from '@components/FormInput/FormInput';
+import Toastify from 'toastify-js';
 
 function isValidEmail(email: string): string {
   const atIndex = email.indexOf('@');
@@ -69,6 +70,18 @@ function SignInForm({ checkLogIn }: { checkLogIn: () => void }): JSX.Element {
     const authType = Cookies.get('auth-type');
     if (authType === 'password') {
       navigate('/');
+      Toastify({
+        text: 'Log out to access this page',
+        duration: 3000,
+        newWindow: true,
+        close: true,
+        gravity: 'top',
+        position: 'right',
+        stopOnFocus: true,
+        style: {
+          background: 'linear-gradient(to right, #ff0000, #fdacac)',
+        },
+      }).showToast();
     }
   }, [navigate]);
 
