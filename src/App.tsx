@@ -1,18 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, useNavigate } from 'react-router-dom';
 import './App.scss';
 import Home from '@pages/Home/Home';
 import LoginPage from '@pages/Login/LoginPage';
 import NotFound from '@pages/NotFound/NotFound';
 import RegistrationPage from '@pages/Register/RegistrationPage';
 import Cookies from 'js-cookie';
+
 import Header from './components/header/Header';
 
 function App(): JSX.Element {
+  const navigate = useNavigate();
   const [auth, setIsAuth] = useState(false);
   const onLogOut = (): void => {
     Object.keys(Cookies.get()).forEach((item) => {
       Cookies.remove(item);
+      navigate('/');
       setIsAuth(false);
     });
   };
