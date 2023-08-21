@@ -2,6 +2,12 @@
 @import url('https://fonts.googleapis.com/css2?family=ABeeZee&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap');
 
+:root {
+  --font-s14: 14px;
+  --font-s12: 12px;
+  --font-s22: 22px;
+}
+
 .header {
   height: 115px;
   background-color: black;
@@ -11,22 +17,36 @@
   justify-content: center;
 }
 
+.burger-menu {
+  display: none;
+}
+
 .container {
   display: flex;
   justify-content: space-around;
   align-items: center;
+  padding: 0 20px;
+  position: relative;
 }
 
 .nav__list {
   display: flex;
   gap: 20px;
   list-style: none;
+  padding: 0;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  justify-content: space-around;
 }
 
 .btn__home {
   color: #fff;
   font-family: 'Oswald', sans-serif;
-  font-size: 14px;
+  font-size: var(--font-s14);
   font-style: normal;
   font-weight: 600;
   line-height: normal;
@@ -52,7 +72,7 @@
 
 .cart__title {
   font-family: 'ABeeZee', sans-serif;
-  font-size: 12px;
+  font-size: var(--font-s12);
   font-style: normal;
   font-weight: 400;
 }
@@ -60,7 +80,7 @@
 .cart__sell {
   color: #fff;
   font-family: 'Roboto', sans-serif;
-  font-size: 14px;
+  font-size: var(--font-s14);
   font-style: normal;
   font-weight: 700;
 }
@@ -89,7 +109,7 @@
     color: #ffffff;
     right: 15px;
     top: 15px;
-    font-size: 22px;
+    font-size: var(--font-s22);
     cursor: pointer;
     img {
       width: 16px;
@@ -99,7 +119,7 @@
     .search__title {
       font-family: 'Oswald', sans-serif;
       color: white;
-      font-size: 14px;
+      font-size: var(--font-s14);
       font-style: normal;
       font-weight: 600;
       line-height: normal;
@@ -145,7 +165,7 @@
 .header__account-create {
   color: #fff;
   font-family: 'Oswald', sans-serif;
-  font-size: 14px;
+  font-size: var(--font-s14);
   font-style: normal;
   font-weight: 600;
   line-height: normal;
@@ -165,4 +185,102 @@ button {
   cursor: pointer;
   border: none;
   background-color: inherit;
+}
+
+@media (max-width: 950px) {
+  :root {
+    --font-s14: 12px;
+  }
+  .logo {
+    max-width: 90px;
+  }
+  .header__search.active {
+    width: 180px;
+  }
+}
+
+@media (max-width: 900px) {
+  :root {
+    --font-s14: 15px;
+  }
+  .header {
+    height: auto;
+    // padding-top: 20px 0;
+  }
+  .container {
+    padding: 37px 0;
+  }
+  .lock {
+    overflow: hidden;
+  }
+  .nav {
+    display: none;
+    pointer-events: auto;
+  }
+  .nav.active {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: center;
+    flex-direction: column;
+    position: absolute;
+    z-index: 5;
+    background: #3a4242;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    gap: 45px;
+  }
+  .nav__list,
+  .header__account-info {
+    flex-direction: column;
+    margin: 0;
+  }
+  .header-burger {
+    display: block;
+    position: relative;
+    width: 30px;
+    height: 20px;
+    z-index: 6;
+    span {
+      position: absolute;
+      background: white;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      top: 9px;
+      transition: all 0.5s ease 0s;
+    }
+    &:before,
+    &:after {
+      content: '';
+      background: white;
+      position: absolute;
+      width: 100%;
+      height: 2px;
+      left: 0;
+      transition: all 0.5s ease 0s;
+    }
+    &:before {
+      top: 0;
+    }
+
+    &:after {
+      bottom: 0;
+    }
+
+    &.active:before {
+      transform: rotate(45deg);
+      top: 9px;
+    }
+
+    &.active:after {
+      transform: rotate(-45deg);
+      bottom: 9px;
+    }
+
+    &.active span {
+      transform: scale(0);
+    }
+  }
 }
