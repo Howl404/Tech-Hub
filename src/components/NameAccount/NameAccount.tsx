@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CustomersId } from '@src/interfaces/Customer';
 import { getCustomerId } from '@src/services/AuthService/AuthService';
@@ -11,9 +11,11 @@ function NameAccount({ logOut }: { logOut: () => void }): JSX.Element {
     lastName: '',
   });
 
-  getCustomerId().then((item) => {
-    setData(item);
-  });
+  useEffect(() => {
+    getCustomerId().then((item) => {
+      setData(item);
+    });
+  }, []);
 
   return (
     <>
