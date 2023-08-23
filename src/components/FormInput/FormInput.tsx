@@ -1,4 +1,4 @@
-import React, { ChangeEventHandler } from 'react';
+import React, { ChangeEventHandler, KeyboardEventHandler } from 'react';
 import './FormInput.scss';
 
 function FormInput(props: {
@@ -13,8 +13,9 @@ function FormInput(props: {
   value?: string;
   disabled?: boolean;
   button?: React.ReactNode;
+  onKeyDown?: KeyboardEventHandler<HTMLInputElement>;
 }): JSX.Element {
-  const { label, errorMessage, onChange, id, type, pattern, title, max, value, disabled, button } = props;
+  const { label, errorMessage, onChange, id, type, pattern, title, max, value, disabled, button, onKeyDown } = props;
   const spanClass = `${id}-error`;
 
   return (
@@ -30,6 +31,7 @@ function FormInput(props: {
           max={max}
           value={value}
           disabled={disabled}
+          onKeyDown={onKeyDown}
         />
         {button}
         <span className={spanClass}>{errorMessage}</span>
@@ -43,6 +45,7 @@ FormInput.defaultProps = {
   value: '',
   disabled: false,
   button: null,
+  onKeyDown: null,
 };
 
 export default FormInput;
