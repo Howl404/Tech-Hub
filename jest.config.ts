@@ -9,6 +9,7 @@ module.exports = {
     '^.+\\.(ts|tsx)$': 'ts-jest',
   },
   testMatch: ['**/__tests__/**/*.(ts|tsx|js)'],
+  collectCoverageFrom: ['src/**/*.tsx'],
 };
 
 export {};
