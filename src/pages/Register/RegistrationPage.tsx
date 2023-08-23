@@ -12,6 +12,19 @@ import { BaseAddress, CustomerDraft } from '@interfaces/Customer';
 import Toastify from 'toastify-js';
 
 function RegistrationPage({ checkLogIn }: { checkLogIn: () => void }): JSX.Element {
+  function getFormattedDate(): string {
+    const currentDate = new Date(Date.now());
+    const currentYear = currentDate.getFullYear();
+    currentDate.setFullYear(currentYear - 13);
+
+    const year = currentDate.getFullYear();
+    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+    const day = String(currentDate.getDate()).padStart(2, '0');
+
+    const formattedDate = `${year}-${month}-${day}`;
+    return formattedDate;
+  }
+
   const [formData, setFormData] = useState<RegistrationFormData>({
     email: '',
     password: '',
@@ -224,7 +237,7 @@ function RegistrationPage({ checkLogIn }: { checkLogIn: () => void }): JSX.Eleme
           type="date"
           pattern=".*"
           title="You need to be older than 13 years old"
-          max="2010-01-01"
+          max={getFormattedDate()}
           value={formData.dateOfBirth}
         />
         <div className="form-address">
