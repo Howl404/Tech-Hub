@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent, MouseEvent, useEffect } from 'react';
+import React, { useState, ChangeEvent, MouseEvent, useEffect, KeyboardEventHandler } from 'react';
 import Cookies from 'js-cookie';
 import { Link, useNavigate } from 'react-router-dom';
 import './LoginForm.scss';
@@ -135,6 +135,12 @@ function SignInForm({ checkLogIn }: { checkLogIn: () => void }): JSX.Element {
     }
   };
 
+  const handleKeyboard: KeyboardEventHandler<HTMLInputElement> = (event): void => {
+    if (event.key === ' ') {
+      event.preventDefault();
+    }
+  };
+
   const showPassword = (e: MouseEvent<HTMLInputElement>): void => {
     const targetElement = e.target;
 
@@ -183,6 +189,7 @@ function SignInForm({ checkLogIn }: { checkLogIn: () => void }): JSX.Element {
           pattern=".*"
           title="Valid email address"
           value={email}
+          onKeyDown={handleKeyboard}
         />
         <FormInput
           label="Password *"
@@ -194,6 +201,7 @@ function SignInForm({ checkLogIn }: { checkLogIn: () => void }): JSX.Element {
           title="Valid password"
           value={password}
           button={showButton}
+          onKeyDown={handleKeyboard}
         />
         <div className="wrapper-btn">
           <button type="submit" className="btn btn-enabled" disabled={!formValid} onClick={onSignIn}>
