@@ -28,4 +28,12 @@ describe('NotFound', () => {
     );
     expect(screen.getByText('Page not found')).toBeInTheDocument();
   });
+  test('displays "Home" button', () => {
+    render(
+      <Router>
+        <NotFound />
+      </Router>,
+    );
+    expect(screen.getByRole('button', { name: 'Home' })).toBeInTheDocument();
+  });
 });
