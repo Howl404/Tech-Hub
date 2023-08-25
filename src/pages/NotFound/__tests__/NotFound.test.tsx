@@ -20,4 +20,12 @@ describe('NotFound', () => {
     );
     expect(screen.getByText('404')).toBeInTheDocument();
   });
+  test('displays "Page not found" text', () => {
+    render(
+      <Router>
+        <NotFound />
+      </Router>,
+    );
+    expect(screen.getByText('Page not found')).toBeInTheDocument();
+  });
 });
