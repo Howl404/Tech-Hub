@@ -25,4 +25,21 @@ describe('SignInForm component', () => {
     fireEvent.click(visibilityToggleButton);
     expect(passwordInput.type).toBe('password');
   });
+
+  test('blocks spacebar key on email and password input fields', () => {
+    const mockCheckLogIn = jest.fn();
+    const { getByLabelText } = render(
+      <Router>
+        <SignInForm checkLogIn={mockCheckLogIn} />
+      </Router>,
+    );
+    const emailInput = getByLabelText('Email *') as HTMLInputElement;
+    const passwordInput = getByLabelText('Password *') as HTMLInputElement;
+
+    fireEvent.keyDown(emailInput, { key: ' ', code: 'Space' });
+    expect(emailInput.value).toBe('');
+
+    fireEvent.keyDown(passwordInput, { key: ' ', code: 'Space' });
+    expect(passwordInput.value).toBe('');
+  });
 });
