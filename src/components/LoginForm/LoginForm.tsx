@@ -184,7 +184,7 @@ function SignInForm({ checkLogIn }: { checkLogIn: () => void }): JSX.Element {
 
   return (
     <div className="container__form">
-      <form className="login-form">
+      <form className="login-form" data-testid="login-form">
         <h2 className="login-form__title main-heading">Log in</h2>
         <FormInput
           label="Email *"
