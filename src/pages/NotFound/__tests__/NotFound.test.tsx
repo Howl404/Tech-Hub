@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import NotFound from '../NotFound';
 import '@testing-library/jest-dom';
 
@@ -11,5 +11,13 @@ describe('NotFound', () => {
         <NotFound />
       </Router>,
     );
+  });
+  test('displays "404" text', () => {
+    render(
+      <Router>
+        <NotFound />
+      </Router>,
+    );
+    expect(screen.getByText('404')).toBeInTheDocument();
   });
 });
