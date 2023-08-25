@@ -14,8 +14,24 @@ function FormInput(props: {
   disabled?: boolean;
   button?: React.ReactNode;
   onKeyDown?: KeyboardEventHandler<HTMLInputElement>;
+  // eslint-disable-next-line react/require-default-props
+  placeholderr?: string;
 }): JSX.Element {
-  const { label, errorMessage, onChange, id, type, pattern, title, max, value, disabled, button, onKeyDown } = props;
+  const {
+    label,
+    errorMessage,
+    onChange,
+    id,
+    type,
+    pattern,
+    title,
+    max,
+    value,
+    disabled,
+    button,
+    onKeyDown,
+    placeholderr,
+  } = props;
   const spanClass = `${id}-error`;
 
   return (
@@ -32,6 +48,7 @@ function FormInput(props: {
           value={value}
           disabled={disabled}
           onKeyDown={onKeyDown}
+          placeholder={placeholderr}
         />
         {button}
         <span className={spanClass}>{errorMessage}</span>

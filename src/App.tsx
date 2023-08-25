@@ -6,8 +6,7 @@ import LoginPage from '@pages/Login/LoginPage';
 import NotFound from '@pages/NotFound/NotFound';
 import RegistrationPage from '@pages/Register/RegistrationPage';
 import Cookies from 'js-cookie';
-
-import Header from '@components/Header/Header';
+import Header from './components/header/Header';
 
 function App(): JSX.Element {
   const navigate = useNavigate();
