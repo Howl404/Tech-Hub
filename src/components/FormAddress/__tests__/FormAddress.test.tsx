@@ -18,7 +18,6 @@ describe('FormAddress component', () => {
     );
 
     const labelElementCity = screen.getByText('City');
-    // screen.getByRole('textbox', { name: 'City' });
     const inputElementCity = document.querySelector('#city');
 
     expect(labelElementCity).toBeInTheDocument();
@@ -49,7 +48,6 @@ describe('FormAddress component', () => {
       <FormAddress prefix="" city="" country="" postalCode="" streetName="" disabled onInputChange={onChangeMock} />,
     );
 
-    // const inputElement = screen.getByRole('textbox', { name: 'City' });
     const inputElementCity = document.querySelector('#city') as HTMLInputElement;
     const inputElementCountry = document.querySelector('#country') as HTMLInputElement;
 
