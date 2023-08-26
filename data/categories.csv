@@ -1,0 +1,20 @@
+key,externalId,name.en,slug.en,parentId,orderHint
+c1,1,Computers & Laptops,computerslaptops,,0.001
+c2,2,Computers,Computers,1,0.001
+c3,3,Laptops,Laptops,1,0.001
+c4,4,Displays & Graphics Cards,displaysgraphics,,0.001
+c5,5,Displays,displays,4,0.001
+c6,6,Graphics Cards,graphicscards,4,0.001
+c7,7,Audio & Input Devices,audioinput,,0.001
+c8,8,Headphones,headphones,7,0.001
+c9,9,Keyboards,keyboards,7,0.001
+c10,10,Mouses,mouses,7,0.001
+c11,11,Gaming Computers,gamindcomputers,2,0.001
+c12,12,Gaming Laptops,gaminglaptops,3,0.001
+c13,13,Gaming Graphics Cards,gaminggraphics,4,0.001
+c14,14,Gaming Headphones,gamingheadphones,8,0.001
+c15,15,Proffesional Headphones,proffesionalheadphones,8,0.001
+c16,16,Mechanical Keayboards,mechanicalkeyboards,9,0.001
+c17,17,Membrane Keyboards,membranekeyboards,9,0.001
+c18,18,Gaming Mouses,gamingmouses,10,0.001
+c19,19,Office Mouses,officemouses,10,0.001 
