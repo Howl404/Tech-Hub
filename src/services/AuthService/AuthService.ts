@@ -153,7 +153,6 @@ const createCart = async (token: string): Promise<Cart> => {
   });
 
   const cart: Cart = response.data;
-
   return cart;
 };
 
