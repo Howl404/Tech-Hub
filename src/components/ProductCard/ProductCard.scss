@@ -1,0 +1,37 @@
+.product-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  font-family: 'Oswald', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  margin-top: 10px;
+  .product-card {
+    padding: 5px;
+    width: 305px;
+    border: 1px solid #ccc;
+    transition:
+      box-shadow 0.3s ease,
+      border-radius 0.3s ease;
+    border-radius: 8px;
+    img {
+      width: 305px;
+      height: 450px;
+      object-fit: contain;
+    }
+
+    h4 {
+      margin-top: 5px;
+    }
+
+    h3 {
+      font-size: 24px;
+      margin-bottom: 5px;
+    }
+    &:hover {
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      border-radius: 16px;
+    }
+  }
+}
