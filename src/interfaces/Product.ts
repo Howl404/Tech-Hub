@@ -23,6 +23,11 @@ export interface Product {
               centAmount: number;
               fractionDigits: number;
             };
+            discounted?: {
+              value: {
+                centAmount: number;
+              };
+            };
           },
         ];
       };

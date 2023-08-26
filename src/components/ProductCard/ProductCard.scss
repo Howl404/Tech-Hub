@@ -34,4 +34,16 @@
       border-radius: 16px;
     }
   }
+
+  .price-container {
+    display: flex;
+    gap: 10px;
+    .discounted-price {
+      scale: 1.1;
+      color: red;
+    }
+    .crossed-price {
+      text-decoration: line-through;
+    }
+  }
 }
