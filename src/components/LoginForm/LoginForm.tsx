@@ -173,12 +173,18 @@ function SignInForm({ checkLogIn }: { checkLogIn: () => void }): JSX.Element {
   };
 
   const showButton = (
-    <input type="checkbox" className="btn btn__show-pass" onClick={showPassword} disabled={!password.length} />
+    <input
+      type="checkbox"
+      className="btn btn__show-pass"
+      onClick={showPassword}
+      disabled={!password.length}
+      aria-label="show password"
+    />
   );
 
   return (
     <div className="container__form">
-      <form className="login-form">
+      <form className="login-form" data-testid="login-form">
         <h2 className="login-form__title main-heading">Log in</h2>
         <FormInput
           label="Email *"
@@ -190,6 +196,7 @@ function SignInForm({ checkLogIn }: { checkLogIn: () => void }): JSX.Element {
           title="Valid email address"
           value={email}
           onKeyDown={handleKeyboard}
+          placeholderr="Email *"
         />
         <FormInput
           label="Password *"
@@ -202,6 +209,7 @@ function SignInForm({ checkLogIn }: { checkLogIn: () => void }): JSX.Element {
           value={password}
           button={showButton}
           onKeyDown={handleKeyboard}
+          placeholderr="Password *"
         />
         <div className="wrapper-btn">
           <button type="submit" className="btn btn-enabled" disabled={!formValid} onClick={onSignIn}>
