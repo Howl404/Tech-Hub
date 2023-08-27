@@ -16,18 +16,11 @@ function AccountDashboard(): JSX.Element {
     shippingAddressIds: [],
     addresses: [
       {
-        apartment: '',
-        building: '',
         city: '',
         country: '',
         id: '',
         postalCode: '',
-        region: '',
-        state: '',
         streetName: '',
-        streetNumber: '',
-        firstName: '',
-        lastName: '',
       },
     ],
   });
@@ -83,12 +76,8 @@ function AccountDashboard(): JSX.Element {
                     city={defaultBillingAddress.city}
                     postalCode={defaultBillingAddress.postalCode}
                     country={defaultBillingAddress.country}
-                    name={`${defaultBillingAddress.firstName} ${defaultBillingAddress.lastName}`}
+                    name={`${user.firstName} ${user.lastName}`}
                     streetName={defaultBillingAddress.streetName}
-                    streetNumber={defaultBillingAddress.streetNumber}
-                    building={defaultBillingAddress.building}
-                    apartment={defaultBillingAddress.apartment}
-                    region={defaultBillingAddress.region}
                   />
                 ) : (
                   <span>You have not set a default billing address.</span>
@@ -103,12 +92,8 @@ function AccountDashboard(): JSX.Element {
                     city={defaultShippingAddress.city}
                     postalCode={defaultShippingAddress.postalCode}
                     country={defaultShippingAddress.country}
-                    name={`${defaultShippingAddress.firstName} ${defaultShippingAddress.lastName}`}
+                    name={`${user.firstName} ${user.lastName}`}
                     streetName={defaultShippingAddress.streetName}
-                    streetNumber={defaultShippingAddress.streetNumber}
-                    building={defaultShippingAddress.building}
-                    apartment={defaultShippingAddress.apartment}
-                    region={defaultShippingAddress.region}
                   />
                 ) : (
                   <span>You have not set a default shipping address.</span>

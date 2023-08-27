@@ -54,18 +54,11 @@ export interface LastModifiedBy {
 }
 
 export interface Address {
-  apartment: string;
-  building: string;
   city: string;
   country: string;
   id: string;
   postalCode: string;
-  region: string;
-  state: string;
   streetName: string;
-  streetNumber: string;
-  firstName: string;
-  lastName: string;
 }
 
 export interface CustomersId {
