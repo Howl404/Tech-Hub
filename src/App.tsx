@@ -7,6 +7,7 @@ import NotFound from '@pages/NotFound/NotFound';
 import RegistrationPage from '@pages/Register/RegistrationPage';
 import Cookies from 'js-cookie';
 import Header from './components/Header/Header';
+import AccountDashboard from './pages/AccountDashboard/AccountDashboard';
 
 function App(): JSX.Element {
   const navigate = useNavigate();
@@ -37,6 +38,7 @@ function App(): JSX.Element {
         <Route path="/" element={<Home />} />
         <Route path="/register" element={<RegistrationPage checkLogIn={checkLogIn} />} />
         <Route path="/login" element={<LoginPage checkLogIn={checkLogIn} />} />
+        <Route path="/MyAccount" element={<AccountDashboard />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>

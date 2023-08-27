@@ -175,7 +175,8 @@
 
 .header__account-in:hover,
 .header__account-create:hover,
-.header__cart_icon:hover {
+.header__cart_icon:hover,
+.header__account-name:hover {
   transition: all 0.3s;
   box-shadow: 0 0 4px 4px rgb(48, 48, 48);
   color: rgba(255, 255, 255, 0.73);
