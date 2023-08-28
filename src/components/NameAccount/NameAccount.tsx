@@ -10,18 +10,15 @@ function NameAccount({ logOut }: { logOut: () => void }): JSX.Element {
     firstName: '',
     lastName: '',
     billingAddressIds: [],
+    shippingAddressIds: [],
+    dateOfBirth: '',
     addresses: [
       {
-        apartment: '',
-        building: '',
         city: '',
         country: '',
         id: '',
         postalCode: '',
-        region: '',
-        state: '',
         streetName: '',
-        streetNumber: '',
       },
     ],
   });
@@ -34,7 +31,8 @@ function NameAccount({ logOut }: { logOut: () => void }): JSX.Element {
 
   return (
     <>
-      <Link to="/MyAccount">
+      {/* <Link to="/MyAccount"> */}
+      <Link to="/MyAccount/Profile">
         <button type="button" className="header__account-name">
           {data.email}
         </button>
