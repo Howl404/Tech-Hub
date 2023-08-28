@@ -67,6 +67,8 @@ export interface CustomersId {
   lastName: string;
   billingAddressIds: string[];
   shippingAddressIds: string[];
+  defaultShippingAddressId: string;
+  defaultBillingAddressId: string;
   addresses: Address[];
   dateOfBirth: string;
 }

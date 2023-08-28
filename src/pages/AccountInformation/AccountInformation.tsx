@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import FormInput from '@src/components/FormInput/FormInput';
 import { getCustomerId } from '@src/services/AuthService/AuthService';
 import { CustomersId } from '@src/interfaces/Customer';
+import { FaEdit, FaRegSave } from 'react-icons/fa';
 import styles from './AccountInformation.module.scss';
 
 function AccountInformation(): JSX.Element {
@@ -11,6 +12,8 @@ function AccountInformation(): JSX.Element {
     lastName: '',
     billingAddressIds: [],
     shippingAddressIds: [],
+    defaultShippingAddressId: '',
+    defaultBillingAddressId: '',
     addresses: [
       {
         city: '',
@@ -44,8 +47,9 @@ function AccountInformation(): JSX.Element {
       <h3 className={styles.account__information_title}>Edit Account Information</h3>
       <div className={styles.account__information_block}>
         <button type="button" className={styles.btn} onClick={(): void => {}}>
-          Edit Information
+          Edit Information <FaEdit />
         </button>
+
         <div className={styles.account__information_block}>
           <FormInput
             label="First name *"
@@ -105,7 +109,7 @@ function AccountInformation(): JSX.Element {
           />
         </div>
         <button type="button" className={styles.btn__save} onClick={(): void => {}}>
-          save
+          save <FaRegSave />
         </button>
       </div>
     </div>

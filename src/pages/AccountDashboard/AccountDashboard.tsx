@@ -17,6 +17,9 @@ function AccountDashboard(): JSX.Element {
     lastName: '',
     billingAddressIds: [],
     shippingAddressIds: [],
+    dateOfBirth: '',
+    defaultShippingAddressId: '',
+    defaultBillingAddressId: '',
     addresses: [
       {
         city: '',
@@ -26,7 +29,6 @@ function AccountDashboard(): JSX.Element {
         streetName: '',
       },
     ],
-    dateOfBirth: '',
   });
 
   useEffect(() => {
@@ -43,7 +45,7 @@ function AccountDashboard(): JSX.Element {
           <Routes>
             <Route path="/Profile" element={<Profile user={user} />} />
             <Route path="/Information" element={<AccountInformation />} />
-            <Route path="/Address" element={<AccountAddress />} />
+            <Route path="/Address" element={<AccountAddress user={user} />} />
             <Route path="/Order" element={<AccountOrder />} />
           </Routes>
         </div>

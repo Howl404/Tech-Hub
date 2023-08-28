@@ -25,6 +25,14 @@
   margin: 0;
 }
 
+h3 {
+  color: #000;
+  font-family: 'Oswald', sans-serif;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 400;
+}
+
 .dashboard__information {
   display: flex;
   justify-content: space-evenly;
@@ -35,4 +43,43 @@
 
 .link {
   text-decoration: none;
+}
+
+.dashboard__description {
+  display: block;
+  max-width: 400px;
+  flex: 1;
+}
+
+.block__address {
+  margin: 25px 0;
+}
+
+.account__information_blockTitle {
+  color: var(--black-2);
+  font-family: 'Oswald', sans-serif;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  text-transform: uppercase;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+.block__address {
+  color: var(--gray-1);
+  font-family: 'Roboto', sans-serif;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 400;
+  display: flex;
+  gap: 10px;
+}
+
+.btn__edit {
+  color: black;
+  cursor: pointer;
+  width: 25px;
+  height: 25px;
 }
