@@ -165,4 +165,36 @@ const getCustomerId = async (): Promise<CustomersId> => {
   return response.data;
 };
 
-export { registerUser, logInUser, getAnonymousAccessToken, createCart, getCustomerId };
+const sendData = async (data, id: string, addressId: string): Promise<void> => {
+  const profileResponse = await axios.get(`${apiUrl}/${projectKey}/me`, {
+    headers: {
+      Authorization: `Bearer ${Cookies.get('access-token')}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  const currentVersion = profileResponse.data.version;
+  const response = await axios.post(
+    `${apiUrl}/${projectKey}/me`,
+    {
+      version: currentVersion,
+      actions: [
+        {
+          action: 'changeAddress',
+          addressId: `${addressId}`,
+          address: data,
+        },
+      ],
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${Cookies.get('access-token')}`,
+        'Content-Type': 'application/json',
+      },
+    },
+  );
+  console.log(response.data);
+  return response.data;
+};
+
+export { registerUser, logInUser, getAnonymousAccessToken, createCart, getCustomerId, sendData };

@@ -71,4 +71,5 @@ export interface CustomersId {
   defaultBillingAddressId: string;
   addresses: Address[];
   dateOfBirth: string;
+  id: string;
 }
