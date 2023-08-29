@@ -10,7 +10,7 @@ import AccountInformation from '../AccountInformation/AccountInformation';
 import AccountAddress from '../AccountAddress/AccountAddress';
 import AccountOrder from '../AccountOrder/AccountOrder';
 
-function AccountDashboard(): JSX.Element {
+function AccountDashboard({ onLogOut }: { onLogOut: () => void }): JSX.Element {
   const [user, setUser] = useState<CustomersId>({
     email: '',
     firstName: '',
@@ -18,6 +18,7 @@ function AccountDashboard(): JSX.Element {
     billingAddressIds: [],
     shippingAddressIds: [],
     dateOfBirth: '',
+    id: '',
     defaultShippingAddressId: '',
     defaultBillingAddressId: '',
     addresses: [
@@ -43,8 +44,12 @@ function AccountDashboard(): JSX.Element {
         <div className={styles.dashboard__information}>
           <AccountMenu />
           <Routes>
-            <Route path="/Profile" element={<Profile user={user} />} />
-            <Route path="/Information" element={<AccountInformation />} />
+            <Route path="/Profile" element={<Profile />} />
+            {/* user={user} */}
+            <Route
+              path="/Information"
+              element={<AccountInformation user={user} setUser={setUser} onLogOut={onLogOut} />}
+            />
             <Route path="/Address" element={<AccountAddress user={user} />} />
             <Route path="/Order" element={<AccountOrder />} />
           </Routes>

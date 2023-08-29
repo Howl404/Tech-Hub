@@ -61,6 +61,14 @@ export interface Address {
   streetName: string;
 }
 
+export interface SendAddress {
+  city: string;
+  postalCode: string;
+  country: string;
+  streetName: string;
+  addressId: string;
+}
+
 export interface CustomersId {
   email: string;
   firstName: string;

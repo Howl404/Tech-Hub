@@ -1,18 +1,41 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { CustomersId } from '@src/interfaces/Customer';
 import BillingAddress from '@src/components/BillingAddress/BillingAddress';
 import ShippingAddress from '@src/components/ShippingAddress/ShippingAddress';
+import { getCustomerId } from '@src/services/AuthService/AuthService';
 import styles from './Profile.module.scss';
 
-function Profile({ user }: { user: CustomersId }): JSX.Element {
+function Profile(): JSX.Element {
+  // { user }: { user: CustomersId }
+  const [user, setUser] = useState<CustomersId>({
+    email: '',
+    firstName: '',
+    lastName: '',
+    billingAddressIds: [],
+    shippingAddressIds: [],
+    dateOfBirth: '',
+    id: '',
+    defaultShippingAddressId: '',
+    defaultBillingAddressId: '',
+    addresses: [
+      {
+        city: '',
+        country: '',
+        id: '',
+        postalCode: '',
+        streetName: '',
+      },
+    ],
+  });
+  useEffect(() => {
+    getCustomerId().then((item) => setUser(item));
+  }, []);
   const defaultBillingAddressId = user.billingAddressIds[0];
   const defaultBillingAddress = user.addresses.find((item) => item.id === defaultBillingAddressId);
   const defaultShippingAddressId = user.shippingAddressIds[0];
   const defaultShippingAddress = user.addresses.find((item) => item.id === defaultShippingAddressId);
-  const dateBirth = new Date(user.dateOfBirth);
-  const date = String(dateBirth.getDay()).length === 1 ? `0${dateBirth.getDay()}` : `${dateBirth.getDay()}`;
-  const month = String(dateBirth.getMonth()).length === 1 ? `0${dateBirth.getMonth()}` : `${dateBirth.getMonth()}`;
-  const resultDateBirth = `${date}.${month}.${dateBirth.getFullYear()}`;
+  const dateBirth = user.dateOfBirth.split('-');
+  const resultDateBirth = `${dateBirth[2]}.${dateBirth[1]}.${dateBirth[0]}`;
 
   return (
     <div className={styles.dashboard__description}>

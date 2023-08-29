@@ -1,9 +1,10 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
-import React, { useEffect } from 'react';
+import React from 'react';
 import './Modal.scss';
 import { FaRegSave } from 'react-icons/fa';
 import { PostalCodePattern } from '@src/interfaces/Register';
 import { sendData } from '@src/services/AuthService/AuthService';
+import { Address } from '@src/interfaces/Customer';
 import FormInput from '../FormInput/FormInput';
 
 interface ModalType {
@@ -14,15 +15,17 @@ interface ModalType {
   postalCode: string;
   country: string;
   streetName: string;
-  addressId: string;
+  setAddressesAll: React.Dispatch<React.SetStateAction<Address[]>>;
   selectedData: {
     city: string;
     postalCode: string;
     country: string;
     streetName: string;
+    addressId: string;
   };
   setSelectedData: React.Dispatch<
     React.SetStateAction<{
+      addressId: string;
       city: string;
       postalCode: string;
       country: string;
@@ -49,7 +52,7 @@ function Modal({
   streetName,
   selectedData,
   setSelectedData,
-  addressId,
+  setAddressesAll,
 }: ModalType): JSX.Element {
   const handleCountryChange = (event: React.ChangeEvent<HTMLSelectElement>): void => {
     const { id, value } = event.target;
@@ -126,9 +129,11 @@ function Modal({
           type="button"
           className="btn__save"
           onClick={(): Promise<void> =>
-            sendData(selectedData, userId, addressId).then((item) => {
-              const date = item.addresses.filter((adress) => adress.id === addressId)[0];
+            sendData(selectedData, userId, selectedData.addressId).then((item) => {
+              const date = item.addresses.filter((adress) => adress.id === selectedData.addressId)[0];
+              setAddressesAll(item.addresses);
               setSelectedData({
+                addressId: date.id,
                 city: date.city,
                 postalCode: date.postalCode,
                 country: date.country,
