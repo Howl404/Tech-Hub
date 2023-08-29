@@ -4,31 +4,61 @@ import React, { useEffect, useState } from 'react';
 import { Product, ProductFormattedData } from '@src/interfaces/Product';
 import CategoryCard from '@src/components/CategoryCard/CategoryCard';
 import './CatalogPage.scss';
+import PriceRangeSlider from '@src/components/PriceRange/PriceRange';
 
 export default function Catalog(): JSX.Element {
+  const minPrice = 0;
+  const maxPrice = 5000;
+  const [priceRange, setPriceRange] = useState([minPrice, maxPrice]);
+
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<ProductFormattedData[]>([]);
-  const [productsQueryList] = useState<string[]>([]);
+  const [productsCategoriesList] = useState<string[]>([]);
+
+  function getNewProducts(): void {
+    let formatPriceRange;
+    if (priceRange[0] === 0) {
+      formatPriceRange = `variants.price.centAmount:range (0 to ${priceRange[1]}00)`;
+    } else {
+      formatPriceRange = `variants.price.centAmount:range (${priceRange[0]}00 to ${priceRange[1]}00)`;
+    }
+    if (productsCategoriesList.length > 0) {
+      const formattedCategories = productsCategoriesList
+        .map((id, index) => (index === 0 ? `categories.id: subtree("${id}")` : `subtree("${id}")`))
+        .join(', ');
+
+      getProductsByCategory(`${formattedCategories}&filter=${formatPriceRange}`).then((data) => {
+        setProducts(data.results);
+      });
+    } else {
+      getProductsByCategory(formatPriceRange).then((data) => {
+        setProducts(data.results);
+      });
+    }
+  }
+
+  const handlePriceChange = (newRange: number[]): void => {
+    setPriceRange(newRange);
+  };
+
+  const handlePriceApply = (): void => {
+    getNewProducts();
+  };
 
   function handleFilterCheckbox(checked: boolean, key: string): void {
     if (checked) {
-      productsQueryList.push(key);
+      productsCategoriesList.push(key);
     } else {
-      const index = productsQueryList.indexOf(key);
-      productsQueryList.splice(index, 1);
-      if (productsQueryList.length === 0) {
+      const index = productsCategoriesList.indexOf(key);
+      productsCategoriesList.splice(index, 1);
+      if (productsCategoriesList.length === 0) {
         getProductsByCategory(`variants.prices:exists`).then((data) => {
           setProducts(data.results);
         });
         return;
       }
     }
-    const formattedQuery = productsQueryList
-      .map((id, index) => (index === 0 ? `categories.id: subtree("${id}")` : `subtree("${id}")`))
-      .join(', ');
-    getProductsByCategory(formattedQuery).then((data) => {
-      setProducts(data.results);
-    });
+    getNewProducts();
   }
 
   useEffect(() => {
@@ -114,6 +144,7 @@ export default function Catalog(): JSX.Element {
   return (
     <div className="catalog-content">
       <div className="filter-list">
+        <PriceRangeSlider min={minPrice} max={maxPrice} onChange={handlePriceChange} onApply={handlePriceApply} />
         {categories.map((category) => (
           <CategoryCard
             key={category.id}

@@ -6,12 +6,12 @@
   font-family: 'Oswald', sans-serif;
   font-style: normal;
   font-weight: 400;
-  margin-top: 10px;
+  margin-top: 5px;
   flex-grow: 2;
   .product-card {
     padding: 5px;
     width: 305px;
-    height: 700px;
+    height: 750px;
     border: 1px solid #ccc;
     transition:
       box-shadow 0.3s ease,
@@ -39,6 +39,7 @@
     &:hover {
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
       border-radius: 16px;
+      cursor: pointer;
     }
   }
 
