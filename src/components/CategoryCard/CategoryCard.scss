@@ -3,6 +3,8 @@
 }
 
 .category {
+  position: relative;
+  transition: 400ms;
   border: 1px solid #ddd;
   padding: 5px;
   margin: 5px;
@@ -48,8 +50,29 @@
     transform: translateY(-50%);
   }
 }
+
+.subcategories-list {
+  z-index: 1;
+  position: absolute;
+  right: -100px;
+}
 .sub-category {
-  margin-left: 20px;
-  border-left: 1px solid #ddd;
-  padding-left: 10px;
+  transition: 300ms;
+}
+
+.name-expand-wrapper {
+  display: flex;
+  justify-content: space-between;
+  .expand-active {
+    img {
+      rotate: 180deg;
+    }
+  }
+  button {
+    img {
+      transition: 200ms;
+      width: 10px;
+      height: 10px;
+    }
+  }
 }

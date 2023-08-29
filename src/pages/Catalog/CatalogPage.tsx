@@ -1,10 +1,13 @@
-import { getCategories, getProductsByCategory } from '@src/services/ProductsService/ProductsService';
+import { getProductsByCategory } from '@src/services/ProductsService/ProductsService';
 import ProductCard from '@src/components/ProductCard/ProductCard';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Product, ProductFormattedData } from '@src/interfaces/Product';
 import CategoryCard from '@src/components/CategoryCard/CategoryCard';
 import './CatalogPage.scss';
 import PriceRangeSlider from '@src/components/PriceRange/PriceRange';
+import formattedCategoryList from '@src/utilities/formattedCategoryList';
+import SortingSelect from '@src/components/SortingSelect/SortingSelect';
+import BrandFilter from '@src/components/BrandFilter/BrandFilter';
 
 export default function Catalog(): JSX.Element {
   const minPrice = 0;
@@ -13,9 +16,19 @@ export default function Catalog(): JSX.Element {
 
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<ProductFormattedData[]>([]);
+  const [sort, setSort] = useState('name.en asc');
   const [productsCategoriesList] = useState<string[]>([]);
+  const [brand, setBrand] = useState('');
+  const [savedBrands, setSavedBrands] = useState<Product[]>([]);
 
-  function getNewProducts(): void {
+  const sortingOptions = [
+    { value: 'name.en asc', label: 'Name (Ascending)' },
+    { value: 'name.en desc', label: 'Name (Descending)' },
+    { value: 'price asc', label: 'Price (Ascending)' },
+    { value: 'price desc', label: 'Price (Descending)' },
+  ];
+
+  const getNewProducts = useCallback(() => {
     let formatPriceRange;
     if (priceRange[0] === 0) {
       formatPriceRange = `variants.price.centAmount:range (0 to ${priceRange[1]}00)`;
@@ -27,22 +40,43 @@ export default function Catalog(): JSX.Element {
         .map((id, index) => (index === 0 ? `categories.id: subtree("${id}")` : `subtree("${id}")`))
         .join(', ');
 
-      getProductsByCategory(`${formattedCategories}&filter=${formatPriceRange}`).then((data) => {
+      if (brand) {
+        getProductsByCategory(
+          `${formattedCategories}&filter=${formatPriceRange}&filter=variants.attributes.brand:"${brand}"`,
+          sort,
+        ).then((data) => {
+          setProducts(data.results);
+        });
+      } else {
+        getProductsByCategory(`${formattedCategories}&filter=${formatPriceRange}`, sort).then((data) => {
+          setProducts(data.results);
+        });
+      }
+    } else if (brand) {
+      getProductsByCategory(`${formatPriceRange}&filter=variants.attributes.brand:"${brand}"`, sort).then((data) => {
         setProducts(data.results);
       });
     } else {
-      getProductsByCategory(formatPriceRange).then((data) => {
+      getProductsByCategory(formatPriceRange, sort).then((data) => {
         setProducts(data.results);
       });
     }
-  }
+  }, [priceRange, productsCategoriesList, sort, brand]);
+
+  const handleSortingChange = (newOption: string): void => {
+    setSort(newOption);
+  };
+
+  useEffect(() => {
+    getNewProducts();
+  }, [sort, getNewProducts]);
 
   const handlePriceChange = (newRange: number[]): void => {
     setPriceRange(newRange);
   };
 
-  const handlePriceApply = (): void => {
-    getNewProducts();
+  const handleBrandChange = (newBrand: string): void => {
+    setBrand(newBrand);
   };
 
   function handleFilterCheckbox(checked: boolean, key: string): void {
@@ -52,7 +86,7 @@ export default function Catalog(): JSX.Element {
       const index = productsCategoriesList.indexOf(key);
       productsCategoriesList.splice(index, 1);
       if (productsCategoriesList.length === 0) {
-        getProductsByCategory(`variants.prices:exists`).then((data) => {
+        getProductsByCategory(`variants.prices:exists`, sort).then((data) => {
           setProducts(data.results);
         });
         return;
@@ -62,103 +96,49 @@ export default function Catalog(): JSX.Element {
   }
 
   useEffect(() => {
-    getProductsByCategory(`variants.prices:exists`).then((data) => {
-      setProducts(data.results);
+    getNewProducts();
+  }, [getNewProducts]);
+
+  useEffect(() => {
+    formattedCategoryList().then((data) => {
+      setCategories(data.mainCategories);
     });
   }, []);
 
   useEffect(() => {
-    const mainCategories: ProductFormattedData[] = [];
-    const subCategories: ProductFormattedData[] = [];
-    const subCategories2: ProductFormattedData[] = [];
-    getCategories('parent is not defined')
-      .then((data) => {
-        data.results.forEach((item) => {
-          const category: ProductFormattedData = {
-            name: item.name.en,
-            id: item.id,
-            ancestors: [],
-          };
-          mainCategories.push(category);
-        });
-        return Promise;
-      })
-      .then(() => {
-        getCategories('parent is defined')
-          .then((data) => {
-            data.results.forEach((item) => {
-              const category: ProductFormattedData = {
-                name: item.name.en,
-                id: item.id,
-                ancestors: [],
-              };
-
-              if (item.parent?.id) {
-                mainCategories
-                  .filter((c) => c.id === item.parent?.id)
-                  .forEach((c) => {
-                    if (Object.values(c.ancestors).find((object) => object.id === item.id) === undefined) {
-                      subCategories.push(category);
-                      c.ancestors.push(category);
-                      const itemCopy = item;
-                      itemCopy.used = true;
-                    }
-                    return false;
-                  });
-              }
-            });
-            return data;
-          })
-          .then((data) => {
-            data.results
-              .filter((c) => c.used !== true)
-              .forEach((item) => {
-                const category: ProductFormattedData = {
-                  name: item.name.en,
-                  id: item.id,
-                  ancestors: [],
-                };
-
-                if (item.parent?.id) {
-                  subCategories
-                    .filter((c) => c.id === item.parent?.id)
-                    .forEach((c) => {
-                      if (Object.values(c.ancestors).find((object) => object.id === item.id) === undefined) {
-                        subCategories2.push(category);
-                        c.ancestors.push(category);
-                        const itemCopy = item;
-                        itemCopy.used = true;
-                      }
-                      return false;
-                    });
-                }
-              });
-            return Promise;
-          })
-          .then(() => {
-            setCategories(mainCategories);
-          });
-      });
-  }, []);
+    getProductsByCategory(`variants.prices:exists`, sort).then((data) => {
+      setSavedBrands(data.results);
+    });
+  }, [sort]);
 
   return (
     <div className="catalog-content">
-      <div className="filter-list">
-        <PriceRangeSlider min={minPrice} max={maxPrice} onChange={handlePriceChange} onApply={handlePriceApply} />
-        {categories.map((category) => (
-          <CategoryCard
-            key={category.id}
-            category={category}
-            onCheckboxClick={(isChecked, key): void => {
-              handleFilterCheckbox(isChecked, key);
-            }}
-          />
-        ))}
+      <div className="catalog-header">
+        <div className="categories">
+          {categories.map((category) => (
+            <CategoryCard
+              key={category.id}
+              category={category}
+              onCheckboxClick={(isChecked, key): void => {
+                handleFilterCheckbox(isChecked, key);
+              }}
+            />
+          ))}
+        </div>
+        <div className="sort-container">
+          <SortingSelect selectedOption={sort} options={sortingOptions} onSelect={handleSortingChange} />
+        </div>
       </div>
-      <div className="product-list">
-        {products.map((product) => (
-          <ProductCard key={product.name.en} product={product} />
-        ))}
+      <div className="main-content">
+        <div className="filter-list">
+          <PriceRangeSlider min={minPrice} max={maxPrice} onChange={handlePriceChange} />
+          <BrandFilter products={savedBrands} onChange={handleBrandChange} />
+        </div>
+        <div className="product-list">
+          {products.map((product) => (
+            <ProductCard key={product.name.en} product={product} />
+          ))}
+        </div>
       </div>
     </div>
   );

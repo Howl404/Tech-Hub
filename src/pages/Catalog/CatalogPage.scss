@@ -1,3 +1,19 @@
 .catalog-content {
-  display: flex;
+  flex-direction: column;
+
+  &,
+  .main-content,
+  .categories,
+  .catalog-header,
+  .sort-container {
+    display: flex;
+  }
+
+  .catalog-header {
+    justify-content: space-around;
+  }
+
+  .sort-container {
+    align-items: center;
+  }
 }

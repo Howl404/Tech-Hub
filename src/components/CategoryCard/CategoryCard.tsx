@@ -1,24 +1,43 @@
 import { CategoryProps } from '@src/interfaces/Category';
-import React, { useState } from 'react';
+import React, { MouseEventHandler, useEffect, useState } from 'react';
 import './CategoryCard.scss';
+import openIcon from '@assets/chevron-down-solid.svg';
 
 function CategoryCard({ category, onCheckboxClick }: CategoryProps): JSX.Element {
-  const [isChecked, setIsChecked] = useState(false);
+  const [isSubcategoriesOpen, setIsSubcategoriesOpen] = useState(false);
 
-  const handleCheckboxClick = (): void => {
-    setIsChecked(!isChecked);
-    onCheckboxClick(!isChecked, category.id);
+  const [hasSubcategories, setHasSubcategories] = useState(category.ancestors.length > 0);
+
+  useEffect(() => {
+    setHasSubcategories(category.ancestors.length > 0);
+  }, [category.ancestors]);
+
+  const subcategories = isSubcategoriesOpen
+    ? category.ancestors.map((subCategory) => (
+        <div key={subCategory.id} className="sub-category">
+          <CategoryCard category={subCategory} onCheckboxClick={onCheckboxClick} />
+        </div>
+      ))
+    : null;
+
+  const handleCheckboxClick: MouseEventHandler<HTMLButtonElement> = (event): void => {
+    if (event.currentTarget instanceof HTMLElement) {
+      event.currentTarget.classList.toggle('expand-active');
+    }
+    setIsSubcategoriesOpen(!isSubcategoriesOpen);
   };
 
   return (
     <div className="category">
-      <h3>{category.name}</h3>
-      <input type="checkbox" checked={isChecked} onClick={handleCheckboxClick} />
-      {category.ancestors.map((subCategory) => (
-        <div key={subCategory.id} className="sub-category">
-          <CategoryCard category={subCategory} onCheckboxClick={onCheckboxClick} />
-        </div>
-      ))}
+      <div className="name-expand-wrapper">
+        <h3>{category.name}</h3>
+        {hasSubcategories && (
+          <button type="button" onClick={handleCheckboxClick}>
+            <img src={openIcon} alt="Expand category" />
+          </button>
+        )}
+      </div>
+      <div className="subcategories-list">{subcategories}</div>
     </div>
   );
 }

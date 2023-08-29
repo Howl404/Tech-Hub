@@ -28,6 +28,12 @@ export interface Product {
         };
       },
     ];
+    attributes: [
+      {
+        name: string;
+        value: string;
+      },
+    ];
   };
   categories: [
     {
