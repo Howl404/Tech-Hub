@@ -7,9 +7,11 @@
   font-style: normal;
   font-weight: 400;
   margin-top: 10px;
+  flex-grow: 2;
   .product-card {
     padding: 5px;
     width: 305px;
+    height: 700px;
     border: 1px solid #ccc;
     transition:
       box-shadow 0.3s ease,

@@ -3,7 +3,7 @@ import React from 'react';
 import { Product } from '@src/interfaces/Product';
 
 function ProductCard({ product }: { product: Product }): JSX.Element {
-  const { name, description, masterVariant } = product.masterData.current;
+  const { name, description, masterVariant } = product;
   const { images, prices } = masterVariant;
 
   let price: JSX.Element;

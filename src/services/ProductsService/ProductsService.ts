@@ -1,3 +1,4 @@
+import { Category } from '@src/interfaces/Category';
 import { Product } from '@src/interfaces/Product';
 import axios from 'axios';
 import Cookies from 'js-cookie';
@@ -23,4 +24,59 @@ const getProducts = async (): Promise<{
   return response.data;
 };
 
-export default getProducts;
+const getCategories = async (
+  query?: string,
+): Promise<{
+  limit: number;
+  offset: number;
+  count: number;
+  total: number;
+  results: Category[];
+}> => {
+  const token = Cookies.get('access-token');
+  let url = `${apiUrl}/${projectKey}/categories`;
+
+  if (query) {
+    url += `?where=${query}`;
+  }
+  const response = await axios.get(url, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
+
+const getCategory = async (id: string): Promise<Category> => {
+  const token = Cookies.get('access-token');
+  const url = `${apiUrl}/${projectKey}/categories/${id}`;
+
+  const response = await axios.get(url, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
+
+const getProductsByCategory = async (
+  filter: string,
+): Promise<{
+  limit: number;
+  offset: number;
+  count: number;
+  total: number;
+  results: Product[];
+}> => {
+  const token = Cookies.get('access-token');
+  const url = `${apiUrl}/${projectKey}/product-projections/search?filter=${filter}`;
+
+  const response = await axios.get(url, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
+
+export { getProducts, getCategories, getCategory, getProductsByCategory };
