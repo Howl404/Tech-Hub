@@ -1,0 +1,2 @@
+name,type,attributeConstraint,isRequired,isSearchable,label.en,textInputHint
+brand,text,None,true,true,Brand,SingleLine
