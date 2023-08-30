@@ -1,4 +1,4 @@
-import { getProductsByCategory } from '@src/services/ProductsService/ProductsService';
+import { getCategories, getProductsByCategory } from '@src/services/ProductsService/ProductsService';
 import ProductCard from '@src/components/ProductCard/ProductCard';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Product, ProductFormattedData } from '@src/interfaces/Product';
@@ -8,8 +8,16 @@ import PriceRangeSlider from '@src/components/PriceRange/PriceRange';
 import formattedCategoryList from '@src/utilities/formattedCategoryList';
 import SortingSelect from '@src/components/SortingSelect/SortingSelect';
 import BrandFilter from '@src/components/BrandFilter/BrandFilter';
+import { useNavigate, useParams } from 'react-router-dom';
 
 export default function Catalog(): JSX.Element {
+  const navigate = useNavigate();
+  const { categoryslug, subcategoryslug, subcategoryslug2 } = useParams<{
+    categoryslug: string;
+    subcategoryslug: string;
+    subcategoryslug2: string;
+  }>();
+
   const minPrice = 0;
   const maxPrice = 5000;
   const [priceRange, setPriceRange] = useState([minPrice, maxPrice]);
@@ -20,6 +28,7 @@ export default function Catalog(): JSX.Element {
   const [productsCategoriesList] = useState<string[]>([]);
   const [brand, setBrand] = useState('');
   const [savedBrands, setSavedBrands] = useState<Product[]>([]);
+  const [currentCategory, setCurrentCategory] = useState<{ name: string; key?: string }[]>([]);
 
   const sortingOptions = [
     { value: 'name.en asc', label: 'Name (Ascending)' },
@@ -35,20 +44,22 @@ export default function Catalog(): JSX.Element {
     } else {
       formatPriceRange = `variants.price.centAmount:range (${priceRange[0]}00 to ${priceRange[1]}00)`;
     }
-    if (productsCategoriesList.length > 0) {
-      const formattedCategories = productsCategoriesList
-        .map((id, index) => (index === 0 ? `categories.id: subtree("${id}")` : `subtree("${id}")`))
-        .join(', ');
 
+    if (currentCategory.length > 0) {
       if (brand) {
         getProductsByCategory(
-          `${formattedCategories}&filter=${formatPriceRange}&filter=variants.attributes.brand:"${brand}"`,
+          `categories.id: subtree("${
+            currentCategory[currentCategory.length - 1].key
+          }")&filter=${formatPriceRange}&filter=variants.attributes.brand:"${brand}"`,
           sort,
         ).then((data) => {
           setProducts(data.results);
         });
       } else {
-        getProductsByCategory(`${formattedCategories}&filter=${formatPriceRange}`, sort).then((data) => {
+        getProductsByCategory(
+          `categories.id: subtree("${currentCategory[currentCategory.length - 1].key}")&filter=${formatPriceRange}`,
+          sort,
+        ).then((data) => {
           setProducts(data.results);
         });
       }
@@ -57,11 +68,11 @@ export default function Catalog(): JSX.Element {
         setProducts(data.results);
       });
     } else {
-      getProductsByCategory(formatPriceRange, sort).then((data) => {
+      getProductsByCategory(`${formatPriceRange}`, sort).then((data) => {
         setProducts(data.results);
       });
     }
-  }, [priceRange, productsCategoriesList, sort, brand]);
+  }, [priceRange, sort, brand, currentCategory]);
 
   const handleSortingChange = (newOption: string): void => {
     setSort(newOption);
@@ -96,20 +107,59 @@ export default function Catalog(): JSX.Element {
   }
 
   useEffect(() => {
-    getNewProducts();
-  }, [getNewProducts]);
-
-  useEffect(() => {
     formattedCategoryList().then((data) => {
       setCategories(data.mainCategories);
     });
   }, []);
 
   useEffect(() => {
-    getProductsByCategory(`variants.prices:exists`, sort).then((data) => {
-      setSavedBrands(data.results);
-    });
-  }, [sort]);
+    if (subcategoryslug2 && subcategoryslug && categoryslug) {
+      getCategories(`slug(en = "${subcategoryslug2}")`)
+        .then((data) => {
+          setCurrentCategory([
+            { name: categoryslug },
+            { name: subcategoryslug },
+            { name: subcategoryslug2, key: data.results[0].id },
+          ]);
+          getProductsByCategory(`categories.id: subtree("${data.results[0].id}")`, sort).then((result) => {
+            setSavedBrands(result.results);
+            setProducts(result.results);
+          });
+        })
+        .catch(() => {
+          navigate('/NotFound');
+        });
+    } else if (subcategoryslug && categoryslug) {
+      getCategories(`slug(en = "${subcategoryslug}")`)
+        .then((data) => {
+          setCurrentCategory([{ name: categoryslug }, { name: subcategoryslug, key: data.results[0].id }]);
+          getProductsByCategory(`categories.id: subtree("${data.results[0].id}")`, sort).then((result) => {
+            setSavedBrands(result.results);
+            setProducts(result.results);
+          });
+        })
+        .catch(() => {
+          navigate('/NotFound');
+        });
+    } else if (categoryslug) {
+      getCategories(`slug(en = "${categoryslug}")`)
+        .then((data) => {
+          setCurrentCategory([{ name: categoryslug, key: data.results[0].id }]);
+          getProductsByCategory(`categories.id: subtree("${data.results[0].id}")`, sort).then((result) => {
+            setSavedBrands(result.results);
+            setProducts(result.results);
+          });
+        })
+        .catch(() => {
+          navigate('/NotFound');
+        });
+    } else {
+      getProductsByCategory(`variants.prices:exists`, sort).then((data) => {
+        setSavedBrands(data.results);
+        setProducts(data.results);
+      });
+    }
+  }, [sort, categoryslug, subcategoryslug, subcategoryslug2, navigate]);
 
   return (
     <div className="catalog-content">

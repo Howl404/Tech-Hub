@@ -37,7 +37,8 @@ const getCategories = async (
   let url = `${apiUrl}/${projectKey}/categories`;
 
   if (query) {
-    url += `?where=${query}`;
+    const encodedQuery = encodeURIComponent(query);
+    url += `?where=${encodedQuery}`;
   }
   const response = await axios.get(url, {
     headers: {
@@ -47,15 +48,16 @@ const getCategories = async (
   return response.data;
 };
 
-const getCategory = async (id: string): Promise<Category> => {
+const getCategory = async (key: string): Promise<Category> => {
   const token = Cookies.get('access-token');
-  const url = `${apiUrl}/${projectKey}/categories/${id}`;
+  const url = `${apiUrl}/${projectKey}/categories/key=${key}`;
 
   const response = await axios.get(url, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
+
   return response.data;
 };
 

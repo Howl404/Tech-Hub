@@ -38,7 +38,7 @@ function App(): JSX.Element {
         <Route path="/" element={<Home />} />
         <Route path="/register" element={<RegistrationPage checkLogIn={checkLogIn} />} />
         <Route path="/login" element={<LoginPage checkLogIn={checkLogIn} />} />
-        <Route path="/catalog" element={<CatalogPage />} />
+        <Route path="/catalog/:categoryslug?/:subcategoryslug?/:subcategoryslug2?" element={<CatalogPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>
