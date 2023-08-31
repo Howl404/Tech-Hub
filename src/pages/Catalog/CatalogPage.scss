@@ -5,15 +5,32 @@
   .main-content,
   .categories,
   .catalog-header,
-  .sort-container {
+  .sort-container,
+  .info-header,
+  .options-header {
     display: flex;
   }
 
   .catalog-header {
+    flex-direction: column;
     justify-content: space-around;
+    margin-top: 6px;
+    a {
+      text-decoration: none;
+      color: #333;
+      transition: 200ms;
+      border-bottom: 1px solid transparent;
+      &:hover {
+        border-bottom: 1px solid #333;
+      }
+    }
   }
 
-  .sort-container {
+  .sort-container,
+  .info-header,
+  .options-header {
     align-items: center;
+    justify-content: center;
+    gap: 10px;
   }
 }

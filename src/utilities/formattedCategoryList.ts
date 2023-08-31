@@ -16,6 +16,7 @@ async function formattedCategoryList(): Promise<{
       name: item.name.en,
       id: item.id,
       ancestors: [],
+      slug: item.slug.en,
     };
     mainCategories.push(category);
   });
@@ -26,6 +27,7 @@ async function formattedCategoryList(): Promise<{
       name: item.name.en,
       id: item.id,
       ancestors: [],
+      slug: item.slug.en,
     };
 
     if (item.parent?.id) {
@@ -49,6 +51,7 @@ async function formattedCategoryList(): Promise<{
         name: item.name.en,
         id: item.id,
         ancestors: [],
+        slug: item.slug.en,
       };
 
       if (item.parent?.id) {

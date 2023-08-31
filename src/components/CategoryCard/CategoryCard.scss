@@ -6,73 +6,75 @@
   position: relative;
   transition: 400ms;
   border: 1px solid #ddd;
+  padding: 0 5px;
+  height: 30px;
+  margin: 5px;
+  width: 200px;
+  background-color: #f9f9f9;
+  justify-content: center;
+  display: flex;
+
+  font-family: 'Oswald', sans-serif;
+  font-size: 16px;
+  color: #333;
+
+  .category-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    button {
+      width: 24px;
+      img {
+        transition: 200ms;
+      }
+    }
+  }
+}
+
+.subcategories {
+  width: 100%;
+  transition: 300ms;
+  position: absolute;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
   padding: 5px;
   margin: 5px;
-  background-color: #f9f9f9;
-
-  h3 {
-    font-family: 'Oswald', sans-serif;
-    font-size: 14px;
-    margin: 0;
-    padding-bottom: 5px;
-    color: #333;
-  }
-
-  input[type='checkbox'] {
-    transition: 200ms;
-    position: relative;
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    width: 10px;
-    height: 10px;
-    outline: solid 1px #828282;
-    outline-offset: -1px;
-    cursor: pointer;
-
-    &:hover {
-      outline: solid 1px #3f3f3f;
-    }
-
-    &:checked {
-      background-color: black;
-      outline: none;
-    }
-  }
-
-  input[type='checkbox']:checked::after {
-    content: '✔';
-    font-size: 10px;
-    color: #fff;
-    position: absolute;
-    left: 1px;
-    top: 50%;
-    transform: translateY(-50%);
-  }
-}
-
-.subcategories-list {
-  z-index: 1;
-  position: absolute;
-  right: -100px;
-}
-.sub-category {
-  transition: 300ms;
-}
-
-.name-expand-wrapper {
+  opacity: 0;
+  left: -5px;
+  top: 25px;
+  z-index: -1;
+  box-sizing: border-box;
   display: flex;
-  justify-content: space-between;
-  .expand-active {
-    img {
-      rotate: 180deg;
-    }
+  flex-direction: column;
+  gap: 5px;
+  div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
-  button {
-    img {
-      transition: 200ms;
-      width: 10px;
-      height: 10px;
-    }
+}
+
+.category-open {
+  img {
+    rotate: 180deg;
   }
+  .subcategories {
+    opacity: 1;
+    z-index: 1;
+  }
+}
+
+.open-categories {
+  display: none;
+  position: relative;
+  transition: 400ms;
+  border: 1px solid #ddd;
+  padding: 0 5px;
+  height: 30px;
+  margin: 5px;
+  width: 200px;
+  background-color: #f9f9f9;
+  font-family: 'Oswald', sans-serif;
+  font-size: 16px;
+  color: #333;
 }

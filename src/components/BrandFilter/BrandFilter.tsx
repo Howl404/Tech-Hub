@@ -1,8 +1,17 @@
 import { Product } from '@src/interfaces/Product';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './BrandFilter.scss';
 
-function BrandFilter({ products, onChange }: { products: Product[]; onChange: (brands: string) => void }): JSX.Element {
+function BrandFilter({
+  products,
+  onChange,
+  clearBrand,
+}: {
+  products: Product[];
+  onChange: (brands: string) => void;
+  clearBrand: () => void;
+}): JSX.Element {
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
 
   const brandCounts: { [key: string]: number } = {};
@@ -16,6 +25,13 @@ function BrandFilter({ products, onChange }: { products: Product[]; onChange: (b
       brandCounts[brand] = 1;
     }
   });
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    setSelectedBrands([]);
+    clearBrand();
+  }, [navigate, clearBrand]);
 
   const handleBrandChange = (brand: string): void => {
     if (selectedBrands.includes(brand)) {

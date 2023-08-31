@@ -1,3 +1,5 @@
+import { ProductFormattedData } from './Product';
+
 export interface Category {
   id: string;
   name: {
@@ -25,6 +27,5 @@ export interface CategoryFormattedData {
 }
 
 export interface CategoryProps {
-  category: CategoryFormattedData;
-  onCheckboxClick: (checked: boolean, key: string) => void;
+  category: ProductFormattedData;
 }

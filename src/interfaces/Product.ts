@@ -46,6 +46,7 @@ export interface Product {
 export interface ProductFormattedData {
   name: string;
   id: string;
+  slug: string;
   ancestors: ProductFormattedData[];
   parent?: string;
 }

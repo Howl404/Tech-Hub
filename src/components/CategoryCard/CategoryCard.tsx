@@ -1,43 +1,34 @@
-import { CategoryProps } from '@src/interfaces/Category';
-import React, { MouseEventHandler, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import './CategoryCard.scss';
 import openIcon from '@assets/chevron-down-solid.svg';
+import { CategoryProps } from '@src/interfaces/Category';
+import { Link } from 'react-router-dom';
 
-function CategoryCard({ category, onCheckboxClick }: CategoryProps): JSX.Element {
-  const [isSubcategoriesOpen, setIsSubcategoriesOpen] = useState(false);
+function CategoryCard({ category }: CategoryProps): JSX.Element {
+  const { name, slug, ancestors } = category;
 
-  const [hasSubcategories, setHasSubcategories] = useState(category.ancestors.length > 0);
+  const [isCategoryOpen, setCategoryOpen] = useState(false);
 
-  useEffect(() => {
-    setHasSubcategories(category.ancestors.length > 0);
-  }, [category.ancestors]);
-
-  const subcategories = isSubcategoriesOpen
-    ? category.ancestors.map((subCategory) => (
-        <div key={subCategory.id} className="sub-category">
-          <CategoryCard category={subCategory} onCheckboxClick={onCheckboxClick} />
-        </div>
-      ))
-    : null;
-
-  const handleCheckboxClick: MouseEventHandler<HTMLButtonElement> = (event): void => {
-    if (event.currentTarget instanceof HTMLElement) {
-      event.currentTarget.classList.toggle('expand-active');
-    }
-    setIsSubcategoriesOpen(!isSubcategoriesOpen);
+  const handleButtonClick = (): void => {
+    setCategoryOpen(!isCategoryOpen);
   };
 
   return (
-    <div className="category">
-      <div className="name-expand-wrapper">
-        <h3>{category.name}</h3>
-        {hasSubcategories && (
-          <button type="button" onClick={handleCheckboxClick}>
-            <img src={openIcon} alt="Expand category" />
-          </button>
-        )}
+    <div className={`category ${isCategoryOpen ? 'category-open' : ''}`}>
+      <div className="category-header">
+        <Link to={`/catalog/${slug}`}>{name}</Link>
+        <button type="button" onClick={handleButtonClick}>
+          <img src={openIcon} alt="Open subcategories" />
+        </button>
       </div>
-      <div className="subcategories-list">{subcategories}</div>
+
+      <div className="subcategories">
+        {ancestors.map((subcategory) => (
+          <div key={subcategory.slug}>
+            <Link to={`/catalog/${slug}/${subcategory.slug}`}>{subcategory.name}</Link>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
