@@ -3,6 +3,7 @@ import { render } from '@testing-library/react';
 
 import '@testing-library/jest-dom';
 import { Product } from '@src/interfaces/Product';
+import { BrowserRouter } from 'react-router-dom';
 import ProductCard from '../ProductCard';
 
 const mockProductWithDiscount: Product = {
@@ -76,10 +77,14 @@ const mockProductWithoutDiscount: Product = {
 
 describe('ProductCard Component', () => {
   it('renders product information correctly', () => {
-    const { getByText, getByAltText } = render(<ProductCard product={mockProductWithDiscount} />);
+    const { getByText, getByAltText } = render(
+      <BrowserRouter>
+        <ProductCard product={mockProductWithDiscount} />
+      </BrowserRouter>,
+    );
 
     expect(getByText('Product Name')).toBeInTheDocument();
-    expect(getByText('Product Description...')).toBeInTheDocument();
+    expect(getByText('Product Description')).toBeInTheDocument();
     expect(getByText('10 USD')).toBeInTheDocument();
     expect(getByText('5 USD')).toBeInTheDocument();
 
@@ -91,14 +96,22 @@ describe('ProductCard Component', () => {
 
 describe('ProductCard Component', () => {
   it('renders product card with discounted price when discounted price exists', () => {
-    const { getByText } = render(<ProductCard product={mockProductWithDiscount} />);
+    const { getByText } = render(
+      <BrowserRouter>
+        <ProductCard product={mockProductWithDiscount} />
+      </BrowserRouter>,
+    );
 
     expect(getByText('5 USD')).toBeInTheDocument();
     expect(getByText('10 USD')).toBeInTheDocument();
   });
 
   it('renders product card with regular price when discounted price does not exist', () => {
-    const { getByText } = render(<ProductCard product={mockProductWithoutDiscount} />);
+    const { getByText } = render(
+      <BrowserRouter>
+        <ProductCard product={mockProductWithoutDiscount} />
+      </BrowserRouter>,
+    );
 
     expect(getByText('10 USD')).toBeInTheDocument();
   });

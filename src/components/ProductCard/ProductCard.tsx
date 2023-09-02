@@ -6,7 +6,6 @@ import { Link } from 'react-router-dom';
 function ProductCard({ product }: { product: Product }): JSX.Element {
   const { name, description, masterVariant } = product;
   const { images, prices, sku } = masterVariant;
-  console.log(product);
 
   let price: JSX.Element;
   if (prices[0].discounted) {
