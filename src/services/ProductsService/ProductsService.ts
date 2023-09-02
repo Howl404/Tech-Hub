@@ -64,6 +64,8 @@ const getCategory = async (key: string): Promise<Category> => {
 const getProductsByCategory = async (
   filter: string,
   sort: string,
+  text?: string,
+  brand?: string,
 ): Promise<{
   limit: number;
   offset: number;
@@ -72,7 +74,15 @@ const getProductsByCategory = async (
   results: Product[];
 }> => {
   const token = Cookies.get('access-token');
-  const url = `${apiUrl}/${projectKey}/product-projections/search?filter=${filter}&sort=${sort}`;
+  let url = `${apiUrl}/${projectKey}/product-projections/search?filter=${filter}&sort=${sort}`;
+
+  if (text) {
+    url += `&text.en=${text}`;
+  }
+
+  if (brand) {
+    url += `&filter=variants.attributes.brand:"${brand}"`;
+  }
 
   const response = await axios.get(url, {
     headers: {

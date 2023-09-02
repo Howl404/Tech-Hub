@@ -1,10 +1,12 @@
 import './ProductCard.scss';
 import React from 'react';
 import { Product } from '@src/interfaces/Product';
+import { Link } from 'react-router-dom';
 
 function ProductCard({ product }: { product: Product }): JSX.Element {
   const { name, description, masterVariant } = product;
-  const { images, prices } = masterVariant;
+  const { images, prices, sku } = masterVariant;
+  console.log(product);
 
   let price: JSX.Element;
   if (prices[0].discounted) {
@@ -20,12 +22,10 @@ function ProductCard({ product }: { product: Product }): JSX.Element {
     );
   } else {
     price = (
-      <div>
-        <div className="price-container">
-          <h4 className="old-price">
-            {prices[0].value.centAmount / 100} {prices[0].value.currencyCode}
-          </h4>
-        </div>
+      <div className="price-container">
+        <h4 className="old-price">
+          {prices[0].value.centAmount / 100} {prices[0].value.currencyCode}
+        </h4>
       </div>
     );
   }
@@ -35,7 +35,12 @@ function ProductCard({ product }: { product: Product }): JSX.Element {
       <img src={images[0].url} alt={name.en} />
       <h3>{name.en}</h3>
       {price}
-      <p>{description.en.slice(0, 250).concat('...')}</p>
+      <p>{description.en}</p>
+      <Link to={`/products/${sku}`}>
+        <button type="button" className="product-page-button  btn-enabled">
+          Details
+        </button>
+      </Link>
     </div>
   );
 }

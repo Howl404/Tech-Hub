@@ -9,9 +9,12 @@
   margin-top: 5px;
   flex-grow: 2;
   .product-card {
+    position: relative;
+
+    color: black;
     padding: 5px;
     width: 305px;
-    height: 750px;
+    height: 1050px;
     border: 1px solid #ccc;
     transition:
       box-shadow 0.3s ease,
@@ -39,7 +42,20 @@
     &:hover {
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
       border-radius: 16px;
-      cursor: pointer;
+    }
+
+    .product-page-button {
+      width: 120px;
+      margin: 0;
+      font-size: 12px;
+      position: absolute;
+      bottom: 10px;
+      left: 100px;
+      border-radius: 8px;
+      &:hover {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.485);
+        border-radius: 16px;
+      }
     }
   }
 

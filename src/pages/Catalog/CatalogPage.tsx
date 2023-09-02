@@ -11,6 +11,7 @@ import BrandFilter from '@src/components/BrandFilter/BrandFilter';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import Breadcrumb from '@src/components/Breadcrumb/Breadcrumb';
 import sortingOptions from '@src/utilities/sortingOptions';
+import searchIcon from '@assets/search.svg';
 
 export default function Catalog(): JSX.Element {
   const navigate = useNavigate();
@@ -24,6 +25,7 @@ export default function Catalog(): JSX.Element {
   const minPrice = 0;
   const maxPrice = 5000;
   const [priceRange, setPriceRange] = useState([minPrice, maxPrice]);
+  const [search, setSearch] = useState('');
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<ProductFormattedData[]>([]);
   const [sort, setSort] = useState('name.en asc');
@@ -59,85 +61,49 @@ export default function Catalog(): JSX.Element {
     }
 
     if (currentCategory.length > 0) {
-      if (brand) {
-        getProductsByCategory(
-          `categories.id: subtree("${
-            currentCategory[currentCategory.length - 1].key
-          }")&filter=${formatPriceRange}&filter=variants.attributes.brand:"${brand}"`,
-          sort,
-        ).then((data) => {
-          setProducts(data.results);
-        });
-      } else {
-        getProductsByCategory(
-          `categories.id: subtree("${currentCategory[currentCategory.length - 1].key}")&filter=${formatPriceRange}`,
-          sort,
-        ).then((data) => {
-          setProducts(data.results);
-        });
-      }
-    } else if (brand) {
-      getProductsByCategory(`${formatPriceRange}&filter=variants.attributes.brand:"${brand}"`, sort).then((data) => {
+      getProductsByCategory(
+        `categories.id: subtree("${currentCategory[currentCategory.length - 1].key}")&filter=${formatPriceRange}`,
+        sort,
+        search,
+        brand,
+      ).then((data) => {
         setProducts(data.results);
       });
     } else {
-      getProductsByCategory(`${formatPriceRange}`, sort).then((data) => {
+      getProductsByCategory(`${formatPriceRange}`, sort, search, brand).then((data) => {
         setProducts(data.results);
       });
     }
-  }, [priceRange, sort, brand, currentCategory]);
+  }, [priceRange, sort, brand, currentCategory, search]);
 
   useEffect(() => {
-    switch (currentCategory.length) {
-      case 1:
-        getCategories(`slug(en = "${currentCategory[0].name}")`).then((data) => {
-          setBreadcrumb([{ name: data.results[0].name.en, slug: data.results[0].slug.en }]);
+    const fetchCategory = async (
+      name: string,
+    ): Promise<{
+      name: string;
+      slug: string;
+    }> => {
+      const data = await getCategories(`slug(en = "${name}")`);
+      return {
+        name: data.results[0].name.en,
+        slug: data.results[0].slug.en,
+      };
+    };
+
+    const updateBreadcrumb = async (): Promise<void> => {
+      const breadcrumbArray: { name: string; slug: string }[] = [];
+
+      for (let i = 0; i < currentCategory.length; i += 1) {
+        fetchCategory(currentCategory[i].name).then((data) => {
+          breadcrumbArray.push(data);
         });
-        break;
-      case 2:
-        Promise.all([
-          getCategories(`slug(en = "${currentCategory[0].name}")`),
-          getCategories(`slug(en = "${currentCategory[1].name}")`),
-        ]).then(([data1, data2]) => {
-          const mainCategory = {
-            name: data1.results[0].name.en,
-            slug: data1.results[0].slug.en,
-          };
+      }
 
-          const subCategory = {
-            name: data2.results[0].name.en,
-            slug: data2.results[0].slug.en,
-          };
+      setBreadcrumb(breadcrumbArray);
+    };
 
-          setBreadcrumb([mainCategory, subCategory]);
-        });
-        break;
-      case 3:
-        Promise.all([
-          getCategories(`slug(en = "${currentCategory[0].name}")`),
-          getCategories(`slug(en = "${currentCategory[1].name}")`),
-          getCategories(`slug(en = "${currentCategory[2].name}")`),
-        ]).then(([data1, data2, data3]) => {
-          const mainCategory = {
-            name: data1.results[0].name.en,
-            slug: data1.results[0].slug.en,
-          };
-
-          const subCategory = {
-            name: data2.results[0].name.en,
-            slug: data2.results[0].slug.en,
-          };
-
-          const subCategory2 = {
-            name: data3.results[0].name.en,
-            slug: data3.results[0].slug.en,
-          };
-
-          setBreadcrumb([mainCategory, subCategory, subCategory2]);
-        });
-        break;
-      default:
-        break;
+    if (currentCategory.length > 0) {
+      updateBreadcrumb();
     }
   }, [currentCategory]);
 
@@ -149,7 +115,7 @@ export default function Catalog(): JSX.Element {
 
   useEffect(() => {
     getNewProducts();
-  }, [sort, getNewProducts]);
+  }, [sort, priceRange, getNewProducts]);
 
   useEffect(() => {
     if (categories.length > 1 && categoryslug) {
@@ -204,13 +170,11 @@ export default function Catalog(): JSX.Element {
           >
             Categories
           </button>
-          {displayCategories ? (
-            <div className="categories">
-              {categories.map((category) => (
-                <CategoryCard key={category.id} category={category} />
-              ))}
-            </div>
-          ) : null}
+          <div className={`categories ${displayCategories ? 'categories-open' : ''}`}>
+            {categories.map((category) => (
+              <CategoryCard key={category.id} category={category} />
+            ))}
+          </div>
 
           <div className="breadcrumb">
             <div>
@@ -229,6 +193,17 @@ export default function Catalog(): JSX.Element {
           </div>
         </div>
         <div className="options-header">
+          <div className="search-products">
+            <img src={searchIcon} alt="Search icon" />
+            <input
+              name="search"
+              type="text"
+              onChange={(event): void => {
+                const { value } = event.target;
+                setSearch(value);
+              }}
+            />
+          </div>
           <div className="sort-container">
             <SortingSelect selectedOption={sort} options={sortingOptions} onSelect={handleSortingChange} />
           </div>

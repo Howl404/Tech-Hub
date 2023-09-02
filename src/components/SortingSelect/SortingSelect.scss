@@ -2,6 +2,15 @@
   display: flex;
   align-items: center;
 
+  label {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 14px;
+  }
+
   .sorting-select {
     padding: 8px;
     border: 1px solid #ccc;
