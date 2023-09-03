@@ -1,5 +1,5 @@
 import { getCategories, getProductsByCategory } from '@src/services/ProductsService/ProductsService';
-import ProductCard from '@src/components/ProductCard/ProductCard';
+import CatalogProductCard from '@src/components/CatalogProductCard/CatalogProductCard';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Product, ProductFormattedData } from '@src/interfaces/Product';
 import CategoryCard from '@src/components/CategoryCard/CategoryCard';
@@ -216,7 +216,7 @@ export default function Catalog(): JSX.Element {
         </div>
         <div className="product-list">
           {products.map((product) => (
-            <ProductCard key={product.name.en} product={product} />
+            <CatalogProductCard key={product.name.en} product={product} />
           ))}
         </div>
       </div>

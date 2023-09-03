@@ -4,11 +4,12 @@ import { render } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { Product } from '@src/interfaces/Product';
 import { BrowserRouter } from 'react-router-dom';
-import ProductCard from '../ProductCard';
+import CatalogProductCard from '../CatalogProductCard';
 
 const mockProductWithDiscount: Product = {
   name: { en: 'Product Name' },
   description: { en: 'Product Description' },
+  key: '1',
   masterVariant: {
     id: 123,
     sku: 'test',
@@ -46,6 +47,7 @@ const mockProductWithDiscount: Product = {
 const mockProductWithoutDiscount: Product = {
   name: { en: 'Product Name' },
   description: { en: 'Product Description' },
+  key: '1',
   masterVariant: {
     id: 123,
     sku: 'test',
@@ -75,11 +77,11 @@ const mockProductWithoutDiscount: Product = {
   ],
 };
 
-describe('ProductCard Component', () => {
+describe('CatalogProductCard Component', () => {
   it('renders product information correctly', () => {
     const { getByText, getByAltText } = render(
       <BrowserRouter>
-        <ProductCard product={mockProductWithDiscount} />
+        <CatalogProductCard product={mockProductWithDiscount} />
       </BrowserRouter>,
     );
 
@@ -94,11 +96,11 @@ describe('ProductCard Component', () => {
   });
 });
 
-describe('ProductCard Component', () => {
+describe('CatalogProductCard Component', () => {
   it('renders product card with discounted price when discounted price exists', () => {
     const { getByText } = render(
       <BrowserRouter>
-        <ProductCard product={mockProductWithDiscount} />
+        <CatalogProductCard product={mockProductWithDiscount} />
       </BrowserRouter>,
     );
 
@@ -109,7 +111,7 @@ describe('ProductCard Component', () => {
   it('renders product card with regular price when discounted price does not exist', () => {
     const { getByText } = render(
       <BrowserRouter>
-        <ProductCard product={mockProductWithoutDiscount} />
+        <CatalogProductCard product={mockProductWithoutDiscount} />
       </BrowserRouter>,
     );
 
