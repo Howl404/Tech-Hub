@@ -66,7 +66,7 @@ const getAnonymousAccessToken = async (): Promise<{
   accessToken: string;
   refreshToken: string;
 }> => {
-  const scope = `create_anonymous_token:${projectKey} manage_my_orders:${projectKey}`;
+  const scope = `create_anonymous_token:${projectKey} manage_my_orders:${projectKey} manage_my_profile:${projectKey}`;
   const authHeader = `Basic ${btoa(`${clientId}:${clientSecret}`)}`;
   const response = await axios.post(
     `${authHost}/oauth/${projectKey}/anonymous/token`,
