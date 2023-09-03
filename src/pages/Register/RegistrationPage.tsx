@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import FormInput from '@components/FormInput/FormInput';
 import { RegistrationFormData } from '@interfaces/Register';
-import { createCart, getAnonymousAccessToken, logInUser, registerUser } from '@services/AuthService/AuthService';
+import { createCart, logInUser, registerUser } from '@services/AuthService/AuthService';
 import FormAddress from '@components/FormAddress/FormAddress';
 import './RegistrationPage.scss';
 import '@components/Heading/Heading.scss';
@@ -61,14 +61,6 @@ function RegistrationPage({ checkLogIn }: { checkLogIn: () => void }): JSX.Eleme
           background: 'linear-gradient(to right, #ff0000, #fdacac)',
         },
       }).showToast();
-    } else if (!authType) {
-      getAnonymousAccessToken().then((res) => {
-        const threeHours = 180 / (24 * 60);
-
-        Cookies.set('access-token', res.accessToken, { expires: threeHours });
-        Cookies.set('refresh-token', res.refreshToken, { expires: 200 });
-        Cookies.set('auth-type', 'anon', { expires: threeHours });
-      });
     }
   }, [navigate]);
 

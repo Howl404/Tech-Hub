@@ -7,6 +7,7 @@ import NotFound from '@pages/NotFound/NotFound';
 import RegistrationPage from '@pages/Register/RegistrationPage';
 import Cookies from 'js-cookie';
 import Header from './components/Header/Header';
+import { getAnonymousAccessToken } from './services/AuthService/AuthService';
 
 function App(): JSX.Element {
   const navigate = useNavigate();
@@ -16,6 +17,10 @@ function App(): JSX.Element {
       Cookies.remove(item);
       navigate('/');
       setIsAuth(false);
+    });
+    getAnonymousAccessToken().then((result) => {
+      Cookies.set('access-token', result.accessToken, { expires: 2 });
+      Cookies.set('auth-type', 'anon', { expires: 2 });
     });
   };
   const checkLogInn = (): boolean => Cookies.get('auth-type') !== undefined && Cookies.get('auth-type') !== 'anon';
@@ -28,6 +33,11 @@ function App(): JSX.Element {
     const res = checkLogInn();
     if (res) {
       setIsAuth(true);
+    } else {
+      getAnonymousAccessToken().then((result) => {
+        Cookies.set('access-token', result.accessToken, { expires: 2 });
+        Cookies.set('auth-type', 'anon', { expires: 2 });
+      });
     }
   }, []);
   return (
