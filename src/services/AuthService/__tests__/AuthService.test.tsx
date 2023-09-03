@@ -1,6 +1,6 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { getAnonymousAccessToken, logInUser, createCart } from '../AuthService';
+import { getAnonymousAccessToken, logInUser } from '../AuthService';
 
 describe('getAnonymousAccessToken', () => {
   const email = 'qwertyyu@gmail.com';
