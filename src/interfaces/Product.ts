@@ -5,6 +5,7 @@ export interface Product {
   name: {
     en: string;
   };
+  key: string;
   masterVariant: {
     id: number;
     sku: string;

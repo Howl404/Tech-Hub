@@ -4,8 +4,8 @@ import { Product } from '@src/interfaces/Product';
 import { Link } from 'react-router-dom';
 
 function ProductCard({ product }: { product: Product }): JSX.Element {
-  const { name, description, masterVariant } = product;
-  const { images, prices, sku } = masterVariant;
+  const { name, description, masterVariant, key } = product;
+  const { images, prices } = masterVariant;
 
   let price: JSX.Element;
   if (prices[0].discounted) {
@@ -35,7 +35,7 @@ function ProductCard({ product }: { product: Product }): JSX.Element {
       <h3>{name.en}</h3>
       {price}
       <p>{description.en}</p>
-      <Link to={`/products/${sku}`}>
+      <Link to={`/products/${key}`}>
         <button type="button" className="product-page-button  btn-enabled">
           Details
         </button>
