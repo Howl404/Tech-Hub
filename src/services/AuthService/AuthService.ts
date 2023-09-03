@@ -195,8 +195,11 @@ const sendData = async (data: SendAddress, id: string, addressId: string): Promi
   return response.data;
 };
 
-const changePasswordRequest = async (currentPassword: string, newPassword: string): Promise<void> => {
-  // если ошибка, то неверный старый пароль, 200 - пароль изменен и очистка куков и переход на мэйн
+const changePasswordRequest = async (
+  currentPassword: string,
+  newPassword: string,
+): Promise<CustomersId | undefined> => {
+  let errorText;
   const profileResponse = await axios.get(`${apiUrl}/${projectKey}/me`, {
     headers: {
       Authorization: `Bearer ${Cookies.get('access-token')}`,
@@ -204,24 +207,295 @@ const changePasswordRequest = async (currentPassword: string, newPassword: strin
     },
   });
   const currentVersion = profileResponse.data.version;
-  const response = await axios.post(
-    `${apiUrl}/${projectKey}/me/password`,
-    {
-      version: currentVersion,
-      currentPassword: newPassword,
-      newPassword: currentPassword,
-    },
-    {
-      headers: {
-        Authorization: `Bearer ${Cookies.get('access-token')}`,
-        'Content-Type': 'application/json',
+  try {
+    const response = await axios.post(
+      `${apiUrl}/${projectKey}/me/password`,
+      {
+        version: currentVersion,
+        currentPassword: newPassword,
+        newPassword: currentPassword,
       },
+      {
+        headers: {
+          Authorization: `Bearer ${Cookies.get('access-token')}`,
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+    return response.data;
+  } catch (e) {
+    if (e instanceof AxiosError && e.response?.data) {
+      if (e.response.data?.errors.length) {
+        errorText = e.response.data.errors
+          .map((errItem: ResponseErrorItem) => errItem.detailedErrorMessage || errItem.message)
+          .join('\r\n');
+      } else {
+        errorText = e.response.data?.message;
+      }
+    } else if (e instanceof Error) {
+      errorText = e.message;
+    } else if (typeof e === 'string') {
+      errorText = e;
+    }
+  }
+
+  Toastify({
+    text: errorText,
+    duration: 3000,
+    newWindow: true,
+    close: true,
+    gravity: 'top',
+    position: 'right',
+    stopOnFocus: true,
+    style: {
+      background: 'linear-gradient(to right, #ff0000, #fdacac)',
     },
-  );
-  console.log(response);
+  }).showToast();
+  return undefined;
 };
 
-const changeEmailRequest = async (newEmail: string): Promise<void> => {
+const changeEmailRequest = async (newEmail: string): Promise<CustomersId | undefined> => {
+  let errorText;
+  const profileResponse = await axios.get(`${apiUrl}/${projectKey}/me`, {
+    headers: {
+      Authorization: `Bearer ${Cookies.get('access-token')}`,
+      'Content-Type': 'application/json',
+    },
+  });
+  const currentVersion = profileResponse.data.version;
+  try {
+    const response = await axios.post(
+      `${apiUrl}/${projectKey}/me`,
+      {
+        version: currentVersion,
+        actions: [
+          {
+            action: 'changeEmail',
+            email: newEmail,
+          },
+        ],
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${Cookies.get('access-token')}`,
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+    return response.data;
+  } catch (e) {
+    if (e instanceof AxiosError && e.response?.data) {
+      if (e.response.data?.errors.length) {
+        errorText = e.response.data.errors
+          .map((errItem: ResponseErrorItem) => errItem.detailedErrorMessage || errItem.message)
+          .join('\r\n');
+      } else {
+        errorText = e.response.data?.message;
+      }
+    } else if (e instanceof Error) {
+      errorText = e.message;
+    } else if (typeof e === 'string') {
+      errorText = e;
+    }
+  }
+
+  Toastify({
+    text: errorText,
+    duration: 3000,
+    newWindow: true,
+    close: true,
+    gravity: 'top',
+    position: 'right',
+    stopOnFocus: true,
+    style: {
+      background: 'linear-gradient(to right, #ff0000, #fdacac)',
+    },
+  }).showToast();
+  return undefined;
+};
+
+const changeFirstNameRequest = async (firstName: string): Promise<CustomersId | undefined> => {
+  let errorText;
+  const profileResponse = await axios.get(`${apiUrl}/${projectKey}/me`, {
+    headers: {
+      Authorization: `Bearer ${Cookies.get('access-token')}`,
+      'Content-Type': 'application/json',
+    },
+  });
+  const currentVersion = profileResponse.data.version;
+  try {
+    const response = await axios.post(
+      `${apiUrl}/${projectKey}/me`,
+      {
+        version: currentVersion,
+        actions: [
+          {
+            action: 'setFirstName',
+            firstName,
+          },
+        ],
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${Cookies.get('access-token')}`,
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+    return response.data;
+  } catch (e) {
+    if (e instanceof AxiosError && e.response?.data) {
+      if (e.response.data?.errors.length) {
+        errorText = e.response.data.errors
+          .map((errItem: ResponseErrorItem) => errItem.detailedErrorMessage || errItem.message)
+          .join('\r\n');
+      } else {
+        errorText = e.response.data?.message;
+      }
+    } else if (e instanceof Error) {
+      errorText = e.message;
+    } else if (typeof e === 'string') {
+      errorText = e;
+    }
+  }
+
+  Toastify({
+    text: errorText,
+    duration: 3000,
+    newWindow: true,
+    close: true,
+    gravity: 'top',
+    position: 'right',
+    stopOnFocus: true,
+    style: {
+      background: 'linear-gradient(to right, #ff0000, #fdacac)',
+    },
+  }).showToast();
+  return undefined;
+};
+
+const changeDateofBirthRequest = async (dateofBirth: string): Promise<CustomersId | undefined> => {
+  let errorText;
+  const profileResponse = await axios.get(`${apiUrl}/${projectKey}/me`, {
+    headers: {
+      Authorization: `Bearer ${Cookies.get('access-token')}`,
+      'Content-Type': 'application/json',
+    },
+  });
+  const currentVersion = profileResponse.data.version;
+  try {
+    const response = await axios.post(
+      `${apiUrl}/${projectKey}/me`,
+      {
+        version: currentVersion,
+        actions: [
+          {
+            action: 'setDateOfBirth',
+            dateOfBirth: String(dateofBirth),
+          },
+        ],
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${Cookies.get('access-token')}`,
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+    return response.data;
+  } catch (e) {
+    if (e instanceof AxiosError && e.response?.data) {
+      if (e.response.data?.errors.length) {
+        errorText = e.response.data.errors
+          .map((errItem: ResponseErrorItem) => errItem.detailedErrorMessage || errItem.message)
+          .join('\r\n');
+      } else {
+        errorText = e.response.data?.message;
+      }
+    } else if (e instanceof Error) {
+      errorText = e.message;
+    } else if (typeof e === 'string') {
+      errorText = e;
+    }
+  }
+
+  Toastify({
+    text: errorText,
+    duration: 3000,
+    newWindow: true,
+    close: true,
+    gravity: 'top',
+    position: 'right',
+    stopOnFocus: true,
+    style: {
+      background: 'linear-gradient(to right, #ff0000, #fdacac)',
+    },
+  }).showToast();
+  return undefined;
+};
+
+const changeLastNameRequest = async (lastName: string): Promise<CustomersId | undefined> => {
+  let errorText;
+  const profileResponse = await axios.get(`${apiUrl}/${projectKey}/me`, {
+    headers: {
+      Authorization: `Bearer ${Cookies.get('access-token')}`,
+      'Content-Type': 'application/json',
+    },
+  });
+  const currentVersion = profileResponse.data.version;
+  try {
+    const response = await axios.post(
+      `${apiUrl}/${projectKey}/me`,
+      {
+        version: currentVersion,
+        actions: [
+          {
+            action: 'setLastName',
+            lastName,
+          },
+        ],
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${Cookies.get('access-token')}`,
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+
+    return response.data;
+  } catch (e) {
+    if (e instanceof AxiosError && e.response?.data) {
+      if (e.response.data?.errors.length) {
+        errorText = e.response.data.errors
+          .map((errItem: ResponseErrorItem) => errItem.detailedErrorMessage || errItem.message)
+          .join('\r\n');
+      } else {
+        errorText = e.response.data?.message;
+      }
+    } else if (e instanceof Error) {
+      errorText = e.message;
+    } else if (typeof e === 'string') {
+      errorText = e;
+    }
+  }
+
+  Toastify({
+    text: errorText,
+    duration: 3000,
+    newWindow: true,
+    close: true,
+    gravity: 'top',
+    position: 'right',
+    stopOnFocus: true,
+    style: {
+      background: 'linear-gradient(to right, #ff0000, #fdacac)',
+    },
+  }).showToast();
+  return undefined;
+};
+
+const requestRemoveAddress = async (addressId: string): Promise<CustomersId> => {
   const profileResponse = await axios.get(`${apiUrl}/${projectKey}/me`, {
     headers: {
       Authorization: `Bearer ${Cookies.get('access-token')}`,
@@ -235,8 +509,8 @@ const changeEmailRequest = async (newEmail: string): Promise<void> => {
       version: currentVersion,
       actions: [
         {
-          action: 'changeEmail',
-          email: newEmail,
+          action: 'removeAddress',
+          addressId,
         },
       ],
     },
@@ -247,10 +521,15 @@ const changeEmailRequest = async (newEmail: string): Promise<void> => {
       },
     },
   );
-  console.log(response);
+  return response.data;
 };
 
-const changeFirstNameRequest = async (firstName: string): Promise<void> => {
+const requestAddShippingAddress = async (
+  streetName: string,
+  postalCode: string,
+  city: string,
+  country: string,
+): Promise<CustomersId> => {
   const profileResponse = await axios.get(`${apiUrl}/${projectKey}/me`, {
     headers: {
       Authorization: `Bearer ${Cookies.get('access-token')}`,
@@ -264,8 +543,13 @@ const changeFirstNameRequest = async (firstName: string): Promise<void> => {
       version: currentVersion,
       actions: [
         {
-          action: 'setFirstName',
-          firstName,
+          action: 'addAddress',
+          address: {
+            streetName,
+            postalCode,
+            city,
+            country,
+          },
         },
       ],
     },
@@ -276,11 +560,10 @@ const changeFirstNameRequest = async (firstName: string): Promise<void> => {
       },
     },
   );
-  console.log(response);
+  return response.data;
 };
 
-const changeDateofBirthRequest = async (dateofBirth: string): Promise<void> => {
-  console.log(dateofBirth);
+const requestIdShippingAddress = async (idAddress: string): Promise<CustomersId> => {
   const profileResponse = await axios.get(`${apiUrl}/${projectKey}/me`, {
     headers: {
       Authorization: `Bearer ${Cookies.get('access-token')}`,
@@ -294,8 +577,8 @@ const changeDateofBirthRequest = async (dateofBirth: string): Promise<void> => {
       version: currentVersion,
       actions: [
         {
-          action: 'setDateOfBirth',
-          dateOfBirth: String(dateofBirth),
+          action: 'addShippingAddressId',
+          addressId: idAddress,
         },
       ],
     },
@@ -306,10 +589,10 @@ const changeDateofBirthRequest = async (dateofBirth: string): Promise<void> => {
       },
     },
   );
-  console.log(response);
+  return response.data;
 };
 
-const changeLastNameRequest = async (lastName: string): Promise<void> => {
+const requestIdBillingAddress = async (idAddress: string): Promise<CustomersId> => {
   const profileResponse = await axios.get(`${apiUrl}/${projectKey}/me`, {
     headers: {
       Authorization: `Bearer ${Cookies.get('access-token')}`,
@@ -323,8 +606,8 @@ const changeLastNameRequest = async (lastName: string): Promise<void> => {
       version: currentVersion,
       actions: [
         {
-          action: 'setLastName',
-          lastName,
+          action: 'addBillingAddressId',
+          addressId: idAddress,
         },
       ],
     },
@@ -335,43 +618,77 @@ const changeLastNameRequest = async (lastName: string): Promise<void> => {
       },
     },
   );
-  console.log(response);
+  return response.data;
 };
 
-// const updateProfileRequest = async (
-//   action: 'setFirstName' | 'setLastName' | 'setDateOfBirth',
-//   value: string,
-// ): Promise<void> => {
-//   const profileResponse = await axios.get(`${apiUrl}/${projectKey}/me`, {
-//     headers: {
-//       Authorization: `Bearer ${Cookies.get('access-token')}`,
-//       'Content-Type': 'application/json',
-//     },
-//   });
-//   const currentVersion = profileResponse.data.version;
+const requestAddBillingAddress = async (
+  streetName: string,
+  postalCode: string,
+  city: string,
+  country: string,
+): Promise<CustomersId> => {
+  const profileResponse = await axios.get(`${apiUrl}/${projectKey}/me`, {
+    headers: {
+      Authorization: `Bearer ${Cookies.get('access-token')}`,
+      'Content-Type': 'application/json',
+    },
+  });
+  const currentVersion = profileResponse.data.version;
+  const response = await axios.post(
+    `${apiUrl}/${projectKey}/me`,
+    {
+      version: currentVersion,
+      actions: [
+        {
+          action: 'addAddress',
+          address: {
+            streetName,
+            postalCode,
+            city,
+            country,
+          },
+        },
+      ],
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${Cookies.get('access-token')}`,
+        'Content-Type': 'application/json',
+      },
+    },
+  );
+  return response.data;
+};
 
-//   // const actionPayload =
-//   //   action === 'setDateOfBirth' ? { action, dateOfBirth: value } : { action, [action.slice(3).toLowerCase()]: value };
-//   const response = await axios.post(
-//     `${apiUrl}/${projectKey}/me`,
-//     {
-//       version: currentVersion,
-//       actions: [
-//         {
-//           action,
-//           [action.slice(3).toLowerCase()]: value,
-//         },
-//       ],
-//     },
-//     {
-//       headers: {
-//         Authorization: `Bearer ${Cookies.get('access-token')}`,
-//         'Content-Type': 'application/json',
-//       },
-//     },
-//   );
-//   console.log(response);
-// };
+const requestDefaultBillingAddress = async (addressId: string): Promise<CustomersId> => {
+  console.log(addressId);
+  const profileResponse = await axios.get(`${apiUrl}/${projectKey}/me`, {
+    headers: {
+      Authorization: `Bearer ${Cookies.get('access-token')}`,
+      'Content-Type': 'application/json',
+    },
+  });
+  const currentVersion = profileResponse.data.version;
+  const response = await axios.post(
+    `${apiUrl}/${projectKey}/me`,
+    {
+      version: currentVersion,
+      actions: [
+        {
+          action: 'setDefaultBillingAddress',
+          addressId,
+        },
+      ],
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${Cookies.get('access-token')}`,
+        'Content-Type': 'application/json',
+      },
+    },
+  );
+  return response.data;
+};
 
 export {
   registerUser,
@@ -385,5 +702,10 @@ export {
   changeLastNameRequest,
   changeFirstNameRequest,
   changeDateofBirthRequest,
-  // updateProfileRequest,
+  requestRemoveAddress,
+  requestAddShippingAddress,
+  requestIdShippingAddress,
+  requestIdBillingAddress,
+  requestAddBillingAddress,
+  requestDefaultBillingAddress,
 };

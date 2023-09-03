@@ -34,6 +34,7 @@ function AccountDashboard({ onLogOut }: { onLogOut: () => void }): JSX.Element {
 
   useEffect(() => {
     getCustomerId().then((item) => setUser(item));
+    // console.log(user );
   }, []);
 
   return (
@@ -50,7 +51,7 @@ function AccountDashboard({ onLogOut }: { onLogOut: () => void }): JSX.Element {
               path="/Information"
               element={<AccountInformation user={user} setUser={setUser} onLogOut={onLogOut} />}
             />
-            <Route path="/Address" element={<AccountAddress user={user} />} />
+            <Route path="/Address" element={<AccountAddress user={user} setUser={setUser} />} />
             <Route path="/Order" element={<AccountOrder />} />
           </Routes>
         </div>
