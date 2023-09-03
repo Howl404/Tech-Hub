@@ -34,7 +34,7 @@ export default function Catalog(): JSX.Element {
   const [currentCategory, setCurrentCategory] = useState<{ name: string; key?: string }[]>([]);
   const [breadcrumb, setBreadcrumb] = useState<{ name: string; slug: string }[]>([]);
 
-  const [displayCategories, setDisplayCategories] = useState(true);
+  const [displayCategories, setDisplayCategories] = useState(false);
 
   const handleSortingChange = (newOption: string): void => {
     setSort(newOption);
