@@ -15,7 +15,6 @@ import {
   requestIdShippingAddress,
   requestRemoveAddress,
 } from '@src/services/AuthService/AuthService';
-import ModalAccountInformation from '@src/components/ModalAccountInformation/ModalAccountInformation';
 import FormInput from '@src/components/FormInput/FormInput';
 import { PostalCodePattern } from '@src/interfaces/Register';
 import styles from './AccountAddress.module.scss';
@@ -29,6 +28,8 @@ const postalCodePattern: PostalCodePattern = {
 };
 
 function AccountAddress({ user, setUser }: { user: CustomersId; setUser: (value: CustomersId) => void }): JSX.Element {
+  const [isFormComplete, setIsFormComplete] = useState(false);
+
   const [modalActive, setModalActive] = useState(false);
   const [modalActiveNewAddress, setModalActiveNewAddress] = useState(false);
   const [modalActiveNewAddressBilling, setModalActiveNewAddressBilling] = useState(false);
@@ -55,6 +56,16 @@ function AccountAddress({ user, setUser }: { user: CustomersId; setUser: (value:
   const [billingAddress, setBillingAddress] = useState<Address[]>([]);
   const [shippingAddress, setShippingAddress] = useState<Address[]>([]);
 
+  useEffect(() => {
+    if (
+      [newAddress.streetName, newAddress.postalCode, newAddress.city, newAddress.country].every(
+        (value) => value !== '',
+      ) === true
+    ) {
+      setIsFormComplete(true);
+    } else setIsFormComplete(false);
+  }, [newAddress.streetName, newAddress.postalCode, newAddress.city, newAddress.country]);
+
   function modalWindow(
     modalActiveM: boolean,
     setModalActiveM: React.Dispatch<React.SetStateAction<boolean>>,
@@ -63,8 +74,35 @@ function AccountAddress({ user, setUser }: { user: CustomersId; setUser: (value:
     requestDefaultAddress: (addressId: string) => Promise<CustomersId>,
   ): JSX.Element {
     return (
-      <ModalAccountInformation active={modalActiveM} setActive={setModalActiveM}>
-        <>
+      // eslint-disable-next-line jsx-a11y/no-static-element-interactions
+      <div
+        className={modalActiveM ? 'modal active__modal information' : 'modal'}
+        onClick={(): void => setModalActiveM(false)}
+      >
+        <form
+          className={modalActiveM ? 'modal__content active__modal' : 'modal__content'}
+          onClick={(e): void => e.stopPropagation()}
+          onSubmit={(e): void => {
+            e.preventDefault();
+            requestAddress(newAddress.streetName, newAddress.postalCode, newAddress.city, newAddress.country).then(
+              (item) => {
+                const addId = item.addresses[item.addresses.length - 1].id;
+                requestIdAddress(addId).then(() => {
+                  if (checkBoxBilling) {
+                    requestDefaultAddress(addId);
+                    setCheckBoxBilling(false);
+                    setUser({ ...user, billingAddressIds: [addId], addresses: item.addresses });
+                    setAddressesAll(item.addresses);
+                  } else {
+                    setUser({ ...user, addresses: item.addresses });
+                    setAddressesAll(item.addresses);
+                  }
+                  setModalActiveM(false);
+                });
+              },
+            );
+          }}
+        >
           <div className={styles.form_default_address}>
             <p>Set default address</p>
             <input
@@ -134,31 +172,11 @@ function AccountAddress({ user, setUser }: { user: CustomersId; setUser: (value:
             title="Must contain more than 1 character"
             value={newAddress.streetName}
           />
-          <button
-            type="button"
-            className="btn__save"
-            onClick={(): void => {
-              requestAddress(newAddress.streetName, newAddress.postalCode, newAddress.city, newAddress.country).then(
-                (item) => {
-                  const addId = item.addresses[item.addresses.length - 1].id;
-                  requestIdAddress(addId).then(() => {
-                    if (checkBoxBilling) {
-                      requestDefaultAddress(addId);
-                      setCheckBoxBilling(false);
-                      setUser({ ...user, billingAddressIds: [addId], addresses: item.addresses });
-                    } else {
-                      setUser({ ...user, addresses: item.addresses });
-                    }
-                    setModalActiveM(false);
-                  });
-                },
-              );
-            }}
-          >
+          <button type="submit" className="btn__save" disabled={!isFormComplete}>
             add new address <FaRegSave />
           </button>{' '}
-        </>
-      </ModalAccountInformation>
+        </form>
+      </div>
     );
   }
 
