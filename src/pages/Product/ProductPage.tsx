@@ -17,7 +17,7 @@ function ProductPage(): JSX.Element {
     key: string;
   }>();
 
-  const [thumbsSwiper, setThumbsSwiper] = useState<SwiperClass | null>(null);
+  // const [thumbsSwiper, setThumbsSwiper] = useState<SwiperClass | null>(null);
   const [formData, setFormData] = useState({ key, count: 1, inBag: false, inFavorites: false });
   const [product, setProducts] = useState<Product>();
 
@@ -30,9 +30,9 @@ function ProductPage(): JSX.Element {
   const current = product?.masterData.current;
 
   const currency = current?.masterVariant.prices[0].value.currencyCode;
-  const totalPrice = new Intl.NumberFormat('en-IN', { style: 'currency', currency }).format(
-    ((current?.masterVariant.prices[0].value.centAmount || 0) * formData.count) / 100,
-  );
+  const totalPrice = ((current?.masterVariant.prices[0].value.centAmount || 0) * formData.count) / 100;
+  const discountedPrice = ((current?.masterVariant.prices[0].discounted.value.centAmount || 0) * formData.count) / 100;
+
   const description = current?.description.en;
 
   let brand = 'brand not found';
@@ -79,7 +79,15 @@ function ProductPage(): JSX.Element {
       <main className="container">
         <div className="product">
           <div className="product__line first-line">
-            <Swiper
+            <Swiper navigation modules={[Navigation]} className="mySwiper" onClick={(): void => showModal()}>
+              {current?.masterVariant.images.map((img: { url: string }, index: number) => (
+                <SwiperSlide key={img.url}>
+                  <img src={img.url} alt={`${key}${index}`} />
+                </SwiperSlide>
+              ))}
+            </Swiper>
+
+            {/* <Swiper
               style={
                 {
                   '--swiper-navigation-color': '#000000',
@@ -99,8 +107,8 @@ function ProductPage(): JSX.Element {
                   <img src={img.url} alt={`${key}${index}`} />
                 </SwiperSlide>
               ))}
-            </Swiper>
-            <Swiper
+            </Swiper> */}
+            {/* <Swiper
               onSwiper={setThumbsSwiper}
               loop
               spaceBetween={10}
@@ -108,14 +116,14 @@ function ProductPage(): JSX.Element {
               freeMode
               watchSlidesProgress
               modules={[FreeMode, Navigation, Thumbs]}
-              className="mySwiper swiper-vertical"
+              className="mySwiper"
             >
               {current?.masterVariant.images.map((img: { url: string }, index: number) => (
                 <SwiperSlide key={img.url}>
                   <img src={img.url} alt={`${key}${index}`} />
                 </SwiperSlide>
               ))}
-            </Swiper>
+            </Swiper> */}
 
             <div className="product__attributes">
               <div className="path">
@@ -170,7 +178,9 @@ function ProductPage(): JSX.Element {
 
                 <div className="product__price">
                   <div className="product__attr-title">price total</div>
-                  <span className="product__price-value">{totalPrice}</span>
+                  <span className="product__price-discounted">{totalPrice}</span>
+                  <span className="product__price-discounted">&nbsp;{currency}</span>
+                  <span className="product__price-value">{discountedPrice}</span>
                   <span className="product__price-currency">&nbsp;{currency}</span>
                 </div>
               </div>
