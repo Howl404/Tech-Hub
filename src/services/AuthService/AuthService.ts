@@ -12,6 +12,9 @@ const clientId = 'CBJ0upgR5dDSi7L9JIOeY-Ba';
 const clientSecret = '2uZuBnnoXOtyVe8v_1oXCKybDsqEgAtS';
 const projectKey = 'rs-alchemists-ecommerce';
 
+const authorizedClientId = 'f6HOfnyPjgKXKDeXHCHCOvhp';
+const authorizedClientSecret = 'Ljc0KCIYY5hVKWy8Nh9cPSJX7G8QZbXD';
+
 const registerUser = async (userData: CustomerDraft, token: string): Promise<CustomerData | boolean> => {
   let errorText = '';
 
@@ -93,8 +96,9 @@ const logInUser = async (
 > => {
   let errorText;
   try {
-    const scope = `manage_my_orders:${projectKey} manage_my_profile:${projectKey}`;
-    const authHeader = `Basic ${btoa(`${clientId}:${clientSecret}`)}`;
+    const scope =
+      'manage_my_shopping_lists:rs-alchemists-ecommerce view_published_products:rs-alchemists-ecommerce view_categories:rs-alchemists-ecommerce manage_my_business_units:rs-alchemists-ecommerce manage_my_profile:rs-alchemists-ecommerce manage_my_quotes:rs-alchemists-ecommerce manage_my_payments:rs-alchemists-ecommerce create_anonymous_token:rs-alchemists-ecommerce manage_my_quote_requests:rs-alchemists-ecommerce view_products:rs-alchemists-ecommerce manage_my_orders:rs-alchemists-ecommerce';
+    const authHeader = `Basic ${btoa(`${authorizedClientId}:${authorizedClientSecret}`)}`;
     const requestBody = `grant_type=password&username=${email}&password=${password}&scope=${scope}`;
 
     const response = await axios.post(`${authHost}/oauth/${projectKey}/customers/token`, requestBody, {
