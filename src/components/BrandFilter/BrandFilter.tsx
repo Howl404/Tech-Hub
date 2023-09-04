@@ -1,4 +1,4 @@
-import { Product } from '@src/interfaces/Product';
+import { ProductCatalog } from '@src/interfaces/Product';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './BrandFilter.scss';
@@ -8,7 +8,7 @@ function BrandFilter({
   onChange,
   clearBrand,
 }: {
-  products: Product[];
+  products: ProductCatalog[];
   onChange: (brands: string) => void;
   clearBrand: () => void;
 }): JSX.Element {
