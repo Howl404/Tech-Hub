@@ -1,14 +1,23 @@
-import React, { useEffect, useState } from 'react';
+import React, { CSSProperties, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import './ProductPage.scss';
 import { Product } from '@src/interfaces/Product';
 import { getProductByKey } from '@src/services/ProductsService/ProductsService';
+
+// Import Swiper and styles
+import { Swiper, SwiperSlide, SwiperClass } from 'swiper/react';
+import 'swiper/css';
+import 'swiper/css/free-mode';
+import 'swiper/css/navigation';
+import 'swiper/css/thumbs';
+import { FreeMode, Navigation, Thumbs } from 'swiper/modules';
 
 function ProductPage(): JSX.Element {
   const { key = '' } = useParams<{
     key: string;
   }>();
 
+  const [thumbsSwiper, setThumbsSwiper] = useState<SwiperClass | null>(null);
   const [formData, setFormData] = useState({ key, count: 1, inBag: false, inFavorites: false });
   const [product, setProducts] = useState<Product>();
 
@@ -42,13 +51,6 @@ function ProductPage(): JSX.Element {
     setFormData({ ...formData, count });
   };
 
-  const clickImg = (event: React.MouseEvent<HTMLElement>): void => {
-    const { src } = event.target as HTMLImageElement;
-    const node = (event.currentTarget.parentElement as HTMLElement).nextElementSibling;
-    const tagImg = node?.children[0] as HTMLImageElement;
-    if (tagImg) tagImg.src = src || '';
-  };
-
   const clickShowHideDetails = (event: React.MouseEvent<HTMLElement>): void => {
     const node = event.currentTarget as HTMLElement;
     const plusMinus = node?.children[1] as HTMLImageElement;
@@ -63,17 +65,42 @@ function ProductPage(): JSX.Element {
     <main className="container">
       <div className="product">
         <div className="product__line first-line">
-          <div className="product__img-list">
+          <Swiper
+            style={
+              {
+                '--swiper-navigation-color': '#000000',
+                '--swiper-pagination-color': '#000000',
+              } as CSSProperties
+            }
+            loop
+            spaceBetween={10}
+            navigation
+            thumbs={{ swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null }}
+            modules={[FreeMode, Navigation, Thumbs]}
+            className="mySwiper2"
+          >
             {current?.masterVariant.images.map((img: { url: string }, index: number) => (
-              <div role="button" tabIndex={0} className="product__img-item" key={img.url} onClick={clickImg}>
+              <SwiperSlide key={img.url}>
                 <img src={img.url} alt={`${key}${index}`} />
-              </div>
+              </SwiperSlide>
             ))}
-          </div>
-
-          <div className="product__img-main">
-            <img src={current?.masterVariant.images[0].url} alt="image1" />
-          </div>
+          </Swiper>
+          <Swiper
+            onSwiper={setThumbsSwiper}
+            loop
+            spaceBetween={10}
+            slidesPerView={4}
+            freeMode
+            watchSlidesProgress
+            modules={[FreeMode, Navigation, Thumbs]}
+            className="mySwiper swiper-vertical"
+          >
+            {current?.masterVariant.images.map((img: { url: string }, index: number) => (
+              <SwiperSlide key={img.url}>
+                <img src={img.url} alt={`${key}${index}`} />
+              </SwiperSlide>
+            ))}
+          </Swiper>
 
           <div className="product__attributes">
             <div className="path">
