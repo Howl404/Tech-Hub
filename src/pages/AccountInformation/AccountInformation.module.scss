@@ -1,0 +1,100 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Oswald&display=swap');
+
+:root {
+  --gray-1: #828282;
+  --divider: #c4c4c4;
+  --light-blue-hover: #f0f2f2;
+  --black-2: #3f3f3f;
+  --light-blue-active: #c2c2c2;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.page__title {
+  color: #000;
+  text-align: center;
+  font-family: 'Oswald', sans-serif;
+  font-size: 48px;
+  font-style: normal;
+  font-weight: 400;
+  text-align: center;
+  margin: 0;
+}
+
+h3 {
+  color: #000;
+  font-family: 'Oswald', sans-serif;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 400;
+}
+
+.dashboard__information {
+  display: flex;
+  justify-content: space-evenly;
+  margin-top: 17px;
+  padding: 73px 0 73px 0;
+  border: 1px solid var(--divider);
+}
+
+.link {
+  text-decoration: none;
+}
+
+.btn {
+  color: #fff;
+  text-align: center;
+  font-family: 'Oswald', sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  width: 200px;
+  height: 35px;
+  background: black;
+  &:hover {
+    background: rgba(0, 0, 0, 0.685);
+  }
+}
+
+.btn__save {
+  color: #fff;
+  text-align: center;
+  font-family: 'Oswald', sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  width: 150px;
+  height: 50px;
+  background: black;
+  text-transform: uppercase;
+  &:hover {
+    background: rgba(0, 0, 0, 0.685);
+  }
+}
+
+.account__information_block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.align {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.gapPass {
+  margin-top: 10px;
+}
+
+.btn__save:disabled {
+  background-color: #4e4e4eca;
+}

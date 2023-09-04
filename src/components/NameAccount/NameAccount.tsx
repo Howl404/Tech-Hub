@@ -9,6 +9,21 @@ function NameAccount({ logOut }: { logOut: () => void }): JSX.Element {
     email: '',
     firstName: '',
     lastName: '',
+    billingAddressIds: [],
+    shippingAddressIds: [],
+    defaultShippingAddressId: '',
+    defaultBillingAddressId: '',
+    dateOfBirth: '',
+    id: '',
+    addresses: [
+      {
+        city: '',
+        country: '',
+        id: '',
+        postalCode: '',
+        streetName: '',
+      },
+    ],
   });
 
   useEffect(() => {
@@ -19,7 +34,8 @@ function NameAccount({ logOut }: { logOut: () => void }): JSX.Element {
 
   return (
     <>
-      <Link to="/my-account">
+      {/* <Link to="/MyAccount"> */}
+      <Link to="/MyAccount/Profile">
         <button type="button" className="header__account-name">
           {data.email}
         </button>

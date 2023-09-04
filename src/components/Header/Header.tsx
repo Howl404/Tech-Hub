@@ -24,8 +24,8 @@ function Header({ authh, logOut }: { authh: boolean; logOut: () => void }): JSX.
 
   const onToggleActiveSearch: MouseEventHandler<HTMLButtonElement> = (event): void => {
     const target = event.target as HTMLElement;
-    target.parentElement?.classList.toggle('active');
-    target.previousElementSibling?.classList.toggle('active');
+    target.parentElement?.classList.toggle('active-search');
+    target.previousElementSibling?.classList.toggle('active-search');
   };
 
   const buttons = buttonsData.map(({ name, label, path }) => (
@@ -47,7 +47,7 @@ function Header({ authh, logOut }: { authh: boolean; logOut: () => void }): JSX.
           </div>
         </Link>
 
-        <nav className={`nav ${isOpen ? 'active' : ''}`} onClick={toggleMenu}>
+        <nav className={`nav ${isOpen ? 'active_nav' : ''}`} onClick={toggleMenu}>
           <ul className="nav__list list">{buttons}</ul>
 
           <div className="header__search">
@@ -71,7 +71,7 @@ function Header({ authh, logOut }: { authh: boolean; logOut: () => void }): JSX.
           </div>
         </nav>
 
-        <button type="button" className={`header-burger${isOpen ? ' active' : ''}`} onClick={toggleMenu}>
+        <button type="button" className={`header-burger${isOpen ? ' active_nav' : ''}`} onClick={toggleMenu}>
           <span />
         </button>
       </div>

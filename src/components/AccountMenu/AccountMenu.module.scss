@@ -1,0 +1,27 @@
+.dashboard__menu {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.link {
+  text-decoration: none;
+  color: var(--gray-1);
+}
+
+.btn__dashboard {
+  display: block;
+  width: 288px;
+  height: 44px;
+  text-align: left;
+  font-family: 'Oswald', sans-serif;
+  font-size: 18px;
+  font-style: normal;
+  color: inherit;
+  font-weight: 500;
+}
+
+.btn__dashboard:hover {
+  background: var(--light-blue-active);
+  color: #000;
+}

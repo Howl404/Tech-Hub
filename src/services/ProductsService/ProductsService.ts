@@ -1,9 +1,11 @@
 import { ResponseErrorItem } from '@src/interfaces/Errors';
 import { Product } from '@src/interfaces/Product';
+import { Category } from '@src/interfaces/Category';
 import axios, { AxiosError } from 'axios';
 import Toastify from 'toastify-js';
 import Cookies from 'js-cookie';
 import 'toastify-js/src/toastify.css';
+
 
 const apiUrl = 'https://api.europe-west1.gcp.commercetools.com';
 const projectKey = 'rs-alchemists-ecommerce';
@@ -53,6 +55,16 @@ const getProductById = async (id: string): Promise<Product | undefined> => {
 const getProductByKey = async (key: string): Promise<Product> => {
   const token = Cookies.get('access-token');
   const url = `${apiUrl}/${projectKey}/products/key=${key}`;
+  
+const getProducts = async (): Promise<{
+  limit: number;
+  offset: number;
+  count: number;
+  total: number;
+  results: Product[];
+}> => {
+  const token = Cookies.get('access-token');
+  const url = `${apiUrl}/${projectKey}/products`;
 
   const response = await axios.get(url, {
     headers: {
@@ -62,4 +74,73 @@ const getProductByKey = async (key: string): Promise<Product> => {
   return response.data;
 };
 
-export { getProductByKey, getProductById };
+const getCategories = async (
+  query?: string,
+): Promise<{
+  limit: number;
+  offset: number;
+  count: number;
+  total: number;
+  results: Category[];
+}> => {
+  const token = Cookies.get('access-token');
+  let url = `${apiUrl}/${projectKey}/categories`;
+
+  if (query) {
+    const encodedQuery = encodeURIComponent(query);
+    url += `?where=${encodedQuery}`;
+  }
+  const response = await axios.get(url, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
+
+const getCategory = async (key: string): Promise<Category> => {
+  const token = Cookies.get('access-token');
+  const url = `${apiUrl}/${projectKey}/categories/key=${key}`;
+
+  const response = await axios.get(url, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return response.data;
+};
+
+const getProductsByCategory = async (
+  filter: string,
+  sort: string,
+  text?: string,
+  brand?: string,
+): Promise<{
+  limit: number;
+  offset: number;
+  count: number;
+  total: number;
+  results: Product[];
+}> => {
+  const token = Cookies.get('access-token');
+  let url = `${apiUrl}/${projectKey}/product-projections/search?filter=${filter}&sort=${sort}`;
+
+  if (text) {
+    url += `&text.en=${text}`;
+  }
+
+  if (brand) {
+    url += `&filter=variants.attributes.brand:"${brand}"`;
+  }
+
+
+  const response = await axios.get(url, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
+
+export { getProducts, getCategories, getCategory, getProductsByCategory, getProductByKey, getProductById};

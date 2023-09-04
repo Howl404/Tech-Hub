@@ -1,0 +1,20 @@
+.brand-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 5px;
+  margin: 5px;
+  font-family: 'Oswald', sans-serif;
+  color: #333;
+
+  .brand-div {
+    width: 170px;
+    label {
+      display: flex;
+      gap: 10px;
+    }
+  }
+}
