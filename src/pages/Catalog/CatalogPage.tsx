@@ -1,7 +1,7 @@
 import { getCategories, getProductsByCategory } from '@src/services/ProductsService/ProductsService';
 import CatalogProductCard from '@src/components/CatalogProductCard/CatalogProductCard';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Product, ProductFormattedData } from '@src/interfaces/Product';
+import { ProductCatalog, ProductFormattedData } from '@src/interfaces/Product';
 import CategoryCard from '@src/components/CategoryCard/CategoryCard';
 import './CatalogPage.scss';
 import PriceRangeSlider from '@src/components/PriceRange/PriceRange';
@@ -26,11 +26,11 @@ export default function Catalog(): JSX.Element {
   const maxPrice = 5000;
   const [priceRange, setPriceRange] = useState([minPrice, maxPrice]);
   const [search, setSearch] = useState('');
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<ProductCatalog[]>([]);
   const [categories, setCategories] = useState<ProductFormattedData[]>([]);
   const [sort, setSort] = useState('name.en asc');
   const [brand, setBrand] = useState('');
-  const [savedBrands, setSavedBrands] = useState<Product[]>([]);
+  const [savedBrands, setSavedBrands] = useState<ProductCatalog[]>([]);
   const [currentCategory, setCurrentCategory] = useState<{ name: string; key?: string }[]>([]);
   const [breadcrumb, setBreadcrumb] = useState<{ name: string; slug: string }[]>([]);
 

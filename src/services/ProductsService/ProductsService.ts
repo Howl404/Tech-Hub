@@ -1,5 +1,5 @@
 import { ResponseErrorItem } from '@src/interfaces/Errors';
-import { Product } from '@src/interfaces/Product';
+import { ProductDetailedPage, ProductCatalog } from '@src/interfaces/Product';
 import { Category } from '@src/interfaces/Category';
 import axios, { AxiosError } from 'axios';
 import Toastify from 'toastify-js';
@@ -9,7 +9,7 @@ import 'toastify-js/src/toastify.css';
 const apiUrl = 'https://api.europe-west1.gcp.commercetools.com';
 const projectKey = 'rs-alchemists-ecommerce';
 
-const getProductById = async (id: string): Promise<Product | undefined> => {
+const getProductById = async (id: string): Promise<ProductDetailedPage | undefined> => {
   const token = Cookies.get('access-token');
   const url = `${apiUrl}/${projectKey}/products/${id}`;
   let errorText;
@@ -51,7 +51,7 @@ const getProductById = async (id: string): Promise<Product | undefined> => {
   return undefined;
 };
 
-const getProductByKey = async (key: string): Promise<Product> => {
+const getProductByKey = async (key: string): Promise<ProductDetailedPage> => {
   const token = Cookies.get('access-token');
   const url = `${apiUrl}/${projectKey}/products/key=${key}`;
   const response = await axios.get(url, {
@@ -67,7 +67,7 @@ const getProducts = async (): Promise<{
   offset: number;
   count: number;
   total: number;
-  results: Product[];
+  results: ProductCatalog[];
 }> => {
   const token = Cookies.get('access-token');
   const url = `${apiUrl}/${projectKey}/products`;
@@ -127,7 +127,7 @@ const getProductsByCategory = async (
   offset: number;
   count: number;
   total: number;
-  results: Product[];
+  results: ProductCatalog[];
 }> => {
   const token = Cookies.get('access-token');
   let url = `${apiUrl}/${projectKey}/product-projections/search?filter=${filter}&sort=${sort}`;

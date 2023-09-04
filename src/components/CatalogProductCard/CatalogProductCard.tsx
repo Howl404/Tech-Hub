@@ -1,9 +1,9 @@
 import './CatalogProductCard.scss';
 import React from 'react';
-import { Product } from '@src/interfaces/Product';
+import { ProductCatalog } from '@src/interfaces/Product';
 import { Link } from 'react-router-dom';
 
-function CatalogProductCard({ product }: { product: Product }): JSX.Element {
+function CatalogProductCard({ product }: { product: ProductCatalog }): JSX.Element {
   const { name, description, masterVariant, key } = product;
   const { images, prices } = masterVariant;
 

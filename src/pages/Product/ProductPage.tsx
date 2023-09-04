@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import './ProductPage.scss';
-import { Product } from '@src/interfaces/Product';
+import { ProductDetailedPage } from '@src/interfaces/Product';
 import { getProductByKey } from '@src/services/ProductsService/ProductsService';
 
 // Import Swiper and styles
@@ -18,7 +18,7 @@ function ProductPage(): JSX.Element {
   }>();
 
   const [formData, setFormData] = useState({ key, count: 1, inBag: false, inFavorites: false });
-  const [product, setProducts] = useState<Product>();
+  const [product, setProducts] = useState<ProductDetailedPage>();
 
   useEffect(() => {
     getProductByKey(formData.key).then((data) => {
