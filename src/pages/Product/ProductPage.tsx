@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import './ProductPage.scss';
+
 import { ProductDetailedPage } from '@src/interfaces/Product';
 import { getProductByKey } from '@src/services/ProductsService/ProductsService';
 
@@ -30,7 +31,11 @@ function ProductPage(): JSX.Element {
 
   const currency = current?.masterVariant.prices[0].value.currencyCode || '';
   const totalPrice = ((current?.masterVariant.prices[0].value.centAmount || 0) * formData.count) / 100;
+  const totalPriceFormated = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'EUR' }).format(totalPrice);
   const discountedPrice = ((current?.masterVariant.prices[0].discounted?.value.centAmount || 0) * formData.count) / 100;
+  const discountedPriceFormated = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'EUR' }).format(
+    discountedPrice,
+  );
 
   const description = current?.description.en;
 
@@ -141,14 +146,14 @@ function ProductPage(): JSX.Element {
                   <div className="product__attr-title">price total</div>
                   {discountedPrice > 0 ? (
                     <>
-                      <span className="product__price-discounted">{totalPrice}</span>
-                      <span className="product__price-discounted">&nbsp;{currency}</span>
-                      <span className="product__price-value">{discountedPrice}</span>
+                      <span className="product__price-discounted">{totalPriceFormated}</span>
+                      <span className="product__price-discounted">&nbsp;{currency}</span> <br />
+                      <span className="product__price-value">{discountedPriceFormated}</span>
                       <span className="product__price-currency">&nbsp;{currency}</span>
                     </>
                   ) : (
                     <>
-                      <span className="product__price-value">{totalPrice}</span>
+                      <span className="product__price-value">{totalPriceFormated}</span>
                       <span className="product__price-currency">&nbsp;{currency}</span>
                     </>
                   )}
