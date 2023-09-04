@@ -17,7 +17,6 @@ function ProductPage(): JSX.Element {
     key: string;
   }>();
 
-  // const [thumbsSwiper, setThumbsSwiper] = useState<SwiperClass | null>(null);
   const [formData, setFormData] = useState({ key, count: 1, inBag: false, inFavorites: false });
   const [product, setProducts] = useState<Product>();
 
@@ -86,44 +85,6 @@ function ProductPage(): JSX.Element {
                 </SwiperSlide>
               ))}
             </Swiper>
-
-            {/* <Swiper
-              style={
-                {
-                  '--swiper-navigation-color': '#000000',
-                  '--swiper-pagination-color': '#000000',
-                } as CSSProperties
-              }
-              loop
-              spaceBetween={10}
-              navigation
-              thumbs={{ swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null }}
-              modules={[FreeMode, Navigation, Thumbs]}
-              className="mySwiper2"
-              onClick={(): void => showModal()}
-            >
-              {current?.masterVariant.images.map((img: { url: string }, index: number) => (
-                <SwiperSlide key={img.url}>
-                  <img src={img.url} alt={`${key}${index}`} />
-                </SwiperSlide>
-              ))}
-            </Swiper> */}
-            {/* <Swiper
-              onSwiper={setThumbsSwiper}
-              loop
-              spaceBetween={10}
-              slidesPerView={4}
-              freeMode
-              watchSlidesProgress
-              modules={[FreeMode, Navigation, Thumbs]}
-              className="mySwiper"
-            >
-              {current?.masterVariant.images.map((img: { url: string }, index: number) => (
-                <SwiperSlide key={img.url}>
-                  <img src={img.url} alt={`${key}${index}`} />
-                </SwiperSlide>
-              ))}
-            </Swiper> */}
 
             <div className="product__attributes">
               <div className="path">
