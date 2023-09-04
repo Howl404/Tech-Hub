@@ -32,15 +32,15 @@ describe('Header component', () => {
 
     const burgerButton = document.querySelector('.header-burger');
     if (burgerButton) {
-      expect(burgerButton).not.toHaveClass('active');
+      expect(burgerButton).not.toHaveClass('active_nav');
 
       fireEvent.click(burgerButton);
 
-      expect(burgerButton).toHaveClass('active');
+      expect(burgerButton).toHaveClass('active_nav');
 
       fireEvent.click(burgerButton);
 
-      expect(burgerButton).not.toHaveClass('active');
+      expect(burgerButton).not.toHaveClass('active_nav');
     }
   });
 });

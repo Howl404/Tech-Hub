@@ -11,7 +11,10 @@ function NameAccount({ logOut }: { logOut: () => void }): JSX.Element {
     lastName: '',
     billingAddressIds: [],
     shippingAddressIds: [],
+    defaultShippingAddressId: '',
+    defaultBillingAddressId: '',
     dateOfBirth: '',
+    id: '',
     addresses: [
       {
         city: '',
