@@ -6,6 +6,7 @@ import LoginPage from '@pages/Login/LoginPage';
 import NotFound from '@pages/NotFound/NotFound';
 import RegistrationPage from '@pages/Register/RegistrationPage';
 import Cookies from 'js-cookie';
+import CatalogPage from '@pages/Catalog/CatalogPage';
 import Header from './components/Header/Header';
 import { getAnonymousAccessToken } from './services/AuthService/AuthService';
 
@@ -47,6 +48,7 @@ function App(): JSX.Element {
         <Route path="/" element={<Home />} />
         <Route path="/register" element={<RegistrationPage checkLogIn={checkLogIn} />} />
         <Route path="/login" element={<LoginPage checkLogIn={checkLogIn} />} />
+        <Route path="/catalog/:categoryslug?/:subcategoryslug?" element={<CatalogPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>
