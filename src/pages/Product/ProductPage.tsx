@@ -22,6 +22,7 @@ function ProductPage(): JSX.Element {
 
   const currency = current?.masterVariant.prices[0].value.currencyCode;
   const totalPrice = (current?.masterVariant.prices[0].value.centAmount || 0) * formData.count;
+  const description = current?.description.en;
 
   let brand = 'brand not found';
   const brandModel = current?.name.en;
@@ -159,10 +160,7 @@ function ProductPage(): JSX.Element {
 
             <div className="product__details-block">
               <div className="product__details-title">about product</div>
-              <div className="product__details-descriptions">
-                Cool off this summer in the Mini Ruffle Smocked Tank Top from our very own LA Hearts. This tank features
-                a smocked body, adjustable straps, scoop neckline, ruffled hems, and a cropped fit.
-              </div>
+              <div className="product__details-descriptions">{description}</div>
             </div>
           </div>
         </div>
