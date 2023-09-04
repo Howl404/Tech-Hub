@@ -30,7 +30,9 @@ function ProductPage(): JSX.Element {
   const current = product?.masterData.current;
 
   const currency = current?.masterVariant.prices[0].value.currencyCode;
-  const totalPrice = (current?.masterVariant.prices[0].value.centAmount || 0) * formData.count;
+  const totalPrice = new Intl.NumberFormat('en-IN', { style: 'currency', currency }).format(
+    ((current?.masterVariant.prices[0].value.centAmount || 0) * formData.count) / 100,
+  );
   const description = current?.description.en;
 
   let brand = 'brand not found';
@@ -90,7 +92,7 @@ function ProductPage(): JSX.Element {
               thumbs={{ swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null }}
               modules={[FreeMode, Navigation, Thumbs]}
               className="mySwiper2"
-              onClick={() => showModal()}
+              onClick={(): void => showModal()}
             >
               {current?.masterVariant.images.map((img: { url: string }, index: number) => (
                 <SwiperSlide key={img.url}>
