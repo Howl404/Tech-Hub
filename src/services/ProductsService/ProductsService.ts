@@ -6,7 +6,6 @@ import Toastify from 'toastify-js';
 import Cookies from 'js-cookie';
 import 'toastify-js/src/toastify.css';
 
-
 const apiUrl = 'https://api.europe-west1.gcp.commercetools.com';
 const projectKey = 'rs-alchemists-ecommerce';
 
@@ -55,7 +54,14 @@ const getProductById = async (id: string): Promise<Product | undefined> => {
 const getProductByKey = async (key: string): Promise<Product> => {
   const token = Cookies.get('access-token');
   const url = `${apiUrl}/${projectKey}/products/key=${key}`;
-  
+  const response = await axios.get(url, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
+
 const getProducts = async (): Promise<{
   limit: number;
   offset: number;
@@ -134,7 +140,6 @@ const getProductsByCategory = async (
     url += `&filter=variants.attributes.brand:"${brand}"`;
   }
 
-
   const response = await axios.get(url, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -143,4 +148,4 @@ const getProductsByCategory = async (
   return response.data;
 };
 
-export { getProducts, getCategories, getCategory, getProductsByCategory, getProductByKey, getProductById};
+export { getProducts, getCategories, getCategory, getProductsByCategory, getProductByKey, getProductById };

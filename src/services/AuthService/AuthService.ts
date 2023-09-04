@@ -8,8 +8,6 @@ import Cookies from 'js-cookie';
 
 const authHost = 'https://auth.europe-west1.gcp.commercetools.com';
 const apiUrl = 'https://api.europe-west1.gcp.commercetools.com';
-const clientId = 'CBJ0upgR5dDSi7L9JIOeY-Ba';
-const clientSecret = '2uZuBnnoXOtyVe8v_1oXCKybDsqEgAtS';
 
 const anonId = 'Cshtoo22G2afdntJDUBkDtc0';
 const anonSecret = '0xZeWTiFELWzFjDBT_vfD48YDRdlfALK';
@@ -663,7 +661,6 @@ const requestAddBillingAddress = async (
 };
 
 const requestDefaultBillingAddress = async (addressId: string): Promise<CustomersId> => {
-  console.log(addressId);
   const profileResponse = await axios.get(`${apiUrl}/${projectKey}/me`, {
     headers: {
       Authorization: `Bearer ${Cookies.get('access-token')}`,
