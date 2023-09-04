@@ -1,0 +1,20 @@
+.link {
+  text-decoration: none;
+  color: var(--gray-1);
+  &:hover {
+    color: black;
+  }
+}
+
+.crumbs {
+  font-family: 'Roboto', sans-serif;
+  color: var(--gray-1);
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  display: flex;
+  justify-content: center;
+  margin: 13px 0;
+}

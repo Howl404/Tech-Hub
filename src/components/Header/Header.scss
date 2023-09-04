@@ -138,7 +138,7 @@
     font-weight: bold;
     transition: all 0.3s ease;
   }
-  .search-box.active {
+  .search-box.active-search {
     width: 98%;
     padding-left: 5px;
     transition: all 0.5s 0.8s ease;
@@ -149,7 +149,7 @@
   }
 }
 
-.header__search.active {
+.header__search.active-search {
   width: 250px;
   padding-left: 25px;
   padding-right: 100px;
@@ -175,7 +175,8 @@
 
 .header__account-in:hover,
 .header__account-create:hover,
-.header__cart_icon:hover {
+.header__cart_icon:hover,
+.header__account-name:hover {
   transition: all 0.3s;
   box-shadow: 0 0 4px 4px rgb(48, 48, 48);
   color: rgba(255, 255, 255, 0.73);
@@ -194,7 +195,7 @@ button {
   .logo {
     max-width: 90px;
   }
-  .header__search.active {
+  .header__search.active-search {
     width: 180px;
   }
 }
@@ -217,7 +218,7 @@ button {
     display: none;
     pointer-events: auto;
   }
-  .nav.active {
+  .nav.active_nav {
     display: flex;
     align-items: center;
     width: 100%;
@@ -269,17 +270,17 @@ button {
       bottom: 0;
     }
 
-    &.active:before {
+    &.active_nav:before {
       transform: rotate(45deg);
       top: 9px;
     }
 
-    &.active:after {
+    &.active_nav:after {
       transform: rotate(-45deg);
       bottom: 9px;
     }
 
-    &.active span {
+    &.active_nav span {
       transform: scale(0);
     }
   }
