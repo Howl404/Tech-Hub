@@ -690,6 +690,35 @@ const requestDefaultBillingAddress = async (addressId: string): Promise<Customer
   return response.data;
 };
 
+const requestDefaultShippingAddress = async (addressId: string): Promise<CustomersId> => {
+  const profileResponse = await axios.get(`${apiUrl}/${projectKey}/me`, {
+    headers: {
+      Authorization: `Bearer ${Cookies.get('access-token')}`,
+      'Content-Type': 'application/json',
+    },
+  });
+  const currentVersion = profileResponse.data.version;
+  const response = await axios.post(
+    `${apiUrl}/${projectKey}/me`,
+    {
+      version: currentVersion,
+      actions: [
+        {
+          action: 'setDefaultShippingAddress',
+          addressId,
+        },
+      ],
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${Cookies.get('access-token')}`,
+        'Content-Type': 'application/json',
+      },
+    },
+  );
+  return response.data;
+};
+
 export {
   registerUser,
   logInUser,
@@ -708,4 +737,5 @@ export {
   requestIdBillingAddress,
   requestAddBillingAddress,
   requestDefaultBillingAddress,
+  requestDefaultShippingAddress,
 };

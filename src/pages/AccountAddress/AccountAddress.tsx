@@ -6,9 +6,11 @@ import { FaCheck, FaEdit, FaAddressBook, FaRegSave } from 'react-icons/fa';
 import { AiOutlineDelete } from 'react-icons/ai';
 import Modal from '@src/components/Modal/Modal';
 import {
+  // getCustomerId,
   requestAddBillingAddress,
   requestAddShippingAddress,
   requestDefaultBillingAddress,
+  requestDefaultShippingAddress,
   requestIdBillingAddress,
   requestIdShippingAddress,
   requestRemoveAddress,
@@ -16,7 +18,6 @@ import {
 import ModalAccountInformation from '@src/components/ModalAccountInformation/ModalAccountInformation';
 import FormInput from '@src/components/FormInput/FormInput';
 import { PostalCodePattern } from '@src/interfaces/Register';
-import ModalAccountInformationBilling from '@src/components/ModalAccountInformationBilling/ModalAccountInformationBilling';
 import styles from './AccountAddress.module.scss';
 
 const postalCodePattern: PostalCodePattern = {
@@ -54,7 +55,119 @@ function AccountAddress({ user, setUser }: { user: CustomersId; setUser: (value:
   const [billingAddress, setBillingAddress] = useState<Address[]>([]);
   const [shippingAddress, setShippingAddress] = useState<Address[]>([]);
 
+  function modalWindow(
+    modalActiveM: boolean,
+    setModalActiveM: React.Dispatch<React.SetStateAction<boolean>>,
+    requestAddress: (streetName: string, postalCode: string, city: string, country: string) => Promise<CustomersId>,
+    requestIdAddress: (addressId: string) => Promise<CustomersId>,
+    requestDefaultAddress: (addressId: string) => Promise<CustomersId>,
+  ): JSX.Element {
+    return (
+      <ModalAccountInformation active={modalActiveM} setActive={setModalActiveM}>
+        <>
+          <div className={styles.form_default_address}>
+            <p>Set default address</p>
+            <input
+              type="checkbox"
+              onChange={(e): void => {
+                setCheckBoxBilling(e.target.checked);
+              }}
+            />
+          </div>
+          <div className="form-input">
+            <label htmlFor="countryBill">
+              Country
+              <select
+                id="countryBill"
+                name="countryBill"
+                value={newAddress.country}
+                onChange={(e): void => setNewAddress({ ...newAddress, country: e.target.value })}
+              >
+                <option value="" label="Select a country ... ">
+                  Select a country ...
+                </option>
+                <option value="US" label="United States">
+                  United States
+                </option>
+                <option value="RU" label="Russia">
+                  Russia
+                </option>
+                <option value="GB" label="United Kingdom">
+                  United Kingdom
+                </option>
+                <option value="DE" label="Germany">
+                  Germany
+                </option>
+                <option value="FR" label="France">
+                  France
+                </option>
+              </select>
+            </label>
+          </div>
+          <FormInput
+            label="City"
+            errorMessage="City is not valid"
+            onChange={(e): void => setNewAddress({ ...newAddress, city: e.target.value })}
+            id=""
+            type="text"
+            pattern="[A-Za-z]+"
+            title="Must contain only letters"
+            value={newAddress.city}
+          />
+          <FormInput
+            label="Postal Code"
+            errorMessage="Invalid Postal Code"
+            onChange={(e): void => setNewAddress({ ...newAddress, postalCode: e.target.value })}
+            id=""
+            type="text"
+            pattern={postalCodePattern[newAddress.country] || '.*'}
+            title="Must be a valid postal code of a selected country"
+            value={newAddress.postalCode}
+          />
+          <FormInput
+            label="Street name"
+            errorMessage="Less than 1 character"
+            onChange={(e): void => setNewAddress({ ...newAddress, streetName: e.target.value })}
+            id=""
+            type="text"
+            pattern=".*"
+            title="Must contain more than 1 character"
+            value={newAddress.streetName}
+          />
+          <button
+            type="button"
+            className="btn__save"
+            onClick={(): void => {
+              requestAddress(newAddress.streetName, newAddress.postalCode, newAddress.city, newAddress.country).then(
+                (item) => {
+                  const addId = item.addresses[item.addresses.length - 1].id;
+                  requestIdAddress(addId).then(() => {
+                    if (checkBoxBilling) {
+                      requestDefaultAddress(addId);
+                      setCheckBoxBilling(false);
+                      setUser({ ...user, billingAddressIds: [addId], addresses: item.addresses });
+                    } else {
+                      setUser({ ...user, addresses: item.addresses });
+                    }
+                    setModalActiveM(false);
+                  });
+                },
+              );
+            }}
+          >
+            add new address <FaRegSave />
+          </button>{' '}
+        </>
+      </ModalAccountInformation>
+    );
+  }
+
+  // useEffect(() => {
+  //   getCustomerId().then((item) => setUser(item));
+  // }, []);
+
   useEffect(() => {
+    // getCustomerId().then((item) => setUser(item));
     const bill =
       addressesAll.length === 0
         ? addresses.filter((item) => billingAddressIds.includes(item.id))
@@ -65,7 +178,15 @@ function AccountAddress({ user, setUser }: { user: CustomersId; setUser: (value:
         ? addresses.filter((item) => shippingAddressIds.includes(item.id))
         : addressesAll.filter((item) => shippingAddressIds.includes(item.id));
     setShippingAddress(ship);
-  }, [addresses, billingAddressIds, shippingAddressIds, addressesAll, selectedData]);
+  }, [
+    addresses,
+    billingAddressIds,
+    shippingAddressIds,
+    addressesAll,
+    selectedData,
+    modalActiveNewAddress,
+    modalActiveNewAddressBilling,
+  ]);
 
   const billingAddressArr = billingAddress.map(({ id, city, postalCode, country, streetName }) => {
     const isDefault = id === defaultBillingAddressId;
@@ -153,109 +274,13 @@ function AccountAddress({ user, setUser }: { user: CustomersId; setUser: (value:
             +
             <FaAddressBook />
           </button>
-          <ModalAccountInformationBilling
-            active={modalActiveNewAddressBilling}
-            setActive={setModalActiveNewAddressBilling}
-          >
-            <>
-              <div className={styles.form_default_address}>
-                <p>Set default billing address</p>
-                <input
-                  type="checkbox"
-                  onChange={(e): void => {
-                    setCheckBoxBilling(e.target.checked);
-                  }}
-                />
-              </div>
-              <div className="form-input">
-                <label htmlFor="countryBill">
-                  Country
-                  <select
-                    id="countryBill"
-                    name="countryBill"
-                    value={newAddress.country}
-                    onChange={(e): void => setNewAddress({ ...newAddress, country: e.target.value })}
-                  >
-                    <option value="" label="Select a country ... ">
-                      Select a country ...
-                    </option>
-                    <option value="US" label="United States">
-                      United States
-                    </option>
-                    <option value="RU" label="Russia">
-                      Russia
-                    </option>
-                    <option value="GB" label="United Kingdom">
-                      United Kingdom
-                    </option>
-                    <option value="DE" label="Germany">
-                      Germany
-                    </option>
-                    <option value="FR" label="France">
-                      France
-                    </option>
-                  </select>
-                </label>
-              </div>
-              <FormInput
-                label="City"
-                errorMessage="City is not valid"
-                onChange={(e): void => setNewAddress({ ...newAddress, city: e.target.value })}
-                id="cityB"
-                type="text"
-                pattern="[A-Za-z]+"
-                title="Must contain only letters"
-                value={newAddress.city}
-              />
-              <FormInput
-                label="Postal Code"
-                errorMessage="Invalid Postal Code"
-                onChange={(e): void => setNewAddress({ ...newAddress, postalCode: e.target.value })}
-                id="postalCodeB"
-                type="text"
-                pattern={postalCodePattern[newAddress.country] || '.*'}
-                title="Must be a valid postal code of a selected country"
-                value={newAddress.postalCode}
-              />
-              <FormInput
-                label="Street name"
-                errorMessage="Less than 1 character"
-                onChange={(e): void => setNewAddress({ ...newAddress, streetName: e.target.value })}
-                id="streetNameB"
-                type="text"
-                pattern=".*"
-                title="Must contain more than 1 character"
-                value={newAddress.streetName}
-              />
-              <button
-                type="button"
-                className="btn__save"
-                onClick={(): void => {
-                  requestAddBillingAddress(
-                    newAddress.streetName,
-                    newAddress.postalCode,
-                    newAddress.city,
-                    newAddress.country,
-                  ).then((item) => {
-                    const addId = item.addresses[item.addresses.length - 1].id;
-                    requestIdBillingAddress(addId).then(() => {
-                      if (checkBoxBilling) {
-                        requestDefaultBillingAddress(addId).then(console.log);
-                        setCheckBoxBilling(false);
-                        setUser({ ...user, billingAddressIds: [addId], addresses: item.addresses });
-                      } else {
-                        setUser({ ...user, addresses: item.addresses });
-                      }
-                      setModalActiveNewAddressBilling(false);
-                    });
-                    // console.log(checkBoxBilling);
-                  });
-                }}
-              >
-                add new address <FaRegSave />
-              </button>{' '}
-            </>
-          </ModalAccountInformationBilling>
+          {modalWindow(
+            modalActiveNewAddressBilling,
+            setModalActiveNewAddressBilling,
+            requestAddBillingAddress,
+            requestIdBillingAddress,
+            requestDefaultBillingAddress,
+          )}
         </div>
         {billingAddress ? billingAddressArr : <span>You have not set a default billing address.</span>}
 
@@ -264,88 +289,13 @@ function AccountAddress({ user, setUser }: { user: CustomersId; setUser: (value:
           <button title="add new shipping address" type="button" onClick={(): void => setModalActiveNewAddress(true)}>
             +<FaAddressBook />
           </button>
-          <ModalAccountInformation active={modalActiveNewAddress} setActive={setModalActiveNewAddress}>
-            <>
-              <div className="form-input">
-                <label htmlFor="countryMod">
-                  Country
-                  <select
-                    id="countryMod"
-                    name="countryMod"
-                    value={newAddress.country}
-                    onChange={(e): void => setNewAddress({ ...newAddress, country: e.target.value })}
-                  >
-                    <option value="" label="Select a country ... ">
-                      Select a country ...
-                    </option>
-                    <option value="US" label="United States">
-                      United States
-                    </option>
-                    <option value="RU" label="Russia">
-                      Russia
-                    </option>
-                    <option value="GB" label="United Kingdom">
-                      United Kingdom
-                    </option>
-                    <option value="DE" label="Germany">
-                      Germany
-                    </option>
-                    <option value="FR" label="France">
-                      France
-                    </option>
-                  </select>
-                </label>
-              </div>
-              <FormInput
-                label="City"
-                errorMessage="City is not valid"
-                onChange={(e): void => setNewAddress({ ...newAddress, city: e.target.value })}
-                id="cityM"
-                type="text"
-                pattern="[A-Za-z]+"
-                title="Must contain only letters"
-                value={newAddress.city}
-              />
-              <FormInput
-                label="Postal Code"
-                errorMessage="Invalid Postal Code"
-                onChange={(e): void => setNewAddress({ ...newAddress, postalCode: e.target.value })}
-                id="postalCodeM"
-                type="text"
-                pattern={postalCodePattern[newAddress.country] || '.*'}
-                title="Must be a valid postal code of a selected country"
-                value={newAddress.postalCode}
-              />
-              <FormInput
-                label="Street name"
-                errorMessage="Less than 1 character"
-                onChange={(e): void => setNewAddress({ ...newAddress, streetName: e.target.value })}
-                id="streetNameM"
-                type="text"
-                pattern=".*"
-                title="Must contain more than 1 character"
-                value={newAddress.streetName}
-              />
-              <button
-                type="button"
-                className="btn__save"
-                onClick={(): void => {
-                  requestAddShippingAddress(
-                    newAddress.streetName,
-                    newAddress.postalCode,
-                    newAddress.city,
-                    newAddress.country,
-                  ).then((item) => {
-                    requestIdShippingAddress(item.addresses[item.addresses.length - 1].id);
-                    setUser({ ...user, addresses: item.addresses });
-                    setModalActiveNewAddress(false);
-                  });
-                }}
-              >
-                add new address <FaRegSave />
-              </button>{' '}
-            </>
-          </ModalAccountInformation>
+          {modalWindow(
+            modalActiveNewAddress,
+            setModalActiveNewAddress,
+            requestAddShippingAddress,
+            requestIdShippingAddress,
+            requestDefaultShippingAddress,
+          )}
         </div>
         {shippingAddress ? shippingAddressArr : <span>You have not set a default shipping address.</span>}
       </div>
