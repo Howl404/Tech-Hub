@@ -51,4 +51,8 @@
   &:hover {
     background: rgba(0, 0, 0, 0.685);
   }
+  &:disabled {
+    cursor: auto;
+    background-color: rgba(0, 0, 0, 0.101);
+  }
 }

@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import './Modal.scss';
 import { FaRegSave } from 'react-icons/fa';
 import { PostalCodePattern } from '@src/interfaces/Register';
@@ -54,6 +54,15 @@ function Modal({
   setSelectedData,
   setAddressesAll,
 }: ModalType): JSX.Element {
+  const [isFormComplete, setIsFormComplete] = useState(false);
+
+  useEffect(() => {
+    [city, country, streetName, postalCode].every((value) => value !== '');
+    if ([city, country, streetName, postalCode].every((value) => value !== '') === true) {
+      setIsFormComplete(true);
+    } else setIsFormComplete(false);
+  }, [city, country, streetName, postalCode]);
+
   const handleCountryChange = (event: React.ChangeEvent<HTMLSelectElement>): void => {
     const { id, value } = event.target;
     setSelectedData({ ...selectedData, [id]: value });
@@ -66,9 +75,24 @@ function Modal({
 
   return (
     <div className={active ? 'modal active__modal' : 'modal'} onClick={(): void => setActive(false)}>
-      <div
+      <form
         className={active ? 'modal__content active__modal' : 'modal__content'}
         onClick={(e): void => e.stopPropagation()}
+        onSubmit={(e): void => {
+          e.preventDefault();
+          sendData(selectedData, userId, selectedData.addressId).then((item) => {
+            const date = item.addresses.filter((address) => address.id === selectedData.addressId)[0];
+            setAddressesAll(item.addresses);
+            setSelectedData({
+              addressId: date.id,
+              city: date.city,
+              postalCode: date.postalCode,
+              country: date.country,
+              streetName: date.streetName,
+            });
+            setActive(false);
+          });
+        }}
       >
         <div className="form-input">
           <label htmlFor="country">
@@ -125,27 +149,10 @@ function Modal({
           title="Must contain more than 1 character"
           value={streetName}
         />
-        <button
-          type="button"
-          className="btn__save"
-          onClick={(): Promise<void> =>
-            sendData(selectedData, userId, selectedData.addressId).then((item) => {
-              const date = item.addresses.filter((adress) => adress.id === selectedData.addressId)[0];
-              setAddressesAll(item.addresses);
-              setSelectedData({
-                addressId: date.id,
-                city: date.city,
-                postalCode: date.postalCode,
-                country: date.country,
-                streetName: date.streetName,
-              });
-              setActive(false);
-            })
-          }
-        >
+        <button type="submit" className="btn__save" disabled={!isFormComplete}>
           save <FaRegSave />
         </button>
-      </div>
+      </form>
     </div>
   );
 }
