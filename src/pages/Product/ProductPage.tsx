@@ -28,9 +28,9 @@ function ProductPage(): JSX.Element {
 
   const current = product?.masterData.current;
 
-  const currency = current?.masterVariant.prices[0].value.currencyCode;
+  const currency = current?.masterVariant.prices[0].value.currencyCode || '';
   const totalPrice = ((current?.masterVariant.prices[0].value.centAmount || 0) * formData.count) / 100;
-  const discountedPrice = ((current?.masterVariant.prices[0].discounted.value.centAmount || 0) * formData.count) / 100;
+  const discountedPrice = ((current?.masterVariant.prices[0].discounted?.value.centAmount || 0) * formData.count) / 100;
 
   const description = current?.description.en;
 
@@ -139,10 +139,19 @@ function ProductPage(): JSX.Element {
 
                 <div className="product__price">
                   <div className="product__attr-title">price total</div>
-                  <span className="product__price-discounted">{totalPrice}</span>
-                  <span className="product__price-discounted">&nbsp;{currency}</span>
-                  <span className="product__price-value">{discountedPrice}</span>
-                  <span className="product__price-currency">&nbsp;{currency}</span>
+                  {discountedPrice > 0 ? (
+                    <>
+                      <span className="product__price-discounted">{totalPrice}</span>
+                      <span className="product__price-discounted">&nbsp;{currency}</span>
+                      <span className="product__price-value">{discountedPrice}</span>
+                      <span className="product__price-currency">&nbsp;{currency}</span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="product__price-value">{totalPrice}</span>
+                      <span className="product__price-currency">&nbsp;{currency}</span>
+                    </>
+                  )}
                 </div>
               </div>
 
