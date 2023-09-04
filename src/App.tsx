@@ -7,8 +7,8 @@ import NotFound from '@pages/NotFound/NotFound';
 import RegistrationPage from '@pages/Register/RegistrationPage';
 import Cookies from 'js-cookie';
 import CatalogPage from '@pages/Catalog/CatalogPage';
-import Header from './components/Header/Header';
 import AccountDashboard from '@pages/AccountDashboard/AccountDashboard';
+import Header from '@components/Header/Header';
 import { getAnonymousAccessToken } from './services/AuthService/AuthService';
 
 function App(): JSX.Element {
