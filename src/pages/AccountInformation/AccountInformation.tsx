@@ -51,6 +51,41 @@ function AccountInformation({
     return formattedDate;
   }
 
+  const [isEmailInputExist, setEmailInputExist] = useState(false);
+
+  const [isFormComplete, setIsFormComplete] = useState(false);
+
+  const [isPasswordInputsExist, setIsPasswordInputsExist] = useState(false);
+
+  useEffect(() => {
+    if (passwordInformation.oldPasswowrd !== '' && passwordInformation.newPassword !== '') {
+      setIsPasswordInputsExist(true);
+    } else {
+      setIsPasswordInputsExist(false);
+    }
+  }, [passwordInformation.oldPasswowrd, passwordInformation.newPassword]);
+
+  useEffect(() => {
+    if (emailInformation !== '') {
+      setEmailInputExist(true);
+    } else {
+      setEmailInputExist(false);
+    }
+  }, [emailInformation]);
+
+  useEffect(() => {
+    [editUserInformation.firstName, editUserInformation.dateOfBirth, editUserInformation.lastName].every(
+      (value) => value !== '',
+    );
+    if (
+      [editUserInformation.firstName, editUserInformation.dateOfBirth, editUserInformation.lastName].every(
+        (value) => value !== '',
+      ) === true
+    ) {
+      setIsFormComplete(true);
+    } else setIsFormComplete(false);
+  }, [editUserInformation.firstName, editUserInformation.dateOfBirth, editUserInformation.lastName]);
+
   return (
     <div className={styles.dashboard__description}>
       <h3 className={styles.account__information_title}>Edit Account Information</h3>
@@ -63,7 +98,37 @@ function AccountInformation({
           {!editInformation ? 'Edit' : 'Close edit'} Information <FaEdit />
         </button>
 
-        <div className={styles.account__information_block}>
+        <form
+          className={styles.account__information_block}
+          onSubmit={(e): void => {
+            e.preventDefault();
+            changeLastNameRequest(editUserInformation.lastName).then((item) => {
+              if (item !== undefined) {
+                changeFirstNameRequest(editUserInformation.firstName).then((items) => {
+                  if (items !== undefined) {
+                    changeDateofBirthRequest(editUserInformation.dateOfBirth).then((birth) => {
+                      if (birth !== undefined) {
+                        Toastify({
+                          text: 'Information is successfully update!',
+                          duration: 3000,
+                          newWindow: true,
+                          close: true,
+                          gravity: 'top',
+                          position: 'right',
+                          stopOnFocus: true,
+                          style: {
+                            background: 'linear-gradient(315deg, #7ee8fa 0%, #80ff72 74%)',
+                          },
+                        }).showToast();
+                        setEditInformation(false);
+                      }
+                    });
+                  }
+                });
+              }
+            });
+          }}
+        >
           <FormInput
             label="First name *"
             errorMessage="Must contain at least one character and no special characters or numbers"
@@ -100,38 +165,7 @@ function AccountInformation({
             value={editUserInformation.dateOfBirth}
             disabled={!editInformation}
           />
-          <button
-            type="button"
-            className={`${styles.btn__save} ${styles.align}`}
-            disabled={!editInformation}
-            onClick={(): void => {
-              changeLastNameRequest(editUserInformation.lastName).then((item) => {
-                if (item !== undefined) {
-                  changeFirstNameRequest(editUserInformation.firstName).then((items) => {
-                    if (items !== undefined) {
-                      changeDateofBirthRequest(editUserInformation.dateOfBirth).then((birth) => {
-                        if (birth !== undefined) {
-                          Toastify({
-                            text: 'Information is successfully update!',
-                            duration: 3000,
-                            newWindow: true,
-                            close: true,
-                            gravity: 'top',
-                            position: 'right',
-                            stopOnFocus: true,
-                            style: {
-                              background: 'linear-gradient(315deg, #7ee8fa 0%, #80ff72 74%)',
-                            },
-                          }).showToast();
-                          setEditInformation(false);
-                        }
-                      });
-                    }
-                  });
-                }
-              });
-            }}
-          >
+          <button type="submit" className={`${styles.btn__save} ${styles.align}`} disabled={!isFormComplete}>
             save
             <FaRegSave />
           </button>
@@ -142,51 +176,6 @@ function AccountInformation({
           >
             change email <FaExchangeAlt />
           </button>
-          <ModalAccountInformation active={modalActiveEmail} setActive={setModalActiveEmail}>
-            <>
-              <h3>Edit email</h3>
-              <form>
-                <FormInput
-                  label="Enter new email *"
-                  errorMessage="Invalid email"
-                  onChange={(e): void => {
-                    setEmailInformation(e.target.value);
-                  }}
-                  id="email"
-                  type="text"
-                  pattern="[A-Za-z0-9._+\-']+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}"
-                  title="Must contain a valid email"
-                  value={emailInformation}
-                />
-                <button
-                  type="button"
-                  className={`${styles.btn__save} ${styles.align} ${styles.gapPass}`}
-                  onClick={(): void => {
-                    changeEmailRequest(emailInformation).then((item) => {
-                      if (item !== undefined) {
-                        Toastify({
-                          text: 'Email is successfully update!',
-                          duration: 3000,
-                          newWindow: true,
-                          close: true,
-                          gravity: 'top',
-                          position: 'right',
-                          stopOnFocus: true,
-                          style: {
-                            background: 'linear-gradient(315deg, #7ee8fa 0%, #80ff72 74%)',
-                          },
-                        }).showToast();
-                        setModalActiveEmail(false);
-                      }
-                    });
-                  }}
-                >
-                  save email <FaExchangeAlt />
-                </button>
-              </form>
-            </>
-          </ModalAccountInformation>
-
           <button
             type="button"
             className={`${styles.btn__save} ${styles.align} ${styles.gapPass}`}
@@ -194,59 +183,109 @@ function AccountInformation({
           >
             change password <FaExchangeAlt />
           </button>
-          <ModalAccountInformation active={modalActive} setActive={setModalActive}>
-            <>
-              <h3>Edit password</h3>
-              <FormInput
-                label="Enter old password *"
-                errorMessage="Minimum 8 characters, 1 uppercase letter, 1 lowercase, and 1 number"
-                onChange={(e): void => setPasswordInformation({ ...passwordInformation, oldPasswowrd: e.target.value })}
-                id="old_password"
-                type="password"
-                pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$"
-                title="Minimum 8 characters, at least 1 uppercase letter, 1 lowercase letter, and 1 number"
-                value={passwordInformation.oldPasswowrd}
-              />
-              <FormInput
-                label="Enter new password *"
-                errorMessage="Minimum 8 characters, 1 uppercase letter, 1 lowercase, and 1 number"
-                onChange={(e): void => setPasswordInformation({ ...passwordInformation, newPassword: e.target.value })}
-                id="new_password"
-                type="password"
-                pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$"
-                title="Minimum 8 characters, at least 1 uppercase letter, 1 lowercase letter, and 1 number"
-                value={passwordInformation.newPassword}
-              />
-              <button
-                type="button"
-                className={`${styles.btn__save} ${styles.align} ${styles.gapPass}`}
-                onClick={(): void => {
-                  changePasswordRequest(passwordInformation.newPassword, passwordInformation.oldPasswowrd).then(
-                    (item) => {
-                      if (item !== undefined) {
-                        Toastify({
-                          text: 'Password is successfully update!',
-                          duration: 3000,
-                          newWindow: true,
-                          close: true,
-                          gravity: 'top',
-                          position: 'right',
-                          stopOnFocus: true,
-                          style: {
-                            background: 'linear-gradient(315deg, #7ee8fa 0%, #80ff72 74%)',
-                          },
-                        }).showToast();
-                        onLogOut();
-                      }
-                    },
-                  );
-                }}
-              >
-                save password <FaExchangeAlt />
-              </button>
-            </>
-          </ModalAccountInformation>
-        </div>
+        </form>
+        <ModalAccountInformation
+          active={modalActiveEmail}
+          setActive={setModalActiveEmail}
+          onSubmit={(e): void => {
+            e.preventDefault();
+            changeEmailRequest(emailInformation).then((item) => {
+              if (item !== undefined) {
+                Toastify({
+                  text: 'Email is successfully update!',
+                  duration: 3000,
+                  newWindow: true,
+                  close: true,
+                  gravity: 'top',
+                  position: 'right',
+                  stopOnFocus: true,
+                  style: {
+                    background: 'linear-gradient(315deg, #7ee8fa 0%, #80ff72 74%)',
+                  },
+                }).showToast();
+                setModalActiveEmail(false);
+              }
+            });
+          }}
+        >
+          <>
+            <h3>Edit email</h3>
+            <FormInput
+              label="Enter new email *"
+              errorMessage="Invalid email"
+              onChange={(e): void => {
+                setEmailInformation(e.target.value);
+              }}
+              id="email"
+              type="text"
+              pattern="[A-Za-z0-9._+\-']+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}"
+              title="Must contain a valid email"
+              value={emailInformation}
+            />
+            <button
+              type="submit"
+              className={`${styles.btn__save} ${styles.align} ${styles.gapPass}`}
+              disabled={!isEmailInputExist}
+            >
+              save email <FaExchangeAlt />
+            </button>
+          </>
+        </ModalAccountInformation>
+        <ModalAccountInformation
+          active={modalActive}
+          setActive={setModalActive}
+          onSubmit={(e): void => {
+            e.preventDefault();
+            changePasswordRequest(passwordInformation.newPassword, passwordInformation.oldPasswowrd).then((item) => {
+              if (item !== undefined) {
+                Toastify({
+                  text: 'Password is successfully update!',
+                  duration: 3000,
+                  newWindow: true,
+                  close: true,
+                  gravity: 'top',
+                  position: 'right',
+                  stopOnFocus: true,
+                  style: {
+                    background: 'linear-gradient(315deg, #7ee8fa 0%, #80ff72 74%)',
+                  },
+                }).showToast();
+                onLogOut();
+              }
+            });
+          }}
+        >
+          <>
+            <h3>Edit password</h3>
+            <FormInput
+              label="Enter old password *"
+              errorMessage="Minimum 8 characters, 1 uppercase letter, 1 lowercase, and 1 number"
+              onChange={(e): void => setPasswordInformation({ ...passwordInformation, oldPasswowrd: e.target.value })}
+              id="old_password"
+              type="password"
+              pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$"
+              title="Minimum 8 characters, at least 1 uppercase letter, 1 lowercase letter, and 1 number"
+              value={passwordInformation.oldPasswowrd}
+            />
+            <FormInput
+              label="Enter new password *"
+              errorMessage="Minimum 8 characters, 1 uppercase letter, 1 lowercase, and 1 number"
+              onChange={(e): void => setPasswordInformation({ ...passwordInformation, newPassword: e.target.value })}
+              id="new_password"
+              type="password"
+              pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$"
+              title="Minimum 8 characters, at least 1 uppercase letter, 1 lowercase letter, and 1 number"
+              value={passwordInformation.newPassword}
+            />
+            <button
+              type="submit"
+              className={`${styles.btn__save} ${styles.align} ${styles.gapPass}`}
+              disabled={!isPasswordInputsExist}
+            >
+              save password <FaExchangeAlt />
+            </button>
+          </>
+        </ModalAccountInformation>
       </div>
     </div>
   );
