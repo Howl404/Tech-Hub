@@ -151,12 +151,15 @@
 
     .product__price {
       font-size: 26px;
-    }
 
-    .product__price-discounted {
-      text-decoration: line-through;
-      color: red;
-      font-size: 16px;
+      .product__price-discounted {
+        text-decoration: line-through;
+        font-size: 16px;
+      }
+
+      .discounted {
+        color: red;
+      }
     }
 
     .product__controls {

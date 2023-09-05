@@ -83,7 +83,7 @@ function ProductPage(): JSX.Element {
       <main className="container">
         <div className="product">
           <div className="product__line first-line">
-            <Swiper navigation modules={[Navigation]} className="mySwiper" onClick={(): void => showModal()}>
+            <Swiper navigation loop modules={[Navigation]} className="mySwiper" onClick={(): void => showModal()}>
               {current?.masterVariant.images.map((img: { url: string }, index: number) => (
                 <SwiperSlide key={img.url}>
                   <img src={img.url} alt={`${key}${index}`} />
@@ -146,10 +146,11 @@ function ProductPage(): JSX.Element {
                   <div className="product__attr-title">price total</div>
                   {discountedPrice > 0 ? (
                     <>
+                      <span className="product__price-value discounted">{discountedPriceFormated}</span>
+                      <span className="product__price-currency discounted">&nbsp;{currency}</span>
+                      <br />
                       <span className="product__price-discounted">{totalPriceFormated}</span>
-                      <span className="product__price-discounted">&nbsp;{currency}</span> <br />
-                      <span className="product__price-value">{discountedPriceFormated}</span>
-                      <span className="product__price-currency">&nbsp;{currency}</span>
+                      <span className="product__price-discounted">&nbsp;{currency}</span>
                     </>
                   ) : (
                     <>
@@ -195,7 +196,7 @@ function ProductPage(): JSX.Element {
       </main>
 
       <div role="button" tabIndex={0} className="modal-view" onClick={showModalImg}>
-        <Swiper navigation modules={[Navigation]} className="swiper-modal">
+        <Swiper navigation loop modules={[Navigation]} className="swiper-modal">
           {current?.masterVariant.images.map((img: { url: string }, index: number) => (
             <SwiperSlide key={img.url}>
               <img src={img.url} alt={`${key}${index}`} />
