@@ -63,11 +63,24 @@ function AccountAddress(): JSX.Element {
   const [newAddress, setNewAddress] = useState<Address>({
     city: '',
     postalCode: '',
-    country: 'en',
+    country: '',
     streetName: '',
     id: '',
   });
   const [checkBoxBilling, setCheckBoxBilling] = useState(false);
+
+  const [isFormComplete, setIsFormComplete] = useState(false);
+
+  useEffect(() => {
+    if (
+      [newAddress.streetName, newAddress.postalCode, newAddress.city, newAddress.country].every(
+        (value) => value !== '',
+      ) === true
+    ) {
+      setIsFormComplete(true);
+    } else setIsFormComplete(false);
+  }, [newAddress.streetName, newAddress.postalCode, newAddress.city, newAddress.country]);
+
   function modalWindow(
     modalActiveM: boolean,
     setModalActiveM: React.Dispatch<React.SetStateAction<boolean>>,
@@ -77,7 +90,27 @@ function AccountAddress(): JSX.Element {
     idModal: string,
   ): JSX.Element {
     return (
-      <ModalAccountInformation active={modalActiveM} setActive={setModalActiveM}>
+      <ModalAccountInformation
+        active={modalActiveM}
+        setActive={setModalActiveM}
+        onSubmit={(e): void => {
+          e.preventDefault();
+          requestAddress(newAddress.streetName, newAddress.postalCode, newAddress.city, newAddress.country).then(
+            (item) => {
+              const addId = item.addresses[item.addresses.length - 1].id;
+              requestIdAddress(addId).then((items) => {
+                if (checkBoxBilling) {
+                  requestDefaultAddress(addId).then((itema) => setUserAccount({ ...itema }));
+                  setCheckBoxBilling(false);
+                } else {
+                  setUserAccount({ ...items });
+                }
+                setModalActiveM(false);
+              });
+            },
+          );
+        }}
+      >
         <>
           <div className={styles.form_default_address}>
             <p>Set default address</p>
@@ -148,26 +181,7 @@ function AccountAddress(): JSX.Element {
             title="Must contain more than 1 character"
             value={newAddress.streetName}
           />
-          <button
-            type="button"
-            className="btn__save"
-            onClick={(): void => {
-              requestAddress(newAddress.streetName, newAddress.postalCode, newAddress.city, newAddress.country).then(
-                (item) => {
-                  const addId = item.addresses[item.addresses.length - 1].id;
-                  requestIdAddress(addId).then((items) => {
-                    if (checkBoxBilling) {
-                      requestDefaultAddress(addId).then((itema) => setUserAccount({ ...itema }));
-                      setCheckBoxBilling(false);
-                    } else {
-                      setUserAccount({ ...items });
-                    }
-                    setModalActiveM(false);
-                  });
-                },
-              );
-            }}
-          >
+          <button type="submit" className="btn__save" disabled={!isFormComplete}>
             add new address <FaRegSave />
           </button>{' '}
         </>

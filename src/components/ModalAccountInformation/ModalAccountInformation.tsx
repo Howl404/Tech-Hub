@@ -5,19 +5,20 @@ import '../Modal/Modal.scss';
 function ModalAccountInformation({
   active,
   setActive,
-  children, // onSubmit,
+  children,
+  onSubmit,
 }: {
   active: boolean;
   setActive: (value: boolean) => void;
   children: JSX.Element;
-  // onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+  onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
 }): JSX.Element {
   return (
     <div className={active ? 'modal active__modal' : 'modal'} onClick={(): void => setActive(false)}>
       <form
         className={active ? 'modal__content active__modal' : 'modal__content'}
         onClick={(e): void => e.stopPropagation()}
-        // onSubmit={onSubmit}
+        onSubmit={onSubmit}
       >
         {children}
       </form>

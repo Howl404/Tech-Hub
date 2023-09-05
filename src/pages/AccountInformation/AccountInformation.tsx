@@ -74,9 +74,6 @@ function AccountInformation({
   }, [emailInformation]);
 
   useEffect(() => {
-    [editUserInformation.firstName, editUserInformation.dateOfBirth, editUserInformation.lastName].every(
-      (value) => value !== '',
-    );
     if (
       [editUserInformation.firstName, editUserInformation.dateOfBirth, editUserInformation.lastName].every(
         (value) => value !== '',

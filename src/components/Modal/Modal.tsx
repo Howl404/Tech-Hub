@@ -84,8 +84,8 @@ function Modal({
         onSubmit={(e): void => {
           e.preventDefault();
           sendData(selectedData, userId, selectedData.addressId).then((item) => {
-            const date = item.addresses.filter((address) => address.id === selectedData.addressId)[0];
-            // setAddressesAll(item.addresses);
+            const date = item.addresses.filter((adress) => adress.id === selectedData.addressId)[0];
+            setUserAccount({ ...userAccount, addresses: item.addresses });
             setSelectedData({
               addressId: date.id,
               city: date.city,
@@ -93,6 +93,18 @@ function Modal({
               country: date.country,
               streetName: date.streetName,
             });
+            Toastify({
+              text: 'Update address successfully!',
+              duration: 3000,
+              newWindow: true,
+              close: true,
+              gravity: 'top',
+              position: 'right',
+              stopOnFocus: true,
+              style: {
+                background: 'linear-gradient(315deg, #7ee8fa 0%, #80ff72 74%)',
+              },
+            }).showToast();
             setActive(false);
           });
         }}
@@ -152,37 +164,7 @@ function Modal({
           title="Must contain more than 1 character"
           value={streetName}
         />
-        <button
-          type="button"
-          className="btn__save"
-          disabled={!isFormComplete}
-          onClick={(): Promise<void> =>
-            sendData(selectedData, userId, selectedData.addressId).then((item) => {
-              const date = item.addresses.filter((adress) => adress.id === selectedData.addressId)[0];
-              setUserAccount({ ...userAccount, addresses: item.addresses });
-              setSelectedData({
-                addressId: date.id,
-                city: date.city,
-                postalCode: date.postalCode,
-                country: date.country,
-                streetName: date.streetName,
-              });
-              Toastify({
-                text: 'Update address successfully!',
-                duration: 3000,
-                newWindow: true,
-                close: true,
-                gravity: 'top',
-                position: 'right',
-                stopOnFocus: true,
-                style: {
-                  background: 'linear-gradient(315deg, #7ee8fa 0%, #80ff72 74%)',
-                },
-              }).showToast();
-              setActive(false);
-            })
-          }
-        >
+        <button type="submit" className="btn__save" disabled={!isFormComplete}>
           save <FaRegSave />
         </button>
       </form>
