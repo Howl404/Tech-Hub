@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import './ProductPage.scss';
 
@@ -6,12 +6,12 @@ import { ProductDetailedPage } from '@src/interfaces/Product';
 import { getProductByKey } from '@src/services/ProductsService/ProductsService';
 
 // Import Swiper and styles
-import { Swiper, SwiperSlide } from 'swiper/react';
+import { Swiper, SwiperSlide, SwiperClass } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/free-mode';
 import 'swiper/css/navigation';
 import 'swiper/css/thumbs';
-import { Navigation } from 'swiper/modules';
+import { Navigation, Controller } from 'swiper/modules';
 
 function ProductPage(): JSX.Element {
   const { key = '' } = useParams<{
@@ -78,12 +78,31 @@ function ProductPage(): JSX.Element {
     node.style.display = 'block';
   };
 
+  const swiper1Ref = useRef<SwiperClass>();
+  const swiper2Ref = useRef<SwiperClass>();
+
+  useLayoutEffect(() => {
+    if (swiper1Ref.current && swiper2Ref.current) {
+      swiper1Ref.current.controller.control = swiper2Ref.current;
+      swiper2Ref.current.controller.control = swiper1Ref.current;
+    }
+  }, []);
+
   return (
     <>
       <main className="container">
         <div className="product">
           <div className="product__line first-line">
-            <Swiper navigation loop modules={[Navigation]} className="mySwiper" onClick={(): void => showModal()}>
+            <Swiper
+              navigation
+              loop
+              modules={[Navigation, Controller]}
+              className="mySwiper"
+              onSwiper={(swiper): void => {
+                swiper1Ref.current = swiper;
+              }}
+              onClick={(): void => showModal()}
+            >
               {current?.masterVariant.images.map((img: { url: string }, index: number) => (
                 <SwiperSlide key={img.url}>
                   <img src={img.url} alt={`${key}${index}`} />
@@ -196,7 +215,15 @@ function ProductPage(): JSX.Element {
       </main>
 
       <div role="button" tabIndex={0} className="modal-view" onClick={showModalImg}>
-        <Swiper navigation loop modules={[Navigation]} className="swiper-modal">
+        <Swiper
+          navigation
+          loop
+          modules={[Navigation, Controller]}
+          className="swiper-modal"
+          onSwiper={(swiper): void => {
+            swiper2Ref.current = swiper;
+          }}
+        >
           {current?.masterVariant.images.map((img: { url: string }, index: number) => (
             <SwiperSlide key={img.url}>
               <img src={img.url} alt={`${key}${index}`} />
