@@ -18,7 +18,6 @@ import {
 import ModalAccountInformation from '@src/components/ModalAccountInformation/ModalAccountInformation';
 import FormInput from '@src/components/FormInput/FormInput';
 import { PostalCodePattern } from '@src/interfaces/Register';
-import Toastify from 'toastify-js';
 import styles from './AccountAddress.module.scss';
 
 const postalCodePattern: PostalCodePattern = {
@@ -163,18 +162,6 @@ function AccountAddress(): JSX.Element {
                     } else {
                       setUserAccount({ ...items });
                     }
-                    Toastify({
-                      text: 'New address successfully added!',
-                      duration: 3000,
-                      newWindow: true,
-                      close: true,
-                      gravity: 'top',
-                      position: 'right',
-                      stopOnFocus: true,
-                      style: {
-                        background: 'linear-gradient(315deg, #7ee8fa 0%, #80ff72 74%)',
-                      },
-                    }).showToast();
                     setModalActiveM(false);
                   });
                 },
@@ -194,6 +181,7 @@ function AccountAddress(): JSX.Element {
 
   const [billingAddress, setBillingAddress] = useState<Address[]>([]);
   const [shippingAddress, setShippingAddress] = useState<Address[]>([]);
+  // const { billingAddressIds, shippingAddressIds } = userAccount;
 
   useEffect(() => {
     const bill = userAccount.addresses.filter((item) => userAccount.billingAddressIds.includes(item.id));
@@ -221,18 +209,6 @@ function AccountAddress(): JSX.Element {
           onClick={(): void => {
             requestRemoveAddress(id).then((item) => {
               setUserAccount({ ...item });
-              Toastify({
-                text: 'Address successfully deleted!',
-                duration: 3000,
-                newWindow: true,
-                close: true,
-                gravity: 'top',
-                position: 'right',
-                stopOnFocus: true,
-                style: {
-                  background: 'linear-gradient(315deg, #7ee8fa 0%, #80ff72 74%)',
-                },
-              }).showToast();
             });
           }}
         />
