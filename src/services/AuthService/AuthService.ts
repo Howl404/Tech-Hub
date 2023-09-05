@@ -521,6 +521,7 @@ const requestRemoveAddress = async (addressId: string): Promise<CustomersId> => 
       },
     },
   );
+  console.log('resp:', response.data);
   return response.data;
 };
 

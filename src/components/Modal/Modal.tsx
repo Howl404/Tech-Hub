@@ -4,8 +4,9 @@ import './Modal.scss';
 import { FaRegSave } from 'react-icons/fa';
 import { PostalCodePattern } from '@src/interfaces/Register';
 import { sendData } from '@src/services/AuthService/AuthService';
-import { Address } from '@src/interfaces/Customer';
+import { CustomersId } from '@src/interfaces/Customer';
 import FormInput from '../FormInput/FormInput';
+import Toastify from 'toastify-js';
 
 interface ModalType {
   active: boolean;
@@ -15,7 +16,8 @@ interface ModalType {
   postalCode: string;
   country: string;
   streetName: string;
-  setAddressesAll: React.Dispatch<React.SetStateAction<Address[]>>;
+  setUserAccount: React.Dispatch<React.SetStateAction<CustomersId>>;
+  userAccount: CustomersId;
   selectedData: {
     city: string;
     postalCode: string;
@@ -52,7 +54,8 @@ function Modal({
   streetName,
   selectedData,
   setSelectedData,
-  setAddressesAll,
+  setUserAccount,
+  userAccount,
 }: ModalType): JSX.Element {
   const handleCountryChange = (event: React.ChangeEvent<HTMLSelectElement>): void => {
     const { id, value } = event.target;
@@ -131,7 +134,7 @@ function Modal({
           onClick={(): Promise<void> =>
             sendData(selectedData, userId, selectedData.addressId).then((item) => {
               const date = item.addresses.filter((adress) => adress.id === selectedData.addressId)[0];
-              setAddressesAll(item.addresses);
+              setUserAccount({ ...userAccount, addresses: item.addresses });
               setSelectedData({
                 addressId: date.id,
                 city: date.city,
@@ -139,6 +142,18 @@ function Modal({
                 country: date.country,
                 streetName: date.streetName,
               });
+              Toastify({
+                text: 'Update address successfully!',
+                duration: 3000,
+                newWindow: true,
+                close: true,
+                gravity: 'top',
+                position: 'right',
+                stopOnFocus: true,
+                style: {
+                  background: 'linear-gradient(315deg, #7ee8fa 0%, #80ff72 74%)',
+                },
+              }).showToast();
               setActive(false);
             })
           }

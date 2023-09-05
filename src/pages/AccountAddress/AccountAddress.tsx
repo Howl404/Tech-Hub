@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import ShippingAddress from '@src/components/ShippingAddress/ShippingAddress';
 import BillingAddress from '@src/components/BillingAddress/BillingAddress';
-import { CustomersId, Address } from '@src/interfaces/Customer';
+import { Address, CustomersId } from '@src/interfaces/Customer';
 import { FaCheck, FaEdit, FaAddressBook, FaRegSave } from 'react-icons/fa';
 import { AiOutlineDelete } from 'react-icons/ai';
 import Modal from '@src/components/Modal/Modal';
 import {
-  // getCustomerId,
+  getCustomerId,
   requestAddBillingAddress,
   requestAddShippingAddress,
   requestDefaultBillingAddress,
@@ -18,6 +18,7 @@ import {
 import ModalAccountInformation from '@src/components/ModalAccountInformation/ModalAccountInformation';
 import FormInput from '@src/components/FormInput/FormInput';
 import { PostalCodePattern } from '@src/interfaces/Register';
+import Toastify from 'toastify-js';
 import styles from './AccountAddress.module.scss';
 
 const postalCodePattern: PostalCodePattern = {
@@ -28,18 +29,31 @@ const postalCodePattern: PostalCodePattern = {
   FR: '\\d{5}',
 };
 
-function AccountAddress({ user, setUser }: { user: CustomersId; setUser: (value: CustomersId) => void }): JSX.Element {
+function AccountAddress(): JSX.Element {
   const [modalActive, setModalActive] = useState(false);
   const [modalActiveNewAddress, setModalActiveNewAddress] = useState(false);
   const [modalActiveNewAddressBilling, setModalActiveNewAddressBilling] = useState(false);
-
-  const [newAddress, setNewAddress] = useState<Address>({
-    city: '',
-    postalCode: '',
-    country: 'en',
-    streetName: '',
+  const [userAccount, setUserAccount] = useState<CustomersId>({
+    email: '',
+    firstName: '',
+    lastName: '',
+    billingAddressIds: [],
+    shippingAddressIds: [],
+    dateOfBirth: '',
     id: '',
+    defaultShippingAddressId: '',
+    defaultBillingAddressId: '',
+    addresses: [
+      {
+        city: '',
+        country: '',
+        id: '',
+        postalCode: '',
+        streetName: '',
+      },
+    ],
   });
+
   const [selectedData, setSelectedData] = useState({
     city: '',
     postalCode: '',
@@ -47,20 +61,21 @@ function AccountAddress({ user, setUser }: { user: CustomersId; setUser: (value:
     streetName: '',
     addressId: '',
   });
-  const [addressesAll, setAddressesAll] = useState<Address[]>([]);
+  const [newAddress, setNewAddress] = useState<Address>({
+    city: '',
+    postalCode: '',
+    country: 'en',
+    streetName: '',
+    id: '',
+  });
   const [checkBoxBilling, setCheckBoxBilling] = useState(false);
-
-  const { defaultBillingAddressId, defaultShippingAddressId, billingAddressIds, shippingAddressIds, addresses } = user;
-
-  const [billingAddress, setBillingAddress] = useState<Address[]>([]);
-  const [shippingAddress, setShippingAddress] = useState<Address[]>([]);
-
   function modalWindow(
     modalActiveM: boolean,
     setModalActiveM: React.Dispatch<React.SetStateAction<boolean>>,
     requestAddress: (streetName: string, postalCode: string, city: string, country: string) => Promise<CustomersId>,
     requestIdAddress: (addressId: string) => Promise<CustomersId>,
     requestDefaultAddress: (addressId: string) => Promise<CustomersId>,
+    idModal: string,
   ): JSX.Element {
     return (
       <ModalAccountInformation active={modalActiveM} setActive={setModalActiveM}>
@@ -108,7 +123,7 @@ function AccountAddress({ user, setUser }: { user: CustomersId; setUser: (value:
             label="City"
             errorMessage="City is not valid"
             onChange={(e): void => setNewAddress({ ...newAddress, city: e.target.value })}
-            id=""
+            id={idModal}
             type="text"
             pattern="[A-Za-z]+"
             title="Must contain only letters"
@@ -118,7 +133,7 @@ function AccountAddress({ user, setUser }: { user: CustomersId; setUser: (value:
             label="Postal Code"
             errorMessage="Invalid Postal Code"
             onChange={(e): void => setNewAddress({ ...newAddress, postalCode: e.target.value })}
-            id=""
+            id={idModal}
             type="text"
             pattern={postalCodePattern[newAddress.country] || '.*'}
             title="Must be a valid postal code of a selected country"
@@ -128,7 +143,7 @@ function AccountAddress({ user, setUser }: { user: CustomersId; setUser: (value:
             label="Street name"
             errorMessage="Less than 1 character"
             onChange={(e): void => setNewAddress({ ...newAddress, streetName: e.target.value })}
-            id=""
+            id={idModal}
             type="text"
             pattern=".*"
             title="Must contain more than 1 character"
@@ -141,14 +156,25 @@ function AccountAddress({ user, setUser }: { user: CustomersId; setUser: (value:
               requestAddress(newAddress.streetName, newAddress.postalCode, newAddress.city, newAddress.country).then(
                 (item) => {
                   const addId = item.addresses[item.addresses.length - 1].id;
-                  requestIdAddress(addId).then(() => {
+                  requestIdAddress(addId).then((items) => {
                     if (checkBoxBilling) {
-                      requestDefaultAddress(addId);
+                      requestDefaultAddress(addId).then((itema) => setUserAccount({ ...itema }));
                       setCheckBoxBilling(false);
-                      setUser({ ...user, billingAddressIds: [addId], addresses: item.addresses });
                     } else {
-                      setUser({ ...user, addresses: item.addresses });
+                      setUserAccount({ ...items });
                     }
+                    Toastify({
+                      text: 'New address successfully added!',
+                      duration: 3000,
+                      newWindow: true,
+                      close: true,
+                      gravity: 'top',
+                      position: 'right',
+                      stopOnFocus: true,
+                      style: {
+                        background: 'linear-gradient(315deg, #7ee8fa 0%, #80ff72 74%)',
+                      },
+                    }).showToast();
                     setModalActiveM(false);
                   });
                 },
@@ -162,34 +188,22 @@ function AccountAddress({ user, setUser }: { user: CustomersId; setUser: (value:
     );
   }
 
-  // useEffect(() => {
-  //   getCustomerId().then((item) => setUser(item));
-  // }, []);
+  useEffect(() => {
+    getCustomerId().then((item) => setUserAccount(item));
+  }, []);
+
+  const [billingAddress, setBillingAddress] = useState<Address[]>([]);
+  const [shippingAddress, setShippingAddress] = useState<Address[]>([]);
 
   useEffect(() => {
-    // getCustomerId().then((item) => setUser(item));
-    const bill =
-      addressesAll.length === 0
-        ? addresses.filter((item) => billingAddressIds.includes(item.id))
-        : addressesAll.filter((item) => billingAddressIds.includes(item.id));
+    const bill = userAccount.addresses.filter((item) => userAccount.billingAddressIds.includes(item.id));
     setBillingAddress(bill);
-    const ship =
-      addressesAll.length === 0
-        ? addresses.filter((item) => shippingAddressIds.includes(item.id))
-        : addressesAll.filter((item) => shippingAddressIds.includes(item.id));
+    const ship = userAccount.addresses.filter((item) => userAccount.shippingAddressIds.includes(item.id));
     setShippingAddress(ship);
-  }, [
-    addresses,
-    billingAddressIds,
-    shippingAddressIds,
-    addressesAll,
-    selectedData,
-    modalActiveNewAddress,
-    modalActiveNewAddressBilling,
-  ]);
+  }, [userAccount, setUserAccount]);
 
   const billingAddressArr = billingAddress.map(({ id, city, postalCode, country, streetName }) => {
-    const isDefault = id === defaultBillingAddressId;
+    const isDefault = id === userAccount.defaultBillingAddressId;
     return (
       <div className={styles.block__address} key={id}>
         {isDefault && <FaCheck className={styles.btn__edit} title="Default billing address" />}
@@ -206,8 +220,19 @@ function AccountAddress({ user, setUser }: { user: CustomersId; setUser: (value:
           className={styles.btn__edit}
           onClick={(): void => {
             requestRemoveAddress(id).then((item) => {
-              setAddressesAll(item.addresses);
-              setUser({ ...user, addresses: item.addresses });
+              setUserAccount({ ...item });
+              Toastify({
+                text: 'Address successfully deleted!',
+                duration: 3000,
+                newWindow: true,
+                close: true,
+                gravity: 'top',
+                position: 'right',
+                stopOnFocus: true,
+                style: {
+                  background: 'linear-gradient(315deg, #7ee8fa 0%, #80ff72 74%)',
+                },
+              }).showToast();
             });
           }}
         />
@@ -215,7 +240,7 @@ function AccountAddress({ user, setUser }: { user: CustomersId; setUser: (value:
           city={city}
           postalCode={postalCode}
           country={country}
-          name={`${user.firstName} ${user.lastName}`}
+          name={`${userAccount.firstName} ${userAccount.lastName}`}
           streetName={streetName}
         />
       </div>
@@ -223,7 +248,7 @@ function AccountAddress({ user, setUser }: { user: CustomersId; setUser: (value:
   });
 
   const shippingAddressArr = shippingAddress.map(({ id, city, postalCode, country, streetName }) => {
-    const isDefault = id === defaultShippingAddressId;
+    const isDefault = id === userAccount.defaultShippingAddressId;
     return (
       <div className={styles.block__address} key={id}>
         {isDefault && <FaCheck className={styles.btn__edit} title="Default shipping address" />}
@@ -232,8 +257,8 @@ function AccountAddress({ user, setUser }: { user: CustomersId; setUser: (value:
           title="Edit"
           className={styles.btn__edit}
           onClick={(): void => {
-            setModalActive(true);
             setSelectedData({ city, postalCode, country, streetName, addressId: id });
+            setModalActive(true);
           }}
         />
         <AiOutlineDelete
@@ -241,8 +266,7 @@ function AccountAddress({ user, setUser }: { user: CustomersId; setUser: (value:
           className={styles.btn__edit}
           onClick={(): void => {
             requestRemoveAddress(id).then((item) => {
-              setAddressesAll(item.addresses);
-              setUser({ ...user, addresses: item.addresses });
+              setUserAccount({ ...item });
             });
           }}
         />
@@ -250,7 +274,7 @@ function AccountAddress({ user, setUser }: { user: CustomersId; setUser: (value:
           city={city}
           postalCode={postalCode}
           country={country}
-          name={`${user.firstName} ${user.lastName}`}
+          name={`${userAccount.firstName} ${userAccount.lastName}`}
           streetName={streetName}
         />
       </div>
@@ -274,13 +298,15 @@ function AccountAddress({ user, setUser }: { user: CustomersId; setUser: (value:
             +
             <FaAddressBook />
           </button>
-          {modalWindow(
-            modalActiveNewAddressBilling,
-            setModalActiveNewAddressBilling,
-            requestAddBillingAddress,
-            requestIdBillingAddress,
-            requestDefaultBillingAddress,
-          )}
+          {modalActiveNewAddressBilling &&
+            modalWindow(
+              modalActiveNewAddressBilling,
+              setModalActiveNewAddressBilling,
+              requestAddBillingAddress,
+              requestIdBillingAddress,
+              requestDefaultBillingAddress,
+              'billing',
+            )}
         </div>
         {billingAddress ? billingAddressArr : <span>You have not set a default billing address.</span>}
 
@@ -289,13 +315,15 @@ function AccountAddress({ user, setUser }: { user: CustomersId; setUser: (value:
           <button title="add new shipping address" type="button" onClick={(): void => setModalActiveNewAddress(true)}>
             +<FaAddressBook />
           </button>
-          {modalWindow(
-            modalActiveNewAddress,
-            setModalActiveNewAddress,
-            requestAddShippingAddress,
-            requestIdShippingAddress,
-            requestDefaultShippingAddress,
-          )}
+          {modalActiveNewAddress &&
+            modalWindow(
+              modalActiveNewAddress,
+              setModalActiveNewAddress,
+              requestAddShippingAddress,
+              requestIdShippingAddress,
+              requestDefaultShippingAddress,
+              'shipping',
+            )}
         </div>
         {shippingAddress ? shippingAddressArr : <span>You have not set a default shipping address.</span>}
       </div>
@@ -308,8 +336,9 @@ function AccountAddress({ user, setUser }: { user: CustomersId; setUser: (value:
         postalCode={selectedData.postalCode}
         country={selectedData.country}
         streetName={selectedData.streetName}
-        userId={user.id}
-        setAddressesAll={setAddressesAll}
+        userId={userAccount.id}
+        setUserAccount={setUserAccount}
+        userAccount={userAccount}
       />
     </div>
   );
