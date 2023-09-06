@@ -5,7 +5,7 @@ import Breadcrumbs from '@src/components/Breadcrumbs/Breadcrumbs';
 import AccountMenu from '@src/components/AccountMenu/AccountMenu';
 import { Route, Routes } from 'react-router-dom';
 import Profile from '../Profile/Profile';
-import styles from './AccountDashboard.module.scss';
+import './AccountDashboard.scss';
 import AccountInformation from '../AccountInformation/AccountInformation';
 import AccountAddress from '../AccountAddress/AccountAddress';
 import AccountOrder from '../AccountOrder/AccountOrder';
@@ -38,10 +38,10 @@ function AccountDashboard({ onLogOut }: { onLogOut: () => void }): JSX.Element {
 
   return (
     <section>
-      <div className={styles.container}>
+      <div className="dashboard__container">
         <Breadcrumbs />
-        <h2 className={styles.page__title}>My Dashboard</h2>
-        <div className={styles.dashboard__information}>
+        <h2 className="dashboard__page__title">My Dashboard</h2>
+        <div className="dashboard__information">
           <AccountMenu />
           <Routes>
             <Route path="/Profile" element={<Profile />} />
