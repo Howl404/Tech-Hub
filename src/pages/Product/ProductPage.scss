@@ -202,12 +202,6 @@
         border: 1px solid #c4c4c4;
       }
     }
-
-    // .product__img-main {
-    //   width: 500px;
-    //   height: 500px;
-    //   margin-right: 50px;
-    // }
   }
 }
 
@@ -244,7 +238,7 @@
 
 .modal-view {
   display: none;
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
@@ -253,6 +247,10 @@
   height: 100%;
   background-color: #000000bd;
   z-index: 2;
+}
+
+body.modal-open {
+  overflow: hidden;
 }
 
 .swiper-modal {

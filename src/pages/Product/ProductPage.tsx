@@ -71,11 +71,13 @@ function ProductPage(): JSX.Element {
     if (event.currentTarget !== event.target) return;
     const node = event.currentTarget as HTMLElement;
     node.style.display = 'none';
+    document.body.classList.remove('modal-open');
   };
 
   const showModal = (): void => {
     const node = document.querySelector('.modal-view') as HTMLElement;
     node.style.display = 'block';
+    document.body.classList.add('modal-open');
   };
 
   const swiper1Ref = useRef<SwiperClass>();
@@ -111,7 +113,7 @@ function ProductPage(): JSX.Element {
             </Swiper>
 
             <div className="product__attributes">
-              <div className="path">
+              {/* <div className="path">
                 <a className="path__category" href="/">
                   Home
                 </a>
@@ -123,13 +125,13 @@ function ProductPage(): JSX.Element {
                 <a className="path__category" href="/">
                   apple
                 </a>
-              </div>
+              </div> */}
 
               <h3 className="product__brand">{brand}</h3>
 
               <h2 className="product__name">{brandModel}</h2>
 
-              <div className="product__color">
+              {/* <div className="product__color">
                 <div className="product__attr-title">select color</div>
                 <div className="product__color-items">
                   <div className="product__color-items-item color-black" />
@@ -145,7 +147,7 @@ function ProductPage(): JSX.Element {
                   <div className="product__select-size-items_item">15</div>
                   <div className="product__select-size-items_item">16</div>
                 </div>
-              </div>
+              </div> */}
 
               <div className="product__quantity_price">
                 <div className="product__quantity">
