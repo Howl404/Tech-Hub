@@ -151,12 +151,15 @@
 
     .product__price {
       font-size: 26px;
-    }
 
-    .product__price-discounted {
-      text-decoration: line-through;
-      color: red;
-      font-size: 16px;
+      .product__price-discounted {
+        text-decoration: line-through;
+        font-size: 16px;
+      }
+
+      .discounted {
+        color: red;
+      }
     }
 
     .product__controls {
@@ -199,12 +202,6 @@
         border: 1px solid #c4c4c4;
       }
     }
-
-    // .product__img-main {
-    //   width: 500px;
-    //   height: 500px;
-    //   margin-right: 50px;
-    // }
   }
 }
 
@@ -241,7 +238,7 @@
 
 .modal-view {
   display: none;
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
@@ -250,6 +247,10 @@
   height: 100%;
   background-color: #000000bd;
   z-index: 2;
+}
+
+body.modal-open {
+  overflow: hidden;
 }
 
 .swiper-modal {

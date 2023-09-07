@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import './ProductPage.scss';
 
@@ -6,12 +6,12 @@ import { ProductDetailedPage } from '@src/interfaces/Product';
 import { getProductByKey } from '@src/services/ProductsService/ProductsService';
 
 // Import Swiper and styles
-import { Swiper, SwiperSlide } from 'swiper/react';
+import { Swiper, SwiperSlide, SwiperClass } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/free-mode';
 import 'swiper/css/navigation';
 import 'swiper/css/thumbs';
-import { Navigation } from 'swiper/modules';
+import { Navigation, Controller } from 'swiper/modules';
 
 function ProductPage(): JSX.Element {
   const { key = '' } = useParams<{
@@ -71,19 +71,40 @@ function ProductPage(): JSX.Element {
     if (event.currentTarget !== event.target) return;
     const node = event.currentTarget as HTMLElement;
     node.style.display = 'none';
+    document.body.classList.remove('modal-open');
   };
 
   const showModal = (): void => {
     const node = document.querySelector('.modal-view') as HTMLElement;
     node.style.display = 'block';
+    document.body.classList.add('modal-open');
   };
+
+  const swiper1Ref = useRef<SwiperClass>();
+  const swiper2Ref = useRef<SwiperClass>();
+
+  useLayoutEffect(() => {
+    if (swiper1Ref.current && swiper2Ref.current) {
+      swiper1Ref.current.controller.control = swiper2Ref.current;
+      swiper2Ref.current.controller.control = swiper1Ref.current;
+    }
+  }, []);
 
   return (
     <>
       <main className="container">
         <div className="product">
           <div className="product__line first-line">
-            <Swiper navigation modules={[Navigation]} className="mySwiper" onClick={(): void => showModal()}>
+            <Swiper
+              navigation
+              loop
+              modules={[Navigation, Controller]}
+              className="mySwiper"
+              onSwiper={(swiper): void => {
+                swiper1Ref.current = swiper;
+              }}
+              onClick={(): void => showModal()}
+            >
               {current?.masterVariant.images.map((img: { url: string }, index: number) => (
                 <SwiperSlide key={img.url}>
                   <img src={img.url} alt={`${key}${index}`} />
@@ -92,7 +113,7 @@ function ProductPage(): JSX.Element {
             </Swiper>
 
             <div className="product__attributes">
-              <div className="path">
+              {/* <div className="path">
                 <a className="path__category" href="/">
                   Home
                 </a>
@@ -104,13 +125,13 @@ function ProductPage(): JSX.Element {
                 <a className="path__category" href="/">
                   apple
                 </a>
-              </div>
+              </div> */}
 
               <h3 className="product__brand">{brand}</h3>
 
               <h2 className="product__name">{brandModel}</h2>
 
-              <div className="product__color">
+              {/* <div className="product__color">
                 <div className="product__attr-title">select color</div>
                 <div className="product__color-items">
                   <div className="product__color-items-item color-black" />
@@ -126,7 +147,7 @@ function ProductPage(): JSX.Element {
                   <div className="product__select-size-items_item">15</div>
                   <div className="product__select-size-items_item">16</div>
                 </div>
-              </div>
+              </div> */}
 
               <div className="product__quantity_price">
                 <div className="product__quantity">
@@ -146,10 +167,11 @@ function ProductPage(): JSX.Element {
                   <div className="product__attr-title">price total</div>
                   {discountedPrice > 0 ? (
                     <>
+                      <span className="product__price-value discounted">{discountedPriceFormated}</span>
+                      <span className="product__price-currency discounted">&nbsp;{currency}</span>
+                      <br />
                       <span className="product__price-discounted">{totalPriceFormated}</span>
-                      <span className="product__price-discounted">&nbsp;{currency}</span> <br />
-                      <span className="product__price-value">{discountedPriceFormated}</span>
-                      <span className="product__price-currency">&nbsp;{currency}</span>
+                      <span className="product__price-discounted">&nbsp;{currency}</span>
                     </>
                   ) : (
                     <>
@@ -195,7 +217,15 @@ function ProductPage(): JSX.Element {
       </main>
 
       <div role="button" tabIndex={0} className="modal-view" onClick={showModalImg}>
-        <Swiper navigation modules={[Navigation]} className="swiper-modal">
+        <Swiper
+          navigation
+          loop
+          modules={[Navigation, Controller]}
+          className="swiper-modal"
+          onSwiper={(swiper): void => {
+            swiper2Ref.current = swiper;
+          }}
+        >
           {current?.masterVariant.images.map((img: { url: string }, index: number) => (
             <SwiperSlide key={img.url}>
               <img src={img.url} alt={`${key}${index}`} />
