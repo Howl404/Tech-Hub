@@ -45,10 +45,7 @@ function AccountDashboard({ onLogOut }: { onLogOut: () => void }): JSX.Element {
           <AccountMenu />
           <Routes>
             <Route path="/Profile" element={<Profile />} />
-            <Route
-              path="/Information"
-              element={<AccountInformation user={user} setUser={setUser} onLogOut={onLogOut} />}
-            />
+            <Route path="/Information" element={<AccountInformation onLogOut={onLogOut} />} />
             <Route path="/Address" element={<AccountAddress />} />
             <Route path="/Order" element={<AccountOrder />} />
           </Routes>

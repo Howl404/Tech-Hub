@@ -30,10 +30,9 @@ function Profile(): JSX.Element {
   useEffect(() => {
     getCustomerId().then((item) => setUser(item));
   }, []);
-  const defaultBillingAddressId = user.billingAddressIds[0];
-  const defaultBillingAddress = user.addresses.find((item) => item.id === defaultBillingAddressId);
-  const defaultShippingAddressId = user.shippingAddressIds[0];
-  const defaultShippingAddress = user.addresses.find((item) => item.id === defaultShippingAddressId);
+
+  const defaultBillingAddress = user.addresses.find((item) => item.id === user.defaultBillingAddressId);
+  const defaultShippingAddress = user.addresses.find((item) => item.id === user.defaultShippingAddressId);
   const dateBirth = user.dateOfBirth.split('-');
   const resultDateBirth = `${dateBirth[2]}.${dateBirth[1]}.${dateBirth[0]}`;
 

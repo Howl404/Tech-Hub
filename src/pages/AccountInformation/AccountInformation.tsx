@@ -6,6 +6,8 @@ import {
   changeFirstNameRequest,
   changeLastNameRequest,
   changePasswordRequest,
+  getCustomerId,
+  // getCustomerId,
 } from '@src/services/AuthService/AuthService';
 import { CustomersId } from '@src/interfaces/Customer';
 import { FaEdit, FaRegSave, FaExchangeAlt } from 'react-icons/fa';
@@ -13,30 +15,40 @@ import ModalAccountInformation from '@src/components/ModalAccountInformation/Mod
 import Toastify from 'toastify-js';
 import styles from './AccountInformation.module.scss';
 
-function AccountInformation({
-  onLogOut,
-  user,
-  setUser,
-}: {
-  onLogOut: () => void;
-  user: CustomersId;
-  setUser: (value: CustomersId) => void;
-}): JSX.Element {
-  const [modalActive, setModalActive] = useState(false);
-  const [modalActiveEmail, setModalActiveEmail] = useState(false);
-  const [passwordInformation, setPasswordInformation] = useState({ oldPasswowrd: '', newPassword: '' });
+function AccountInformation({ onLogOut }: { onLogOut: () => void }): JSX.Element {
+  const [user, setUser] = useState<CustomersId>({
+    email: '',
+    firstName: '',
+    lastName: '',
+    billingAddressIds: [],
+    shippingAddressIds: [],
+    defaultShippingAddressId: '',
+    defaultBillingAddressId: '',
+    addresses: [],
+    dateOfBirth: '',
+    id: '',
+  });
+
   const [emailInformation, setEmailInformation] = useState(user.email);
-  const [editInformation, setEditInformation] = useState(false);
   const [editUserInformation, setEditUserInformation] = useState({
     firstName: user.firstName,
     lastName: user.lastName,
     dateOfBirth: user.dateOfBirth,
   });
-
   useEffect(() => {
     setUser({ ...user, email: emailInformation });
+    getCustomerId().then((item) => {
+      setUser(item);
+      setEditUserInformation({ firstName: item.firstName, lastName: item.lastName, dateOfBirth: item.dateOfBirth });
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [emailInformation]);
+
+  const [modalActive, setModalActive] = useState(false);
+  const [modalActiveEmail, setModalActiveEmail] = useState(false);
+  const [passwordInformation, setPasswordInformation] = useState({ oldPasswowrd: '', newPassword: '' });
+
+  const [editInformation, setEditInformation] = useState(false);
 
   function getFormattedDate(): string {
     const currentDate = new Date(Date.now());
