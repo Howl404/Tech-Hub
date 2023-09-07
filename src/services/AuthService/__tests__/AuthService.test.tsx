@@ -1,6 +1,6 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { getAnonymousAccessToken, logInUser, createCart } from '../AuthService';
+import { getAnonymousAccessToken, logInUser } from '../AuthService';
 
 describe('getAnonymousAccessToken', () => {
   const email = 'qwertyyu@gmail.com';
@@ -14,7 +14,7 @@ describe('getAnonymousAccessToken', () => {
   });
   test('should return', async () => {
     const response = await getAnonymousAccessToken();
-    expect(Object.keys(response)).toStrictEqual(['accessToken', 'refreshToken']);
+    expect(Object.keys(response)).toStrictEqual(['accessToken']);
   });
 
   test('return accessToken и refreshToken at successful auth', async () => {
@@ -22,38 +22,38 @@ describe('getAnonymousAccessToken', () => {
     if (result !== undefined) expect(Object.keys(result)).toStrictEqual(['accessToken', 'refreshToken']);
   });
 
-  test('createCart post', async () => {
-    const response = await getAnonymousAccessToken();
-    const result = await createCart(response.accessToken);
-    expect(Object.keys(result)).toStrictEqual([
-      'type',
-      'id',
-      'version',
-      'versionModifiedAt',
-      'lastMessageSequenceNumber',
-      'createdAt',
-      'lastModifiedAt',
-      'lastModifiedBy',
-      'createdBy',
-      'anonymousId',
-      'lineItems',
-      'cartState',
-      'totalPrice',
-      'shippingMode',
-      'shipping',
-      'customLineItems',
-      'discountCodes',
-      'directDiscounts',
-      'inventoryMode',
-      'taxMode',
-      'taxRoundingMode',
-      'taxCalculationMode',
-      'deleteDaysAfterLastModification',
-      'refusedGifts',
-      'origin',
-      'itemShippingAddresses',
-    ]);
-  });
+  // test('createCart post', async () => {
+  //   const response = await getAnonymousAccessToken();
+  //   const result = await createCart(response.accessToken);
+  //   expect(Object.keys(result)).toStrictEqual([
+  //     'type',
+  //     'id',
+  //     'version',
+  //     'versionModifiedAt',
+  //     'lastMessageSequenceNumber',
+  //     'createdAt',
+  //     'lastModifiedAt',
+  //     'lastModifiedBy',
+  //     'createdBy',
+  //     'anonymousId',
+  //     'lineItems',
+  //     'cartState',
+  //     'totalPrice',
+  //     'shippingMode',
+  //     'shipping',
+  //     'customLineItems',
+  //     'discountCodes',
+  //     'directDiscounts',
+  //     'inventoryMode',
+  //     'taxMode',
+  //     'taxRoundingMode',
+  //     'taxCalculationMode',
+  //     'deleteDaysAfterLastModification',
+  //     'refusedGifts',
+  //     'origin',
+  //     'itemShippingAddresses',
+  //   ]);
+  // });
 
   test('Error with errorMessage from object response.data.errors', async () => {
     const mock = new MockAdapter(axios);

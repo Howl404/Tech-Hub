@@ -53,8 +53,31 @@ export interface LastModifiedBy {
   anonymousId: string;
 }
 
+export interface Address {
+  city: string;
+  country: string;
+  id: string;
+  postalCode: string;
+  streetName: string;
+}
+
+export interface SendAddress {
+  city: string;
+  postalCode: string;
+  country: string;
+  streetName: string;
+  addressId: string;
+}
+
 export interface CustomersId {
   email: string;
   firstName: string;
   lastName: string;
+  billingAddressIds: string[];
+  shippingAddressIds: string[];
+  defaultShippingAddressId: string;
+  defaultBillingAddressId: string;
+  addresses: Address[];
+  dateOfBirth: string;
+  id: string;
 }
