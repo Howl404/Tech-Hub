@@ -1,0 +1,275 @@
+.product {
+  font-family: 'Oswald', sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+
+  margin: auto;
+
+  .product__line {
+    max-width: 1200px;
+    margin-top: 30px;
+  }
+
+  .product__details {
+    margin-bottom: 30px;
+    padding: 20px;
+    background-color: #f8f9fb;
+
+    &-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    &-title {
+      border-top: 1px solid #c4c4c4;
+      padding-top: 20px;
+      margin-top: 20px;
+
+      text-transform: uppercase;
+      margin-bottom: 15px;
+    }
+
+    &-descriptions {
+      font-family: 'Roboto';
+    }
+  }
+
+  .path__category {
+    color: #828282;
+    text-decoration: none;
+  }
+
+  .first-line {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+
+    .product__img-list {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      margin-right: 5px;
+
+      .product__img-item {
+        width: 76px;
+        height: 96px;
+        cursor: pointer;
+
+        img {
+          max-width: 100%;
+          max-height: 100%;
+        }
+      }
+    }
+
+    .product__brand {
+      background-color: #f0f2f2;
+      width: fit-content;
+      padding: 5px 8px;
+    }
+
+    .product__name:first-letter {
+      text-transform: uppercase;
+    }
+
+    .product__attr-title {
+      margin-top: 15px;
+      margin-bottom: 5px;
+      font-size: 14px;
+      text-transform: uppercase;
+    }
+
+    .product__attributes {
+      font-size: 14px;
+      max-width: 300px;
+    }
+
+    .product__color-items {
+      display: flex;
+      gap: 10px;
+
+      &-item {
+        width: 20px;
+        height: 20px;
+      }
+    }
+
+    .product__select-size_items {
+      display: flex;
+    }
+
+    .product__select-size-items_item {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 70px;
+      height: 40px;
+      border: 1px solid #c4c4c4;
+      margin-right: 3px;
+      cursor: pointer;
+    }
+
+    .color-black {
+      background-color: #000;
+    }
+
+    .color-yellow {
+      background-color: #e0bb52;
+    }
+
+    .color-green {
+      background-color: #03aa19;
+    }
+
+    .active-color {
+      border: 2px solid #000;
+    }
+
+    .active-size {
+      border: 1px solid #000;
+    }
+
+    .product__quantity_price {
+      display: flex;
+      gap: 20px;
+    }
+
+    .product__quantity-input {
+      border: 1px solid #c4c4c4;
+      width: fit-content;
+
+      .product__quantity-btn {
+        font-size: 16px;
+        color: #c4c4c4;
+        width: 40px;
+        height: 30px;
+      }
+    }
+
+    .product__price {
+      font-size: 26px;
+
+      .product__price-discounted {
+        text-decoration: line-through;
+        font-size: 16px;
+      }
+
+      .discounted {
+        color: red;
+      }
+    }
+
+    .product__controls {
+      margin-top: 15px;
+
+      .product__btn {
+        border: none;
+        text-align: center;
+        font-family: 'Oswald', sans-serif;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: normal;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        width: 140px;
+        height: 50px;
+        transition: all 0.3s;
+
+        &:hover {
+          transition: all 0.3s;
+          border-radius: 10px;
+        }
+      }
+
+      .btn-bag {
+        margin-right: 5px;
+      }
+
+      .btn-black {
+        background: #000;
+        color: #fff;
+
+        &:hover {
+          background-color: rgba(0, 0, 0, 0.291);
+        }
+      }
+
+      .btn-white {
+        border: 1px solid #c4c4c4;
+      }
+    }
+  }
+}
+
+.swiper {
+  width: 100%;
+  height: 300px;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.swiper-slide {
+  background-size: cover;
+  background-position: center;
+}
+
+.swiper {
+  width: 100%;
+  height: 100%;
+}
+
+.swiper-slide {
+  text-align: center;
+  font-size: 18px;
+  background: #fff;
+}
+
+.swiper-slide img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.modal-view {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #000000bd;
+  z-index: 2;
+}
+
+body.modal-open {
+  overflow: hidden;
+}
+
+.swiper-modal {
+  top: 10%;
+  left: 10%;
+  width: 60%;
+  height: 80%;
+  max-width: 800px;
+}
+
+@media screen and (max-width: 510px) {
+  .swiper {
+    max-width: 300px;
+  }
+  .swiper-modal {
+    top: 1%;
+    left: 1%;
+    width: 80%;
+    height: 40%;
+    max-width: 300px;
+  }
+}

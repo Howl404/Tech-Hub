@@ -6,10 +6,7 @@ import LoginPage from '@pages/Login/LoginPage';
 import NotFound from '@pages/NotFound/NotFound';
 import RegistrationPage from '@pages/Register/RegistrationPage';
 import Cookies from 'js-cookie';
-import CatalogPage from '@pages/Catalog/CatalogPage';
-import AccountDashboard from '@pages/AccountDashboard/AccountDashboard';
-import Header from '@components/Header/Header';
-import { getAnonymousAccessToken } from './services/AuthService/AuthService';
+import Header from './components/Header/Header';
 
 function App(): JSX.Element {
   const navigate = useNavigate();
@@ -49,6 +46,7 @@ function App(): JSX.Element {
         <Route path="/" element={<Home />} />
         <Route path="/register" element={<RegistrationPage checkLogIn={checkLogIn} />} />
         <Route path="/login" element={<LoginPage checkLogIn={checkLogIn} />} />
+        <Route path="/products/:key?" element={<ProductPage />} />
         <Route path="/MyAccount/*" element={<AccountDashboard onLogOut={onLogOut} />} />
         <Route path="/catalog/:categoryslug?/:subcategoryslug?" element={<CatalogPage />} />
         <Route path="*" element={<NotFound />} />

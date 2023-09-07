@@ -1,9 +1,9 @@
-import React, { MouseEventHandler, useState, MouseEvent } from 'react';
+import React, { useState, MouseEvent } from 'react';
 import './Header.scss';
 import { Link } from 'react-router-dom';
 import logoIcon from '@assets/logo.svg';
 import cartIcon from '@assets/cart.svg';
-import searchIcon from '@assets/search.svg';
+// import searchIcon from '@assets/search.svg';
 import ButtonsAccount from '../ButtonsAccount/ButtonsAccount';
 import NameAccount from '../NameAccount/NameAccount';
 
@@ -22,11 +22,11 @@ function Header({ authh, logOut }: { authh: boolean; logOut: () => void }): JSX.
       setIsOpen(!isOpen);
   };
 
-  const onToggleActiveSearch: MouseEventHandler<HTMLButtonElement> = (event): void => {
-    const target = event.target as HTMLElement;
-    target.parentElement?.classList.toggle('active-search');
-    target.previousElementSibling?.classList.toggle('active-search');
-  };
+  // const onToggleActiveSearch: MouseEventHandler<HTMLButtonElement> = (event): void => {
+  //   const target = event.target as HTMLElement;
+  //   target.parentElement?.classList.toggle('active-search');
+  //   target.previousElementSibling?.classList.toggle('active-search');
+  // };
 
   const buttons = buttonsData.map(({ name, label, path }) => (
     <li className="nav__list_item item" key={name}>
@@ -50,13 +50,13 @@ function Header({ authh, logOut }: { authh: boolean; logOut: () => void }): JSX.
         <nav className={`nav ${isOpen ? 'active_nav' : ''}`} onClick={toggleMenu}>
           <ul className="nav__list list">{buttons}</ul>
 
-          <div className="header__search">
+          {/* <div className="header__search">
             <input type="search" className="search-box" />
             <button type="button" className="header__search_icon" onClick={onToggleActiveSearch}>
               <img src={searchIcon} alt="search icon" />
               <div className="search__title">search</div>
             </button>
-          </div>
+          </div> */}
 
           <div className="header__account-info">{authh ? <NameAccount logOut={logOut} /> : <ButtonsAccount />}</div>
 
