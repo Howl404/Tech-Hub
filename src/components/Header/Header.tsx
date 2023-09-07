@@ -60,15 +60,15 @@ function Header({ authh, logOut }: { authh: boolean; logOut: () => void }): JSX.
 
           <div className="header__account-info">{authh ? <NameAccount logOut={logOut} /> : <ButtonsAccount />}</div>
 
-          <div className="header__cart">
-            <button type="button" className="header__cart_icon">
+          <Link to="/basket" className="header__cart">
+            <div className="header__cart_icon">
               <img src={cartIcon} alt="cart icon" />
-            </button>
+            </div>
             <div className="cart__title_container">
               <div className="cart__title">Shopping Cart</div>
               <div className="cart__sell">{`${0}EUR`}</div>
             </div>
-          </div>
+          </Link>
         </nav>
 
         <button type="button" className={`header-burger${isOpen ? ' active_nav' : ''}`} onClick={toggleMenu}>
