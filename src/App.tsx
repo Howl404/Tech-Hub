@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { Route, Routes, useNavigate } from 'react-router-dom';
 import './App.scss';
 import Home from '@pages/Home/Home';
@@ -14,6 +14,7 @@ import { getClientAccessToken } from '@services/AuthService/AuthService';
 import AuthData from '@interfaces/AuthData';
 
 function App(): JSX.Element {
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   const [auth, setIsAuth] = useState(false);
   const onLogOut = (): void => {
@@ -44,6 +45,34 @@ function App(): JSX.Element {
   };
 
   useEffect(() => {
+    async function fetchData(): Promise<void> {
+      setIsLoading(true);
+      const accessToken = Cookies.get('access-token');
+      const authType = Cookies.get('auth-type');
+      if (authType === 'password') {
+        setIsAuth(true);
+      } else if (!accessToken) {
+        const result = await getClientAccessToken();
+        Cookies.set('access-token', result.accessToken, { expires: 2 });
+        Cookies.set('auth-type', 'anon', { expires: 2 });
+        setAuthData((prevAuthData) => ({
+          ...prevAuthData,
+          accessToken: result.accessToken || prevAuthData.accessToken,
+          authType: 'anon' || prevAuthData.authType,
+        }));
+      }
+      setIsLoading(false);
+    }
+    fetchData();
+  }, []);
+
+  const updateAuthData = (newAuthData: AuthData): void => {
+    setAuthData(newAuthData);
+  };
+
+  updateAuthData(authData); // updateAuthData never used error
+
+  useLayoutEffect(() => {
     const accessToken = Cookies.get('access-token');
     const refreshToken = Cookies.get('refresh-token');
     const authType = Cookies.get('auth-type');
@@ -60,17 +89,11 @@ function App(): JSX.Element {
       anonRefreshToken: anonRefreshToken || prevAuthData.anonRefreshToken,
       cartId: cartId || prevAuthData.cartId,
     }));
-
-    if (authType === 'password') {
-      setIsAuth(true);
-    } else {
-      getClientAccessToken().then((result) => {
-        Cookies.set('access-token', result.accessToken, { expires: 2 });
-        Cookies.set('auth-type', 'anon', { expires: 2 });
-      });
-    }
   }, []);
-  return (
+
+  return isLoading ? (
+    <div>loading</div>
+  ) : (
     <>
       <Header authh={auth} logOut={onLogOut} />
       <Routes>
