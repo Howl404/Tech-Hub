@@ -29,12 +29,14 @@ h2 {
 .title-table {
   display: flex;
   list-style: none;
-  gap: 90px;
+  gap: 110px;
   padding: 0;
-  flex: 1;
+  //   flex: 1;
   justify-content: center;
   border-bottom: 2px solid #c4c4c4;
   max-width: 900px;
+  padding-bottom: 10px;
+  padding-right: 25px;
 }
 
 .table-text {
@@ -47,6 +49,11 @@ h2 {
 
 .table-text:first-child {
   max-width: 400px;
+  width: 100%;
+}
+
+.table-text:last-child {
+  max-width: 150px;
   width: 100%;
 }
 
@@ -131,4 +138,13 @@ h2 {
   gap: 25px;
   border-bottom: none;
   padding: 45px 0 30px 0;
+}
+
+.cart-information {
+  text-align: center;
+  font-family: 'Oswald', sans-serif;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 500;
+  padding-top: 20px;
 }
