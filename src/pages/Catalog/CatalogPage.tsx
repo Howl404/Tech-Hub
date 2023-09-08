@@ -216,7 +216,7 @@ export default function Catalog(): JSX.Element {
         </div>
         <div className="product-list">
           {products.map((product) => (
-            <CatalogProductCard key={product.name.en} product={product} />
+            <CatalogProductCard key={product.name.en} product={product} CartArray={[]} />
           ))}
         </div>
       </div>

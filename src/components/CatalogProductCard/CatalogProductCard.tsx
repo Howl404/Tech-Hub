@@ -3,8 +3,8 @@ import React from 'react';
 import { ProductCatalog } from '@src/interfaces/Product';
 import { Link } from 'react-router-dom';
 
-function CatalogProductCard({ product }: { product: ProductCatalog }): JSX.Element {
-  const { name, description, masterVariant } = product;
+function CatalogProductCard({ product, CartArray }: { product: ProductCatalog; CartArray: string[] }): JSX.Element {
+  const { name, masterVariant } = product;
   const { images, prices, sku } = masterVariant;
 
   let price: JSX.Element;
@@ -34,12 +34,22 @@ function CatalogProductCard({ product }: { product: ProductCatalog }): JSX.Eleme
       <img src={images[0].url} alt={name.en} />
       <h3>{name.en}</h3>
       {price}
-      <p>{description.en}</p>
-      <Link to={`/products/${sku}`}>
-        <button type="button" className="product-page-button  btn-enabled">
-          Details
-        </button>
-      </Link>
+      <div className="buttons-container">
+        {CartArray.includes(sku) ? (
+          <button type="button" className="remove-from-cart btn-enabled">
+            Remove from cart
+          </button>
+        ) : (
+          <button type="button" className="add-to-cart btn-enabled">
+            Add to cart
+          </button>
+        )}
+        <Link to={`/products/${sku}`}>
+          <button type="button" className="details-button  btn-enabled">
+            Details
+          </button>
+        </Link>
+      </div>
     </div>
   );
 }
