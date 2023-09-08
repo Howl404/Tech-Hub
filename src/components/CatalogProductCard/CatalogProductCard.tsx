@@ -4,8 +4,8 @@ import { ProductCatalog } from '@src/interfaces/Product';
 import { Link } from 'react-router-dom';
 
 function CatalogProductCard({ product }: { product: ProductCatalog }): JSX.Element {
-  const { name, description, masterVariant, key } = product;
-  const { images, prices } = masterVariant;
+  const { name, description, masterVariant } = product;
+  const { images, prices, sku } = masterVariant;
 
   let price: JSX.Element;
   if (prices[0].discounted) {
@@ -35,7 +35,7 @@ function CatalogProductCard({ product }: { product: ProductCatalog }): JSX.Eleme
       <h3>{name.en}</h3>
       {price}
       <p>{description.en}</p>
-      <Link to={`/products/${key}`}>
+      <Link to={`/products/${sku}`}>
         <button type="button" className="product-page-button  btn-enabled">
           Details
         </button>

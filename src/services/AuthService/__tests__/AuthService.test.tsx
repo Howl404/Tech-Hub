@@ -1,23 +1,23 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { getAnonymousAccessToken, logInUser } from '../AuthService';
+import { getClientAccessToken, logInUser } from '../AuthService';
 
-describe('getAnonymousAccessToken', () => {
+describe('Get client access token', () => {
   const email = 'qwertyyu@gmail.com';
   const password = '123456qQ';
   const projectKey = 'rs-alchemists-ecommerce';
   const authHost = 'https://auth.europe-west1.gcp.commercetools.com';
 
-  test('should return anonymous access token', async () => {
-    const response = await getAnonymousAccessToken();
+  test('should return client access token', async () => {
+    const response = await getClientAccessToken();
     expect(() => response).not.toThrow();
   });
-  test('should return', async () => {
-    const response = await getAnonymousAccessToken();
+  test('should return access token', async () => {
+    const response = await getClientAccessToken();
     expect(Object.keys(response)).toStrictEqual(['accessToken']);
   });
 
-  test('return accessToken и refreshToken at successful auth', async () => {
+  test('return accessToken at successful auth', async () => {
     const result = await logInUser(email, password);
     if (result !== undefined) expect(Object.keys(result)).toStrictEqual(['accessToken', 'refreshToken']);
   });
