@@ -11,6 +11,7 @@ import Header from '@components/Header/Header';
 import ProductPage from '@pages/Product/ProductPage';
 import AccountDashboard from '@pages/AccountDashboard/AccountDashboard';
 import { getClientAccessToken } from '@services/AuthService/AuthService';
+import AuthData from './interfaces/AuthData';
 
 function App(): JSX.Element {
   const navigate = useNavigate();
@@ -26,23 +27,46 @@ function App(): JSX.Element {
       Cookies.set('auth-type', 'anon', { expires: 2 });
     });
   };
-  const checkLogInn = (): boolean => Cookies.get('auth-type') !== undefined && Cookies.get('auth-type') !== 'anon';
+
+  const [authData, setAuthData] = useState<AuthData>({
+    anonToken: false,
+    anonRefreshToken: false,
+    authType: '',
+    cartId: 0,
+  });
 
   const checkLogIn = (): void => {
     if (Cookies.get('auth-type') !== undefined || Cookies.get('auth-type') !== 'anon') setIsAuth(true);
   };
 
   useEffect(() => {
-    const res = checkLogInn();
-    if (res) {
-      setIsAuth(true);
+    const authType = Cookies.get('auth-type');
+    if (authType) {
+      setAuthData({ ...authData, authType });
+      if (authType === 'password') {
+        setIsAuth(true);
+      }
     } else {
       getClientAccessToken().then((result) => {
         Cookies.set('access-token', result.accessToken, { expires: 2 });
         Cookies.set('auth-type', 'anon', { expires: 2 });
       });
     }
-  }, []);
+
+    const anonToken = Cookies.get('anon-token');
+    if (anonToken) {
+      setAuthData({ ...authData, anonToken: true });
+    }
+
+    const anonRefreshToken = Cookies.get('anon-refresh-token');
+    if (anonRefreshToken) {
+      setAuthData({ ...authData, anonRefreshToken: true });
+      const cartId = Cookies.get('cart-id');
+      if (cartId) {
+        setAuthData({ ...authData, cartId: Number(cartId) });
+      }
+    }
+  }, [authData]);
   return (
     <>
       <Header authh={auth} logOut={onLogOut} />
