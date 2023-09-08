@@ -11,7 +11,7 @@ import Header from '@components/Header/Header';
 import ProductPage from '@pages/Product/ProductPage';
 import AccountDashboard from '@pages/AccountDashboard/AccountDashboard';
 import { getClientAccessToken } from '@services/AuthService/AuthService';
-import AuthData from './interfaces/AuthData';
+import AuthData from '@interfaces/AuthData';
 
 function App(): JSX.Element {
   const navigate = useNavigate();
