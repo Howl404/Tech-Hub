@@ -1,9 +1,16 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import './Basket.scss';
 import Breadcrumbs from '@src/components/Breadcrumbs/Breadcrumbs';
 import CartItem from '@src/components/CartItem/CartItem';
+// import Cookies from 'js-cookie';
+// import { addToCart, getCartById } from '@src/services/CartService/CartService';
 
-function Basket(): JSX.Element {
+function Basket({ id }: { id: string }): JSX.Element {
+  useEffect(() => {
+    // const token = Cookies.get('access-token') as string;
+    // getCartById(token, id).then((item) => console.log('cart', item));
+    // addToCart(token, id, 'DEXP-Atlas-H343', 3, 1);
+  }, []);
   const resultBasket = [1];
   return (
     <>

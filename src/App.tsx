@@ -90,7 +90,7 @@ function App(): JSX.Element {
         <Route path="/products/:key?" element={<ProductPage />} />
         <Route path="/MyAccount/*" element={<AccountDashboard onLogOut={onLogOut} />} />
         <Route path="/catalog/:categoryslug?/:subcategoryslug?" element={<CatalogPage />} />
-        <Route path="/basket" element={<Basket />} />
+        <Route path="/basket" element={<Basket id={authData.cartId} />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>
