@@ -37,48 +37,39 @@ function App(): JSX.Element {
     refreshToken: '',
   });
 
+  console.log(authData); // authData never used error
+
   const checkLogIn = (): void => {
     if (Cookies.get('auth-type') !== undefined || Cookies.get('auth-type') !== 'anon') setIsAuth(true);
   };
 
   useEffect(() => {
     const accessToken = Cookies.get('access-token');
-    if (accessToken) {
-      setAuthData({ ...authData, accessToken });
-    }
-
     const refreshToken = Cookies.get('refresh-token');
-    if (refreshToken) {
-      setAuthData({ ...authData, refreshToken });
-    }
-
     const authType = Cookies.get('auth-type');
-    if (authType) {
-      setAuthData({ ...authData, authType });
-      if (authType === 'password') {
-        setIsAuth(true);
-      }
+    const anonToken = Cookies.get('anon-token');
+    const anonRefreshToken = Cookies.get('anon-refresh-token');
+    const cartId = Cookies.get('cart-id');
+
+    setAuthData((prevAuthData) => ({
+      ...prevAuthData,
+      accessToken: accessToken || prevAuthData.accessToken,
+      refreshToken: refreshToken || prevAuthData.refreshToken,
+      authType: authType || prevAuthData.authType,
+      anonToken: anonToken || prevAuthData.anonToken,
+      anonRefreshToken: anonRefreshToken || prevAuthData.anonRefreshToken,
+      cartId: cartId || prevAuthData.cartId,
+    }));
+
+    if (authType === 'password') {
+      setIsAuth(true);
     } else {
       getClientAccessToken().then((result) => {
         Cookies.set('access-token', result.accessToken, { expires: 2 });
         Cookies.set('auth-type', 'anon', { expires: 2 });
       });
     }
-
-    const anonToken = Cookies.get('anon-token');
-    if (anonToken) {
-      setAuthData({ ...authData, anonToken });
-    }
-
-    const anonRefreshToken = Cookies.get('anon-refresh-token');
-    if (anonRefreshToken) {
-      setAuthData({ ...authData, anonRefreshToken });
-      const cartId = Cookies.get('cart-id');
-      if (cartId) {
-        setAuthData({ ...authData, cartId });
-      }
-    }
-  }, [authData]);
+  }, []);
   return (
     <>
       <Header authh={auth} logOut={onLogOut} />
