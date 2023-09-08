@@ -3,4 +3,6 @@ export default interface AuthData {
   anonRefreshToken: string;
   authType: string;
   cartId: string;
+  accessToken: string;
+  refreshToken: string;
 }

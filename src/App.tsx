@@ -33,6 +33,8 @@ function App(): JSX.Element {
     anonRefreshToken: '',
     authType: '',
     cartId: '',
+    accessToken: '',
+    refreshToken: '',
   });
 
   const checkLogIn = (): void => {
@@ -40,6 +42,16 @@ function App(): JSX.Element {
   };
 
   useEffect(() => {
+    const accessToken = Cookies.get('access-token');
+    if (accessToken) {
+      setAuthData({ ...authData, accessToken });
+    }
+
+    const refreshToken = Cookies.get('refresh-token');
+    if (refreshToken) {
+      setAuthData({ ...authData, refreshToken });
+    }
+
     const authType = Cookies.get('auth-type');
     if (authType) {
       setAuthData({ ...authData, authType });
