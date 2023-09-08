@@ -87,7 +87,7 @@ const getCartByAnonId = async (token: string, anonymousId: string): Promise<Cart
 };
 
 const getCartById = async (token: string, id: string): Promise<Cart> => {
-  const url = `${apiUrl}/${projectKey}/me${id}`;
+  const url = `${apiUrl}/${projectKey}/me/carts/${id}`;
 
   const response = await axios.get(url, {
     headers: {
