@@ -10,7 +10,7 @@ import CatalogPage from '@pages/Catalog/CatalogPage';
 import Header from '@components/Header/Header';
 import ProductPage from '@pages/Product/ProductPage';
 import AccountDashboard from '@pages/AccountDashboard/AccountDashboard';
-import { getAnonymousAccessToken } from './services/AuthService/AuthService';
+import { getClientAccessToken } from '@services/AuthService/AuthService';
 
 function App(): JSX.Element {
   const navigate = useNavigate();
@@ -21,7 +21,7 @@ function App(): JSX.Element {
       navigate('/');
       setIsAuth(false);
     });
-    getAnonymousAccessToken().then((result) => {
+    getClientAccessToken().then((result) => {
       Cookies.set('access-token', result.accessToken, { expires: 2 });
       Cookies.set('auth-type', 'anon', { expires: 2 });
     });
@@ -37,7 +37,7 @@ function App(): JSX.Element {
     if (res) {
       setIsAuth(true);
     } else {
-      getAnonymousAccessToken().then((result) => {
+      getClientAccessToken().then((result) => {
         Cookies.set('access-token', result.accessToken, { expires: 2 });
         Cookies.set('auth-type', 'anon', { expires: 2 });
       });
