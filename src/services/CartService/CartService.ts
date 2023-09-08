@@ -55,13 +55,11 @@ const addToCart = async (
 };
 
 const getCartByCustomerId = async (token: string, customerId: string): Promise<Cart> => {
-  const encodedQuery = encodeURIComponent(`customerId="${customerId}"`);
+  let url = `${apiUrl}/${projectKey}/me/carts`;
 
-  const url = `${apiUrl}/${projectKey}/me/carts?where=${encodedQuery}`;
+  url += `?where=customerId="${customerId}"`;
 
-  const requestBody = {};
-
-  const response = await axios.post(url, JSON.stringify(requestBody), {
+  const response = await axios.get(url, {
     headers: {
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
@@ -77,7 +75,7 @@ const getCartByAnonId = async (token: string, anonymousId: string): Promise<Cart
 
   url += `?where=anonymousId="${anonymousId}"`;
 
-  const response = await axios.post(url, {
+  const response = await axios.get(url, {
     headers: {
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
@@ -91,7 +89,7 @@ const getCartByAnonId = async (token: string, anonymousId: string): Promise<Cart
 const getCartById = async (token: string, id: string): Promise<Cart> => {
   const url = `${apiUrl}/${projectKey}/me${id}`;
 
-  const response = await axios.post(url, {
+  const response = await axios.get(url, {
     headers: {
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
