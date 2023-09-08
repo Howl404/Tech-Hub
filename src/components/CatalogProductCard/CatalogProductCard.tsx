@@ -3,9 +3,33 @@ import React from 'react';
 import { ProductCatalog } from '@src/interfaces/Product';
 import { Link } from 'react-router-dom';
 
-function CatalogProductCard({ product, CartArray }: { product: ProductCatalog; CartArray: string[] }): JSX.Element {
+function CatalogProductCard({
+  product,
+  cartList,
+  addToCart,
+  removeFromCart,
+}: {
+  product: ProductCatalog;
+  cartList: { productId: string; id: string }[];
+  addToCart: (product: string) => Promise<void>;
+  removeFromCart: (product: string) => Promise<void>;
+}): JSX.Element {
   const { name, masterVariant } = product;
   const { images, prices, sku } = masterVariant;
+
+  let CartProduct: {
+    productId: string;
+    id: string;
+  } = {
+    productId: '0',
+    id: '0',
+  };
+  if (cartList.length > 0) {
+    const foundProduct = cartList.find((item) => item.productId === product.id);
+    if (foundProduct) {
+      CartProduct = foundProduct;
+    }
+  }
 
   let price: JSX.Element;
   if (prices[0].discounted) {
@@ -35,15 +59,26 @@ function CatalogProductCard({ product, CartArray }: { product: ProductCatalog; C
       <h3>{name.en}</h3>
       {price}
       <div className="buttons-container">
-        {CartArray.includes(sku) ? (
-          <button type="button" className="remove-from-cart btn-enabled">
-            Remove from cart
-          </button>
-        ) : (
-          <button type="button" className="add-to-cart btn-enabled">
-            Add to cart
-          </button>
-        )}
+        <button
+          type="button"
+          className="add-to-cart btn-enabled"
+          onClick={(): void => {
+            addToCart(sku);
+          }}
+          disabled={CartProduct.id !== '0'}
+        >
+          Add to cart
+        </button>
+        <button
+          type="button"
+          className="remove-from-cart btn-enabled"
+          onClick={(): void => {
+            removeFromCart(CartProduct.id);
+          }}
+          disabled={CartProduct.id === '0'}
+        >
+          Remove
+        </button>
         <Link to={`/products/${sku}`}>
           <button type="button" className="details-button  btn-enabled">
             Details

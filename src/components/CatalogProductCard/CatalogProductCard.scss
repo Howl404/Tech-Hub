@@ -13,7 +13,7 @@
     color: black;
     padding: 5px;
     width: 130px;
-    height: 420px;
+    height: 490px;
     border: 1px solid #ccc;
     transition:
       box-shadow 0.3s ease,
@@ -44,30 +44,32 @@
     }
 
     .buttons-container {
-      .details-button {
-        position: absolute;
-        width: 50px;
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      left: 0;
+      display: grid;
+      grid-template-columns: repeat(2, 50px);
+      a {
+        grid-column: span 2;
+      }
+      .details-button,
+      .add-to-cart,
+      .remove-from-cart {
         margin: 0;
+        width: 100%;
         font-size: 12px;
-        bottom: 10px;
-        left: 80px;
         border-radius: 8px;
         &:hover {
           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.485);
           border-radius: 16px;
         }
-      }
-      .add-to-cart {
-        position: absolute;
-        width: 50px;
-        margin: 0;
-        font-size: 12px;
-        bottom: 10px;
-        right: 80px;
-        border-radius: 8px;
-        &:hover {
-          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.485);
-          border-radius: 16px;
+
+        &:disabled {
+          background-color: grey;
+          cursor: auto;
+          border-radius: 8px;
+          box-shadow: none;
         }
       }
     }

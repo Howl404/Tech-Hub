@@ -12,8 +12,12 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import Breadcrumb from '@src/components/Breadcrumb/Breadcrumb';
 import sortingOptions from '@src/utilities/sortingOptions';
 import searchIcon from '@assets/search.svg';
+import AuthData from '@src/interfaces/AuthData';
+import { getCartById, createCart, addToCart, removeFromCart } from '@src/services/CartService/CartService';
+import { getAnonymousToken } from '@src/services/AuthService/AuthService';
+import Cookies from 'js-cookie';
 
-export default function Catalog(): JSX.Element {
+export default function Catalog({ authData }: { authData: AuthData }): JSX.Element {
   const navigate = useNavigate();
 
   const { categoryslug, subcategoryslug, subcategoryslug2 } = useParams<{
@@ -34,6 +38,8 @@ export default function Catalog(): JSX.Element {
   const [currentCategory, setCurrentCategory] = useState<{ name: string; key?: string }[]>([]);
   const [breadcrumb, setBreadcrumb] = useState<{ name: string; slug: string }[]>([]);
 
+  const [cartList, setCartList] = useState<{ id: string; productId: string }[]>([]);
+
   const [displayCategories, setDisplayCategories] = useState(false);
 
   const handleSortingChange = (newOption: string): void => {
@@ -46,6 +52,59 @@ export default function Catalog(): JSX.Element {
 
   const handleBrandChange = (newBrand: string): void => {
     setBrand(newBrand);
+  };
+
+  const handleAddToCart = async (product: string): Promise<void> => {
+    let resultCart;
+    if (authData.cartId) {
+      if (authData.anonToken) {
+        const cart = await getCartById(authData.anonToken, authData.cartId);
+        resultCart = await addToCart(authData.anonToken, cart.id, product, cart.version, 1);
+      } else {
+        // получить новый токен через рефреш
+        // TODO
+      }
+    } else {
+      const response = await getAnonymousToken();
+      const threeHours = 180 / (24 * 60);
+
+      Cookies.set('anon-token', response.accessToken, { expires: threeHours });
+      Cookies.set('anon-refresh-token', response.refreshToken, { expires: 200 });
+
+      const cart = await createCart(response.accessToken);
+      Cookies.set('cart-id', cart.id);
+
+      resultCart = await addToCart(response.accessToken, cart.id, product, cart.version, 1);
+    }
+
+    if (resultCart) {
+      const formattedCart = resultCart.lineItems.map((lineItem) => ({
+        productId: lineItem.productId,
+        id: lineItem.id,
+      }));
+      setCartList(formattedCart);
+    }
+  };
+
+  const handleRemoveFromCart = async (product: string): Promise<void> => {
+    let resultCart;
+    if (authData.cartId) {
+      if (authData.anonToken) {
+        const cart = await getCartById(authData.anonToken, authData.cartId);
+        resultCart = await removeFromCart(authData.anonToken, cart.id, product, cart.version);
+      } else {
+        // получить новый токен через рефреш
+        // TODO
+      }
+    }
+
+    if (resultCart) {
+      const formattedCart = resultCart.lineItems.map((lineItem) => ({
+        productId: lineItem.productId,
+        id: lineItem.id,
+      }));
+      setCartList(formattedCart);
+    }
   };
 
   const clearBrand = useCallback(() => {
@@ -112,6 +171,18 @@ export default function Catalog(): JSX.Element {
       setCategories(data.mainCategories);
     });
   }, []);
+
+  useEffect(() => {
+    if (authData.cartId && authData.anonToken) {
+      getCartById(authData.anonToken, authData.cartId).then((cart) => {
+        const formattedCart = cart.lineItems.map((lineItem) => ({
+          productId: lineItem.productId,
+          id: lineItem.id,
+        }));
+        setCartList(formattedCart);
+      });
+    }
+  }, [authData]);
 
   useEffect(() => {
     getNewProducts();
@@ -216,7 +287,13 @@ export default function Catalog(): JSX.Element {
         </div>
         <div className="product-list">
           {products.map((product) => (
-            <CatalogProductCard key={product.name.en} product={product} CartArray={[]} />
+            <CatalogProductCard
+              key={product.name.en}
+              product={product}
+              cartList={cartList}
+              addToCart={handleAddToCart}
+              removeFromCart={handleRemoveFromCart}
+            />
           ))}
         </div>
       </div>

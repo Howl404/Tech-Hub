@@ -79,7 +79,7 @@ function App(): JSX.Element {
         <Route path="/login" element={<LoginPage checkLogIn={checkLogIn} />} />
         <Route path="/products/:key?" element={<ProductPage />} />
         <Route path="/MyAccount/*" element={<AccountDashboard onLogOut={onLogOut} />} />
-        <Route path="/catalog/:categoryslug?/:subcategoryslug?" element={<CatalogPage />} />
+        <Route path="/catalog/:categoryslug?/:subcategoryslug?" element={<CatalogPage authData={authData} />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>
