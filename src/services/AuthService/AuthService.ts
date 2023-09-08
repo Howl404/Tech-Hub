@@ -3,7 +3,6 @@ import Toastify from 'toastify-js';
 import { ResponseErrorItem } from '@interfaces/Errors';
 import { CustomerData, CustomerDraft, CustomersId, SendAddress } from '@interfaces/Customer';
 import 'toastify-js/src/toastify.css';
-import { Cart } from '@interfaces/Cart';
 import Cookies from 'js-cookie';
 
 const authHost = 'https://auth.europe-west1.gcp.commercetools.com';
@@ -65,7 +64,7 @@ const registerUser = async (userData: CustomerDraft, token: string): Promise<Cus
   return false;
 };
 
-const getAnonymousAccessToken = async (): Promise<{
+const getClientAccessToken = async (): Promise<{
   accessToken: string;
 }> => {
   const authHeader = `Basic ${btoa(`${anonId}:${anonSecret}`)}`;
@@ -78,6 +77,28 @@ const getAnonymousAccessToken = async (): Promise<{
 
   const accessToken = response.data.access_token;
   return { accessToken };
+};
+
+const getAnonymousToken = async (): Promise<{
+  accessToken: string;
+  refreshToken: string;
+}> => {
+  const scope = `create_anonymous_token:${projectKey} manage_my_orders:${projectKey} manage_my_profile:${projectKey}`;
+  const authHeader = `Basic ${btoa(`${anonId}:${anonSecret}`)}`;
+  const response = await axios.post(
+    `${authHost}/oauth/${projectKey}/anonymous/token`,
+    `grant_type=client_credentials&scope=${scope}`,
+    {
+      headers: {
+        Authorization: authHeader,
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    },
+  );
+
+  const accessToken = response.data.access_token;
+  const refreshToken = response.data.refresh_token;
+  return { accessToken, refreshToken };
 };
 
 const logInUser = async (
@@ -136,24 +157,6 @@ const logInUser = async (
     },
   }).showToast();
   return undefined;
-};
-
-const createCart = async (token: string): Promise<Cart> => {
-  const cartEndpoint = `${apiUrl}/${projectKey}/me/carts`;
-
-  const requestBody = {
-    currency: 'EUR',
-  };
-
-  const response = await axios.post(cartEndpoint, JSON.stringify(requestBody), {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-  });
-
-  const cart: Cart = response.data;
-  return cart;
 };
 
 const getCustomerId = async (): Promise<CustomersId> => {
@@ -721,8 +724,8 @@ const requestDefaultShippingAddress = async (addressId: string): Promise<Custome
 export {
   registerUser,
   logInUser,
-  getAnonymousAccessToken,
-  createCart,
+  getAnonymousToken,
+  getClientAccessToken,
   getCustomerId,
   sendData,
   changePasswordRequest,
