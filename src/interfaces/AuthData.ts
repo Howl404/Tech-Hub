@@ -1,6 +1,6 @@
 export default interface AuthData {
-  anonToken: boolean;
-  anonRefreshToken: boolean;
+  anonToken: string;
+  anonRefreshToken: string;
   authType: string;
-  cartId: number;
+  cartId: string;
 }

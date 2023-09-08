@@ -19,20 +19,20 @@ function App(): JSX.Element {
   const onLogOut = (): void => {
     Object.keys(Cookies.get()).forEach((item) => {
       Cookies.remove(item);
-      navigate('/');
-      setIsAuth(false);
     });
     getClientAccessToken().then((result) => {
       Cookies.set('access-token', result.accessToken, { expires: 2 });
       Cookies.set('auth-type', 'anon', { expires: 2 });
     });
+    navigate('/');
+    setIsAuth(false);
   };
 
   const [authData, setAuthData] = useState<AuthData>({
-    anonToken: false,
-    anonRefreshToken: false,
+    anonToken: '',
+    anonRefreshToken: '',
     authType: '',
-    cartId: 0,
+    cartId: '',
   });
 
   const checkLogIn = (): void => {
@@ -55,15 +55,15 @@ function App(): JSX.Element {
 
     const anonToken = Cookies.get('anon-token');
     if (anonToken) {
-      setAuthData({ ...authData, anonToken: true });
+      setAuthData({ ...authData, anonToken });
     }
 
     const anonRefreshToken = Cookies.get('anon-refresh-token');
     if (anonRefreshToken) {
-      setAuthData({ ...authData, anonRefreshToken: true });
+      setAuthData({ ...authData, anonRefreshToken });
       const cartId = Cookies.get('cart-id');
       if (cartId) {
-        setAuthData({ ...authData, cartId: Number(cartId) });
+        setAuthData({ ...authData, cartId });
       }
     }
   }, [authData]);
