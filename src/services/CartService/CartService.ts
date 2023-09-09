@@ -66,7 +66,7 @@ const getCartByCustomerId = async (token: string, customerId: string): Promise<C
     },
   });
 
-  const cart: Cart = response.data;
+  const cart: Cart = response.data.results[0];
   return cart;
 };
 
