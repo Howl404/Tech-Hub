@@ -12,8 +12,18 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import Breadcrumb from '@src/components/Breadcrumb/Breadcrumb';
 import sortingOptions from '@src/utilities/sortingOptions';
 import searchIcon from '@assets/search.svg';
+import AuthData from '@src/interfaces/AuthData';
+import { getCartById, createCart, addToCart, removeFromCart } from '@src/services/CartService/CartService';
+import { getAnonymousToken, getNewToken } from '@src/services/AuthService/AuthService';
+import Cookies from 'js-cookie';
 
-export default function Catalog(): JSX.Element {
+export default function Catalog({
+  authData,
+  updateAuthData,
+}: {
+  authData: AuthData;
+  updateAuthData: (newAuthData: AuthData) => void;
+}): JSX.Element {
   const navigate = useNavigate();
 
   const { categoryslug, subcategoryslug, subcategoryslug2 } = useParams<{
@@ -34,6 +44,8 @@ export default function Catalog(): JSX.Element {
   const [currentCategory, setCurrentCategory] = useState<{ name: string; key?: string }[]>([]);
   const [breadcrumb, setBreadcrumb] = useState<{ name: string; slug: string }[]>([]);
 
+  const [cartList, setCartList] = useState<{ id: string; productId: string }[]>([]);
+
   const [displayCategories, setDisplayCategories] = useState(false);
 
   const handleSortingChange = (newOption: string): void => {
@@ -46,6 +58,82 @@ export default function Catalog(): JSX.Element {
 
   const handleBrandChange = (newBrand: string): void => {
     setBrand(newBrand);
+  };
+
+  const handleAddToCart = async (product: string): Promise<void> => {
+    let resultCart;
+    if (authData.cartId) {
+      if (authData.anonToken) {
+        const cart = await getCartById(authData.anonToken, authData.cartId);
+        resultCart = await addToCart(authData.anonToken, cart.id, product, cart.version, 1);
+      } else {
+        const response = await getNewToken(authData.anonRefreshToken);
+        Cookies.set('anon-token', response.accessToken, { expires: 2 });
+        updateAuthData({ ...authData, anonToken: response.accessToken });
+        const cart = await getCartById(response.accessToken, authData.cartId);
+        resultCart = await addToCart(response.accessToken, cart.id, product, cart.version, 1);
+      }
+    } else {
+      const response = await getAnonymousToken();
+      const threeHours = 180 / (24 * 60);
+
+      Cookies.set('anon-token', response.accessToken, { expires: threeHours });
+      Cookies.set('anon-refresh-token', response.refreshToken, { expires: 200 });
+
+      const cart = await createCart(response.accessToken);
+      Cookies.set('cart-id', cart.id);
+
+      updateAuthData({
+        ...authData,
+        anonToken: response.accessToken,
+        cartId: cart.id,
+        anonRefreshToken: response.refreshToken,
+      });
+
+      resultCart = await addToCart(response.accessToken, cart.id, product, cart.version, 1);
+    }
+
+    if (resultCart) {
+      const formattedCart = resultCart.lineItems.map((lineItem) => ({
+        productId: lineItem.productId,
+        id: lineItem.id,
+      }));
+      setCartList(formattedCart);
+    }
+
+    return Promise.resolve();
+  };
+
+  const handleRemoveFromCart = async (product: string): Promise<void> => {
+    let resultCart;
+    if (authData.cartId) {
+      if (authData.anonToken) {
+        const cart = await getCartById(authData.anonToken, authData.cartId);
+        resultCart = await removeFromCart(authData.anonToken, cart.id, product, cart.version);
+      } else {
+        const response = await getNewToken(authData.anonRefreshToken);
+        Cookies.set('anon-token', response.accessToken, { expires: 2 });
+
+        updateAuthData({
+          ...authData,
+          anonToken: response.accessToken,
+        });
+
+        const cart = await getCartById(authData.anonToken, authData.cartId);
+        resultCart = await removeFromCart(authData.anonToken, cart.id, product, cart.version);
+      }
+    }
+
+    if (resultCart) {
+      const formattedCart = resultCart.lineItems.map((lineItem) => ({
+        productId: lineItem.productId,
+        id: lineItem.id,
+      }));
+      setCartList(formattedCart);
+    }
+
+    console.log('resolve catalog page');
+    return Promise.resolve();
   };
 
   const clearBrand = useCallback(() => {
@@ -90,20 +178,32 @@ export default function Catalog(): JSX.Element {
       };
     };
 
-    const updateBreadcrumb = async (): Promise<void> => {
-      const breadcrumbArray: { name: string; slug: string }[] = [];
+    async function fetchCategoriesInOrder(
+      currentCategories: {
+        name: string;
+        key?: string | undefined;
+      }[],
+    ): Promise<
+      {
+        name: string;
+        slug: string;
+      }[]
+    > {
+      const breadcrumbArray = [];
 
-      for (let i = 0; i < currentCategory.length; i += 1) {
-        fetchCategory(currentCategory[i].name).then((data) => {
-          breadcrumbArray.push(data);
-        });
-      }
+      const fetchPromises = currentCategories.map((category) => fetchCategory(category.name));
 
-      setBreadcrumb(breadcrumbArray);
-    };
+      const results = await Promise.all(fetchPromises);
+
+      breadcrumbArray.push(...results);
+
+      return breadcrumbArray;
+    }
 
     if (currentCategory.length > 0) {
-      updateBreadcrumb();
+      fetchCategoriesInOrder(currentCategory).then((array) => {
+        setBreadcrumb(array);
+      });
     }
   }, [currentCategory]);
 
@@ -112,6 +212,18 @@ export default function Catalog(): JSX.Element {
       setCategories(data.mainCategories);
     });
   }, []);
+
+  useEffect(() => {
+    if (authData.cartId && authData.anonToken) {
+      getCartById(authData.anonToken, authData.cartId).then((cart) => {
+        const formattedCart = cart.lineItems.map((lineItem) => ({
+          productId: lineItem.productId,
+          id: lineItem.id,
+        }));
+        setCartList(formattedCart);
+      });
+    }
+  }, [authData]);
 
   useEffect(() => {
     getNewProducts();
@@ -216,7 +328,13 @@ export default function Catalog(): JSX.Element {
         </div>
         <div className="product-list">
           {products.map((product) => (
-            <CatalogProductCard key={product.name.en} product={product} />
+            <CatalogProductCard
+              key={product.name.en}
+              product={product}
+              cartList={cartList}
+              addToCart={handleAddToCart}
+              removeFromCart={handleRemoveFromCart}
+            />
           ))}
         </div>
       </div>
