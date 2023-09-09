@@ -4,6 +4,7 @@ import { ResponseErrorItem } from '@interfaces/Errors';
 import { CustomerData, CustomerDraft, CustomersId, SendAddress } from '@interfaces/Customer';
 import 'toastify-js/src/toastify.css';
 import Cookies from 'js-cookie';
+import { Cart } from '@src/interfaces/Cart';
 
 const authHost = 'https://auth.europe-west1.gcp.commercetools.com';
 const apiUrl = 'https://api.europe-west1.gcp.commercetools.com';
@@ -99,6 +100,60 @@ const getAnonymousToken = async (): Promise<{
   const accessToken = response.data.access_token;
   const refreshToken = response.data.refresh_token;
   return { accessToken, refreshToken };
+};
+
+const logInUserWithCart = async (
+  email: string,
+  password: string,
+): Promise<{ cart: Cart | undefined; customer: CustomerData } | undefined> => {
+  let errorText;
+  try {
+    const token = Cookies.get('anon-token');
+    const authHeader = `Bearer ${token}`;
+    const requestBody = {
+      email,
+      password,
+    };
+
+    const response = await axios.post(`${apiUrl}/${projectKey}/me/login`, requestBody, {
+      headers: {
+        Authorization: authHeader,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    const { customer, cart } = response.data;
+
+    return { customer, cart };
+  } catch (e) {
+    if (e instanceof AxiosError && e.response?.data) {
+      if (e.response.data?.errors.length) {
+        errorText = e.response.data.errors
+          .map((errItem: ResponseErrorItem) => errItem.detailedErrorMessage || errItem.message)
+          .join('\r\n');
+      } else {
+        errorText = e.response.data?.message;
+      }
+    } else if (e instanceof Error) {
+      errorText = e.message;
+    } else if (typeof e === 'string') {
+      errorText = e;
+    }
+  }
+
+  Toastify({
+    text: errorText,
+    duration: 3000,
+    newWindow: true,
+    close: true,
+    gravity: 'top',
+    position: 'right',
+    stopOnFocus: true,
+    style: {
+      background: 'linear-gradient(to right, #ff0000, #fdacac)',
+    },
+  }).showToast();
+  return undefined;
 };
 
 const logInUser = async (
@@ -745,6 +800,7 @@ const requestDefaultShippingAddress = async (addressId: string): Promise<Custome
 export {
   registerUser,
   logInUser,
+  logInUserWithCart,
   getAnonymousToken,
   getClientAccessToken,
   getCustomerId,

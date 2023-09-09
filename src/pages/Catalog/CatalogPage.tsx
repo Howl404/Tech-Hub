@@ -12,18 +12,11 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import Breadcrumb from '@src/components/Breadcrumb/Breadcrumb';
 import sortingOptions from '@src/utilities/sortingOptions';
 import searchIcon from '@assets/search.svg';
-import AuthData from '@src/interfaces/AuthData';
 import { getCartById, createCart, addToCart, removeFromCart } from '@src/services/CartService/CartService';
 import { getAnonymousToken, getNewToken } from '@src/services/AuthService/AuthService';
 import Cookies from 'js-cookie';
 
-export default function Catalog({
-  authData,
-  updateAuthData,
-}: {
-  authData: AuthData;
-  updateAuthData: (newAuthData: AuthData) => void;
-}): JSX.Element {
+export default function Catalog(): JSX.Element {
   const navigate = useNavigate();
 
   const { categoryslug, subcategoryslug, subcategoryslug2 } = useParams<{
@@ -61,16 +54,24 @@ export default function Catalog({
   };
 
   const handleAddToCart = async (product: string): Promise<void> => {
+    const cartId = Cookies.get('cart-id');
+    const anonToken = Cookies.get('anon-token');
+    const authType = Cookies.get('auth-type');
+    const accessToken = Cookies.get('access-token');
+    const anonRefreshToken = Cookies.get('anon-refresh-token');
     let resultCart;
-    if (authData.cartId) {
-      if (authData.anonToken) {
-        const cart = await getCartById(authData.anonToken, authData.cartId);
-        resultCart = await addToCart(authData.anonToken, cart.id, product, cart.version, 1);
-      } else {
-        const response = await getNewToken(authData.anonRefreshToken);
+    if (cartId) {
+      if (authType === 'password' && accessToken) {
+        console.log(cartId);
+        const cart = await getCartById(accessToken, cartId);
+        resultCart = await addToCart(accessToken, cart.id, product, cart.version, 1);
+      } else if (anonToken) {
+        const cart = await getCartById(anonToken, cartId);
+        resultCart = await addToCart(anonToken, cart.id, product, cart.version, 1);
+      } else if (anonRefreshToken) {
+        const response = await getNewToken(anonRefreshToken);
         Cookies.set('anon-token', response.accessToken, { expires: 2 });
-        updateAuthData({ ...authData, anonToken: response.accessToken });
-        const cart = await getCartById(response.accessToken, authData.cartId);
+        const cart = await getCartById(response.accessToken, cartId);
         resultCart = await addToCart(response.accessToken, cart.id, product, cart.version, 1);
       }
     } else {
@@ -81,14 +82,7 @@ export default function Catalog({
       Cookies.set('anon-refresh-token', response.refreshToken, { expires: 200 });
 
       const cart = await createCart(response.accessToken);
-      Cookies.set('cart-id', cart.id);
-
-      updateAuthData({
-        ...authData,
-        anonToken: response.accessToken,
-        cartId: cart.id,
-        anonRefreshToken: response.refreshToken,
-      });
+      Cookies.set('cart-id', cart.id, { expires: 999 });
 
       resultCart = await addToCart(response.accessToken, cart.id, product, cart.version, 1);
     }
@@ -105,22 +99,25 @@ export default function Catalog({
   };
 
   const handleRemoveFromCart = async (product: string): Promise<void> => {
+    const cartId = Cookies.get('cart-id');
+    const anonToken = Cookies.get('anon-token');
+    const authType = Cookies.get('auth-type');
+    const accessToken = Cookies.get('access-token');
+    const anonRefreshToken = Cookies.get('anon-refresh-token');
     let resultCart;
-    if (authData.cartId) {
-      if (authData.anonToken) {
-        const cart = await getCartById(authData.anonToken, authData.cartId);
-        resultCart = await removeFromCart(authData.anonToken, cart.id, product, cart.version);
-      } else {
-        const response = await getNewToken(authData.anonRefreshToken);
+    if (cartId) {
+      if (anonToken) {
+        const cart = await getCartById(anonToken, cartId);
+        resultCart = await removeFromCart(anonToken, cart.id, product, cart.version);
+      } else if (authType === 'password' && accessToken) {
+        const cart = await getCartById(accessToken, cartId);
+        resultCart = await removeFromCart(accessToken, cart.id, product, cart.version);
+      } else if (anonRefreshToken) {
+        const response = await getNewToken(anonRefreshToken);
         Cookies.set('anon-token', response.accessToken, { expires: 2 });
 
-        updateAuthData({
-          ...authData,
-          anonToken: response.accessToken,
-        });
-
-        const cart = await getCartById(authData.anonToken, authData.cartId);
-        resultCart = await removeFromCart(authData.anonToken, cart.id, product, cart.version);
+        const cart = await getCartById(response.accessToken, cartId);
+        resultCart = await removeFromCart(response.accessToken, cart.id, product, cart.version);
       }
     }
 
@@ -131,8 +128,6 @@ export default function Catalog({
       }));
       setCartList(formattedCart);
     }
-
-    console.log('resolve catalog page');
     return Promise.resolve();
   };
 
@@ -214,8 +209,20 @@ export default function Catalog({
   }, []);
 
   useEffect(() => {
-    if (authData.cartId && authData.anonToken) {
-      getCartById(authData.anonToken, authData.cartId).then((cart) => {
+    const cartId = Cookies.get('cart-id');
+    const anonToken = Cookies.get('anon-token');
+    const accessToken = Cookies.get('access-token');
+    const authType = Cookies.get('auth-type');
+    if (cartId && authType === 'password' && accessToken) {
+      getCartById(accessToken, cartId).then((cart) => {
+        const formattedCart = cart.lineItems.map((lineItem) => ({
+          productId: lineItem.productId,
+          id: lineItem.id,
+        }));
+        setCartList(formattedCart);
+      });
+    } else if (cartId && anonToken) {
+      getCartById(anonToken, cartId).then((cart) => {
         const formattedCart = cart.lineItems.map((lineItem) => ({
           productId: lineItem.productId,
           id: lineItem.id,
@@ -223,7 +230,7 @@ export default function Catalog({
         setCartList(formattedCart);
       });
     }
-  }, [authData]);
+  }, []);
 
   useEffect(() => {
     getNewProducts();
