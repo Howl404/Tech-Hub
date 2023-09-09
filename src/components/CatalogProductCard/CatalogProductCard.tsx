@@ -1,7 +1,11 @@
 import './CatalogProductCard.scss';
-import React from 'react';
+import React, { useState } from 'react';
 import { ProductCatalog } from '@src/interfaces/Product';
+import ClipLoader from 'react-spinners/ClipLoader';
 import { Link } from 'react-router-dom';
+
+import cartAdd from '@assets/cart-plus-solid.svg';
+import cartRemove from '@assets/cart-shopping-solid.svg';
 
 function CatalogProductCard({
   product,
@@ -16,6 +20,9 @@ function CatalogProductCard({
 }): JSX.Element {
   const { name, masterVariant } = product;
   const { images, prices, sku } = masterVariant;
+
+  const [addItemLoading, setAddItemLoading] = useState(false);
+  const [removeItemLoading, setRemoveItemLoading] = useState(false);
 
   let CartProduct: {
     productId: string;
@@ -63,21 +70,32 @@ function CatalogProductCard({
           type="button"
           className="add-to-cart btn-enabled"
           onClick={(): void => {
-            addToCart(sku);
+            setAddItemLoading(true);
+            addToCart(sku).then(() => {
+              console.log('resolve product cart');
+              setAddItemLoading(false);
+            });
           }}
           disabled={CartProduct.id !== '0'}
         >
-          Add to cart
+          {addItemLoading ? <ClipLoader /> : <img src={cartAdd} className="cart-add-img" alt="Add to cart" />}
         </button>
         <button
           type="button"
           className="remove-from-cart btn-enabled"
           onClick={(): void => {
-            removeFromCart(CartProduct.id);
+            setRemoveItemLoading(true);
+            removeFromCart(CartProduct.id).then(() => {
+              setRemoveItemLoading(false);
+            });
           }}
           disabled={CartProduct.id === '0'}
         >
-          Remove
+          {removeItemLoading ? (
+            <ClipLoader />
+          ) : (
+            <img src={cartRemove} className="cart-remove-img" alt="Remove from cart" />
+          )}
         </button>
         <Link to={`/products/${sku}`}>
           <button type="button" className="details-button  btn-enabled">

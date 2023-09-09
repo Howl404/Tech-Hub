@@ -68,14 +68,9 @@ export default function Catalog({
         resultCart = await addToCart(authData.anonToken, cart.id, product, cart.version, 1);
       } else {
         const response = await getNewToken(authData.anonRefreshToken);
-
         Cookies.set('anon-token', response.accessToken, { expires: 2 });
-
-        const cart = await createCart(response.accessToken);
-        Cookies.set('cart-id', cart.id);
-
-        updateAuthData({ ...authData, anonToken: response.accessToken, cartId: cart.id });
-
+        updateAuthData({ ...authData, anonToken: response.accessToken });
+        const cart = await getCartById(response.accessToken, authData.cartId);
         resultCart = await addToCart(response.accessToken, cart.id, product, cart.version, 1);
       }
     } else {
@@ -105,6 +100,8 @@ export default function Catalog({
       }));
       setCartList(formattedCart);
     }
+
+    return Promise.resolve();
   };
 
   const handleRemoveFromCart = async (product: string): Promise<void> => {
@@ -134,6 +131,9 @@ export default function Catalog({
       }));
       setCartList(formattedCart);
     }
+
+    console.log('resolve catalog page');
+    return Promise.resolve();
   };
 
   const clearBrand = useCallback(() => {
