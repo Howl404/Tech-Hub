@@ -168,6 +168,27 @@ const getCustomerId = async (): Promise<CustomersId> => {
   return response.data;
 };
 
+const getNewToken = async (
+  refreshToken: string,
+): Promise<{
+  accessToken: string;
+}> => {
+  const authHeader = `Basic ${btoa(`${anonId}:${anonSecret}`)}`;
+  const response = await axios.post(
+    `${authHost}/oauth/token`,
+    `grant_type=refresh_token&refresh_token=${refreshToken}`,
+    {
+      headers: {
+        Authorization: authHeader,
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    },
+  );
+
+  const accessToken = response.data.access_token;
+  return accessToken;
+};
+
 const sendData = async (data: SendAddress, id: string, addressId: string): Promise<CustomersId> => {
   const profileResponse = await axios.get(`${apiUrl}/${projectKey}/me`, {
     headers: {
@@ -727,6 +748,7 @@ export {
   getAnonymousToken,
   getClientAccessToken,
   getCustomerId,
+  getNewToken,
   sendData,
   changePasswordRequest,
   changeEmailRequest,
