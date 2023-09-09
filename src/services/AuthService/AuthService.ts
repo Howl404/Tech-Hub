@@ -186,7 +186,7 @@ const getNewToken = async (
   );
 
   const accessToken = response.data.access_token;
-  return accessToken;
+  return { accessToken };
 };
 
 const sendData = async (data: SendAddress, id: string, addressId: string): Promise<CustomersId> => {
