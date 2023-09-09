@@ -66,11 +66,11 @@ function App(): JSX.Element {
     fetchData();
   }, []);
 
-  const updateAuthData = (newAuthData: AuthData): void => {
-    setAuthData(newAuthData);
-  };
+  // const updateAuthData = (newAuthData: AuthData): void => {
+  //   setAuthData(newAuthData);
+  // };
 
-  updateAuthData(authData); // updateAuthData never used error
+  // updateAuthData(authData); Pass function to update data on pages (...AuthData, accessToken: "123")
 
   useLayoutEffect(() => {
     const accessToken = Cookies.get('access-token');
