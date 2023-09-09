@@ -14,10 +14,16 @@ import sortingOptions from '@src/utilities/sortingOptions';
 import searchIcon from '@assets/search.svg';
 import AuthData from '@src/interfaces/AuthData';
 import { getCartById, createCart, addToCart, removeFromCart } from '@src/services/CartService/CartService';
-import { getAnonymousToken } from '@src/services/AuthService/AuthService';
+import { getAnonymousToken, getNewToken } from '@src/services/AuthService/AuthService';
 import Cookies from 'js-cookie';
 
-export default function Catalog({ authData }: { authData: AuthData }): JSX.Element {
+export default function Catalog({
+  authData,
+  updateAuthData,
+}: {
+  authData: AuthData;
+  updateAuthData: (newAuthData: AuthData) => void;
+}): JSX.Element {
   const navigate = useNavigate();
 
   const { categoryslug, subcategoryslug, subcategoryslug2 } = useParams<{
@@ -61,8 +67,16 @@ export default function Catalog({ authData }: { authData: AuthData }): JSX.Eleme
         const cart = await getCartById(authData.anonToken, authData.cartId);
         resultCart = await addToCart(authData.anonToken, cart.id, product, cart.version, 1);
       } else {
-        // получить новый токен через рефреш
-        // TODO
+        const response = await getNewToken(authData.anonRefreshToken);
+
+        Cookies.set('anon-token', response.accessToken, { expires: 2 });
+
+        const cart = await createCart(response.accessToken);
+        Cookies.set('cart-id', cart.id);
+
+        updateAuthData({ ...authData, anonToken: response.accessToken, cartId: cart.id });
+
+        resultCart = await addToCart(response.accessToken, cart.id, product, cart.version, 1);
       }
     } else {
       const response = await getAnonymousToken();
@@ -73,6 +87,13 @@ export default function Catalog({ authData }: { authData: AuthData }): JSX.Eleme
 
       const cart = await createCart(response.accessToken);
       Cookies.set('cart-id', cart.id);
+
+      updateAuthData({
+        ...authData,
+        anonToken: response.accessToken,
+        cartId: cart.id,
+        anonRefreshToken: response.refreshToken,
+      });
 
       resultCart = await addToCart(response.accessToken, cart.id, product, cart.version, 1);
     }
@@ -93,8 +114,16 @@ export default function Catalog({ authData }: { authData: AuthData }): JSX.Eleme
         const cart = await getCartById(authData.anonToken, authData.cartId);
         resultCart = await removeFromCart(authData.anonToken, cart.id, product, cart.version);
       } else {
-        // получить новый токен через рефреш
-        // TODO
+        const response = await getNewToken(authData.anonRefreshToken);
+        Cookies.set('anon-token', response.accessToken, { expires: 2 });
+
+        updateAuthData({
+          ...authData,
+          anonToken: response.accessToken,
+        });
+
+        const cart = await getCartById(authData.anonToken, authData.cartId);
+        resultCart = await removeFromCart(authData.anonToken, cart.id, product, cart.version);
       }
     }
 
@@ -149,20 +178,32 @@ export default function Catalog({ authData }: { authData: AuthData }): JSX.Eleme
       };
     };
 
-    const updateBreadcrumb = async (): Promise<void> => {
-      const breadcrumbArray: { name: string; slug: string }[] = [];
+    async function fetchCategoriesInOrder(
+      currentCategories: {
+        name: string;
+        key?: string | undefined;
+      }[],
+    ): Promise<
+      {
+        name: string;
+        slug: string;
+      }[]
+    > {
+      const breadcrumbArray = [];
 
-      for (let i = 0; i < currentCategory.length; i += 1) {
-        fetchCategory(currentCategory[i].name).then((data) => {
-          breadcrumbArray.push(data);
-        });
-      }
+      const fetchPromises = currentCategories.map((category) => fetchCategory(category.name));
 
-      setBreadcrumb(breadcrumbArray);
-    };
+      const results = await Promise.all(fetchPromises);
+
+      breadcrumbArray.push(...results);
+
+      return breadcrumbArray;
+    }
 
     if (currentCategory.length > 0) {
-      updateBreadcrumb();
+      fetchCategoriesInOrder(currentCategory).then((array) => {
+        setBreadcrumb(array);
+      });
     }
   }, [currentCategory]);
 

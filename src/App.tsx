@@ -38,8 +38,6 @@ function App(): JSX.Element {
     refreshToken: '',
   });
 
-  console.log(authData); // authData never used error
-
   const checkLogIn = (): void => {
     if (Cookies.get('auth-type') !== undefined || Cookies.get('auth-type') !== 'anon') setIsAuth(true);
   };
@@ -69,8 +67,6 @@ function App(): JSX.Element {
   const updateAuthData = (newAuthData: AuthData): void => {
     setAuthData(newAuthData);
   };
-
-  updateAuthData(authData); // updateAuthData never used error
 
   useLayoutEffect(() => {
     const accessToken = Cookies.get('access-token');
@@ -102,7 +98,10 @@ function App(): JSX.Element {
         <Route path="/login" element={<LoginPage checkLogIn={checkLogIn} />} />
         <Route path="/products/:key?" element={<ProductPage />} />
         <Route path="/MyAccount/*" element={<AccountDashboard onLogOut={onLogOut} />} />
-        <Route path="/catalog/:categoryslug?/:subcategoryslug?" element={<CatalogPage authData={authData} />} />
+        <Route
+          path="/catalog/:categoryslug?/:subcategoryslug?"
+          element={<CatalogPage authData={authData} updateAuthData={updateAuthData} />}
+        />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>
