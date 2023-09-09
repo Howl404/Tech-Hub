@@ -106,12 +106,12 @@ export default function Catalog(): JSX.Element {
     const anonRefreshToken = Cookies.get('anon-refresh-token');
     let resultCart;
     if (cartId) {
-      if (anonToken) {
-        const cart = await getCartById(anonToken, cartId);
-        resultCart = await removeFromCart(anonToken, cart.id, product, cart.version);
-      } else if (authType === 'password' && accessToken) {
+      if (authType === 'password' && accessToken) {
         const cart = await getCartById(accessToken, cartId);
         resultCart = await removeFromCart(accessToken, cart.id, product, cart.version);
+      } else if (anonToken) {
+        const cart = await getCartById(anonToken, cartId);
+        resultCart = await removeFromCart(anonToken, cart.id, product, cart.version);
       } else if (anonRefreshToken) {
         const response = await getNewToken(anonRefreshToken);
         Cookies.set('anon-token', response.accessToken, { expires: 2 });
