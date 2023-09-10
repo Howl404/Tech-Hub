@@ -156,6 +156,12 @@
       }
     }
 
+    @media (max-width: 700px) {
+      .buttons-container {
+        flex-direction: row;
+      }
+    }
+
     .buttons-container {
       width: 285px;
       margin-bottom: 0px;
