@@ -37,7 +37,7 @@ function NameAccount({ logOut }: { logOut: () => void }): JSX.Element {
           const result = await getCartByCustomerId(token, item.id);
           Cookies.set('cart-id', result.id, { expires: 999 });
         } catch (error) {
-          console.log(error);
+          // no cart found
         }
       }
     });

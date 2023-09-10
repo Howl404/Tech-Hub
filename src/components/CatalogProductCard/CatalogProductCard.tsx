@@ -72,7 +72,6 @@ function CatalogProductCard({
           onClick={(): void => {
             setAddItemLoading(true);
             addToCart(sku).then(() => {
-              console.log('resolve product cart');
               setAddItemLoading(false);
             });
           }}

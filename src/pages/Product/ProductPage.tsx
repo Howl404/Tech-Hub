@@ -12,13 +12,13 @@ import 'swiper/css/free-mode';
 import 'swiper/css/navigation';
 import 'swiper/css/thumbs';
 import { Navigation, Controller } from 'swiper/modules';
-import Cookies from 'js-cookie';
-import { addToCart, createCart, getCartById, removeFromCart } from '@src/services/CartService/CartService';
-import { getAnonymousToken, getNewToken } from '@src/services/AuthService/AuthService';
 import ClipLoader from 'react-spinners/ClipLoader';
 
 import cartAdd from '@assets/cart-plus-solid.svg';
 import cartRemove from '@assets/cart-shopping-solid.svg';
+import addItemCart from '@src/utilities/addItemCart';
+import removeItemCart from '@src/utilities/removeItemCart';
+import getFormattedCart from '@src/utilities/getFormattedCart';
 
 function ProductPage(): JSX.Element {
   const { key = '' } = useParams<{
@@ -53,104 +53,29 @@ function ProductPage(): JSX.Element {
   }, [formData.key]);
 
   const handleAddToCart = async (productSku: string): Promise<void> => {
-    const cartId = Cookies.get('cart-id');
-    const anonToken = Cookies.get('anon-token');
-    const authType = Cookies.get('auth-type');
-    const accessToken = Cookies.get('access-token');
-    const anonRefreshToken = Cookies.get('anon-refresh-token');
-    let resultCart;
-    if (cartId) {
-      if (authType === 'password' && accessToken) {
-        const cart = await getCartById(accessToken, cartId);
-        resultCart = await addToCart(accessToken, cart.id, productSku, cart.version, formData.count);
-      } else if (anonToken) {
-        const cart = await getCartById(anonToken, cartId);
-        resultCart = await addToCart(anonToken, cart.id, productSku, cart.version, formData.count);
-      } else if (anonRefreshToken) {
-        const response = await getNewToken(anonRefreshToken);
-        Cookies.set('anon-token', response.accessToken, { expires: 2 });
-        const cart = await getCartById(response.accessToken, cartId);
-        resultCart = await addToCart(response.accessToken, cart.id, productSku, cart.version, formData.count);
-      }
-    } else {
-      const response = await getAnonymousToken();
-      const threeHours = 180 / (24 * 60);
-
-      Cookies.set('anon-token', response.accessToken, { expires: threeHours });
-      Cookies.set('anon-refresh-token', response.refreshToken, { expires: 200 });
-
-      const cart = await createCart(response.accessToken);
-      Cookies.set('cart-id', cart.id, { expires: 999 });
-
-      resultCart = await addToCart(response.accessToken, cart.id, productSku, cart.version, formData.count);
+    const result = await addItemCart(productSku, formData.count);
+    if (result) {
+      setCartList(result);
     }
-
-    if (resultCart) {
-      const formattedCart = resultCart.lineItems.map((lineItem) => ({
-        productId: lineItem.productId,
-        id: lineItem.id,
-      }));
-      setCartList(formattedCart);
-    }
-
     return Promise.resolve();
   };
 
   const handleRemoveFromCart = async (productSku: string): Promise<void> => {
-    const cartId = Cookies.get('cart-id');
-    const anonToken = Cookies.get('anon-token');
-    const authType = Cookies.get('auth-type');
-    const accessToken = Cookies.get('access-token');
-    const anonRefreshToken = Cookies.get('anon-refresh-token');
-    let resultCart;
-    if (cartId) {
-      if (authType === 'password' && accessToken) {
-        const cart = await getCartById(accessToken, cartId);
-        resultCart = await removeFromCart(accessToken, cart.id, productSku, cart.version);
-      } else if (anonToken) {
-        const cart = await getCartById(anonToken, cartId);
-        resultCart = await removeFromCart(anonToken, cart.id, productSku, cart.version);
-      } else if (anonRefreshToken) {
-        const response = await getNewToken(anonRefreshToken);
-        Cookies.set('anon-token', response.accessToken, { expires: 2 });
-
-        const cart = await getCartById(response.accessToken, cartId);
-        resultCart = await removeFromCart(response.accessToken, cart.id, productSku, cart.version);
-      }
-    }
-
-    if (resultCart) {
-      const formattedCart = resultCart.lineItems.map((lineItem) => ({
-        productId: lineItem.productId,
-        id: lineItem.id,
-      }));
-      setCartList(formattedCart);
+    const result = await removeItemCart(productSku);
+    if (result) {
+      setCartList(result);
     }
     return Promise.resolve();
   };
 
   useEffect(() => {
-    const cartId = Cookies.get('cart-id');
-    const anonToken = Cookies.get('anon-token');
-    const accessToken = Cookies.get('access-token');
-    const authType = Cookies.get('auth-type');
-    if (cartId && authType === 'password' && accessToken) {
-      getCartById(accessToken, cartId).then((cart) => {
-        const formattedCart = cart.lineItems.map((lineItem) => ({
-          productId: lineItem.productId,
-          id: lineItem.id,
-        }));
-        setCartList(formattedCart);
-      });
-    } else if (cartId && anonToken) {
-      getCartById(anonToken, cartId).then((cart) => {
-        const formattedCart = cart.lineItems.map((lineItem) => ({
-          productId: lineItem.productId,
-          id: lineItem.id,
-        }));
-        setCartList(formattedCart);
-      });
+    async function fetchData(): Promise<void> {
+      const cart = await getFormattedCart();
+      if (cart) {
+        setCartList(cart);
+      }
     }
+    fetchData();
   }, []);
 
   const current = product?.masterData.current;
