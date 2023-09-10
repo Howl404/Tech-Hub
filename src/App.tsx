@@ -11,6 +11,7 @@ import Header from '@components/Header/Header';
 import ProductPage from '@pages/Product/ProductPage';
 import AccountDashboard from '@pages/AccountDashboard/AccountDashboard';
 import { getClientAccessToken } from '@services/AuthService/AuthService';
+import ClipLoader from 'react-spinners/ClipLoader';
 
 function App(): JSX.Element {
   const [isLoading, setIsLoading] = useState(true);
@@ -51,7 +52,9 @@ function App(): JSX.Element {
   }, []);
 
   return isLoading ? (
-    <div>loading</div>
+    <div className="centered-loader">
+      <ClipLoader size={160} />
+    </div>
   ) : (
     <>
       <Header authh={auth} logOut={onLogOut} />
