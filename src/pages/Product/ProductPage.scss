@@ -137,6 +137,10 @@
       gap: 20px;
     }
 
+    button[disabled] + .product__quantity-display {
+      color: #c4c4c4;
+    }
+
     .product__quantity-input {
       border: 1px solid #c4c4c4;
       width: fit-content;
@@ -146,6 +150,56 @@
         color: #c4c4c4;
         width: 40px;
         height: 30px;
+        &:disabled {
+          cursor: auto;
+        }
+      }
+    }
+
+    .buttons-container {
+      width: 285px;
+      margin-bottom: 0px;
+      margin-top: 15px;
+
+      gap: 10px;
+      .add-to-cart,
+      .remove-from-cart {
+        margin: 0;
+        width: 100%;
+        font-size: 12px;
+        border-radius: 8px;
+        &:hover {
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.485);
+          border-radius: 16px;
+        }
+
+        &:disabled {
+          background-color: rgba(128, 128, 128, 0.124);
+          cursor: auto;
+          border-radius: 8px;
+          box-shadow: none;
+
+          .cart-add-img {
+            filter: invert(6%) sepia(4%) saturate(1067%) hue-rotate(314deg) brightness(93%) contrast(83%);
+          }
+
+          .cart-remove-img {
+            filter: invert(6%) sepia(4%) saturate(1067%) hue-rotate(314deg) brightness(93%) contrast(83%);
+          }
+        }
+
+        .cart-remove-img,
+        .cart-add-img {
+          height: 50%;
+        }
+
+        .cart-add-img {
+          filter: invert(23%) sepia(99%) saturate(2030%) hue-rotate(96deg) brightness(97%) contrast(106%);
+        }
+
+        .cart-remove-img {
+          filter: invert(10%) sepia(57%) saturate(7500%) hue-rotate(357deg) brightness(104%) contrast(96%);
+        }
       }
     }
 

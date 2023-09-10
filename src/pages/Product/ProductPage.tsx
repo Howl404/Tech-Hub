@@ -12,6 +12,13 @@ import 'swiper/css/free-mode';
 import 'swiper/css/navigation';
 import 'swiper/css/thumbs';
 import { Navigation, Controller } from 'swiper/modules';
+import Cookies from 'js-cookie';
+import { addToCart, createCart, getCartById, removeFromCart } from '@src/services/CartService/CartService';
+import { getAnonymousToken, getNewToken } from '@src/services/AuthService/AuthService';
+import ClipLoader from 'react-spinners/ClipLoader';
+
+import cartAdd from '@assets/cart-plus-solid.svg';
+import cartRemove from '@assets/cart-shopping-solid.svg';
 
 function ProductPage(): JSX.Element {
   const { key = '' } = useParams<{
@@ -20,12 +27,131 @@ function ProductPage(): JSX.Element {
 
   const [formData, setFormData] = useState({ key, count: 1, inBag: false, inFavorites: false });
   const [product, setProducts] = useState<ProductDetailedPage>();
+  const [cartList, setCartList] = useState<{ id: string; productId: string }[]>([]);
+
+  let CartProduct: {
+    productId: string;
+    id: string;
+  } = {
+    productId: '0',
+    id: '0',
+  };
+  if (cartList.length > 0) {
+    const foundProduct = cartList.find((item) => item.productId === product?.id);
+    if (foundProduct) {
+      CartProduct = foundProduct;
+    }
+  }
+
+  const [addItemLoading, setAddItemLoading] = useState(false);
+  const [removeItemLoading, setRemoveItemLoading] = useState(false);
 
   useEffect(() => {
     getProductByKey(formData.key).then((data) => {
       setProducts(data);
     });
   }, [formData.key]);
+
+  const handleAddToCart = async (productSku: string): Promise<void> => {
+    const cartId = Cookies.get('cart-id');
+    const anonToken = Cookies.get('anon-token');
+    const authType = Cookies.get('auth-type');
+    const accessToken = Cookies.get('access-token');
+    const anonRefreshToken = Cookies.get('anon-refresh-token');
+    let resultCart;
+    if (cartId) {
+      if (authType === 'password' && accessToken) {
+        const cart = await getCartById(accessToken, cartId);
+        resultCart = await addToCart(accessToken, cart.id, productSku, cart.version, formData.count);
+      } else if (anonToken) {
+        const cart = await getCartById(anonToken, cartId);
+        resultCart = await addToCart(anonToken, cart.id, productSku, cart.version, formData.count);
+      } else if (anonRefreshToken) {
+        const response = await getNewToken(anonRefreshToken);
+        Cookies.set('anon-token', response.accessToken, { expires: 2 });
+        const cart = await getCartById(response.accessToken, cartId);
+        resultCart = await addToCart(response.accessToken, cart.id, productSku, cart.version, formData.count);
+      }
+    } else {
+      const response = await getAnonymousToken();
+      const threeHours = 180 / (24 * 60);
+
+      Cookies.set('anon-token', response.accessToken, { expires: threeHours });
+      Cookies.set('anon-refresh-token', response.refreshToken, { expires: 200 });
+
+      const cart = await createCart(response.accessToken);
+      Cookies.set('cart-id', cart.id, { expires: 999 });
+
+      resultCart = await addToCart(response.accessToken, cart.id, productSku, cart.version, formData.count);
+    }
+
+    if (resultCart) {
+      const formattedCart = resultCart.lineItems.map((lineItem) => ({
+        productId: lineItem.productId,
+        id: lineItem.id,
+      }));
+      setCartList(formattedCart);
+    }
+
+    return Promise.resolve();
+  };
+
+  const handleRemoveFromCart = async (productSku: string): Promise<void> => {
+    const cartId = Cookies.get('cart-id');
+    const anonToken = Cookies.get('anon-token');
+    const authType = Cookies.get('auth-type');
+    const accessToken = Cookies.get('access-token');
+    const anonRefreshToken = Cookies.get('anon-refresh-token');
+    let resultCart;
+    if (cartId) {
+      if (authType === 'password' && accessToken) {
+        const cart = await getCartById(accessToken, cartId);
+        resultCart = await removeFromCart(accessToken, cart.id, productSku, cart.version);
+      } else if (anonToken) {
+        const cart = await getCartById(anonToken, cartId);
+        resultCart = await removeFromCart(anonToken, cart.id, productSku, cart.version);
+      } else if (anonRefreshToken) {
+        const response = await getNewToken(anonRefreshToken);
+        Cookies.set('anon-token', response.accessToken, { expires: 2 });
+
+        const cart = await getCartById(response.accessToken, cartId);
+        resultCart = await removeFromCart(response.accessToken, cart.id, productSku, cart.version);
+      }
+    }
+
+    if (resultCart) {
+      const formattedCart = resultCart.lineItems.map((lineItem) => ({
+        productId: lineItem.productId,
+        id: lineItem.id,
+      }));
+      setCartList(formattedCart);
+    }
+    return Promise.resolve();
+  };
+
+  useEffect(() => {
+    const cartId = Cookies.get('cart-id');
+    const anonToken = Cookies.get('anon-token');
+    const accessToken = Cookies.get('access-token');
+    const authType = Cookies.get('auth-type');
+    if (cartId && authType === 'password' && accessToken) {
+      getCartById(accessToken, cartId).then((cart) => {
+        const formattedCart = cart.lineItems.map((lineItem) => ({
+          productId: lineItem.productId,
+          id: lineItem.id,
+        }));
+        setCartList(formattedCart);
+      });
+    } else if (cartId && anonToken) {
+      getCartById(anonToken, cartId).then((cart) => {
+        const formattedCart = cart.lineItems.map((lineItem) => ({
+          productId: lineItem.productId,
+          id: lineItem.id,
+        }));
+        setCartList(formattedCart);
+      });
+    }
+  }, []);
 
   const current = product?.masterData.current;
 
@@ -153,11 +279,21 @@ function ProductPage(): JSX.Element {
                 <div className="product__quantity">
                   <div className="product__attr-title">quantity</div>
                   <div className="product__quantity-input">
-                    <button type="button" className="product__quantity-btn" onClick={(): void => clickDownCount()}>
+                    <button
+                      type="button"
+                      className="product__quantity-btn"
+                      onClick={(): void => clickDownCount()}
+                      disabled={CartProduct.id !== '0'}
+                    >
                       -
                     </button>
                     <span className="product__quantity-display">{formData.count}</span>
-                    <button type="button" className="product__quantity-btn" onClick={(): void => clickUpCount()}>
+                    <button
+                      type="button"
+                      className="product__quantity-btn"
+                      onClick={(): void => clickUpCount()}
+                      disabled={CartProduct.id !== '0'}
+                    >
                       +
                     </button>
                   </div>
@@ -182,7 +318,40 @@ function ProductPage(): JSX.Element {
                 </div>
               </div>
 
-              <div className="product__controls">
+              <div className="buttons-container">
+                <button
+                  type="button"
+                  className="add-to-cart btn-enabled"
+                  onClick={(): void => {
+                    setAddItemLoading(true);
+                    handleAddToCart(formData.key).then(() => {
+                      setAddItemLoading(false);
+                    });
+                  }}
+                  disabled={CartProduct.id !== '0'}
+                >
+                  {addItemLoading ? <ClipLoader /> : <img src={cartAdd} className="cart-add-img" alt="Add to cart" />}
+                </button>
+                <button
+                  type="button"
+                  className="remove-from-cart btn-enabled"
+                  onClick={(): void => {
+                    setRemoveItemLoading(true);
+                    handleRemoveFromCart(CartProduct.id).then(() => {
+                      setRemoveItemLoading(false);
+                    });
+                  }}
+                  disabled={CartProduct.id === '0'}
+                >
+                  {removeItemLoading ? (
+                    <ClipLoader />
+                  ) : (
+                    <img src={cartRemove} className="cart-remove-img" alt="Remove from cart" />
+                  )}
+                </button>
+              </div>
+
+              {/* <div className="product__controls">
                 <button
                   type="button"
                   className="product__btn btn-black btn-bag"
@@ -197,7 +366,7 @@ function ProductPage(): JSX.Element {
                 >
                   {formData.inFavorites ? 'delete from save' : 'save'}
                 </button>
-              </div>
+              </div> */}
             </div>
           </div>
           <div className="product__line">
