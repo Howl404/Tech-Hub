@@ -1,6 +1,7 @@
 import { getNewToken, getAnonymousToken } from '@src/services/AuthService/AuthService';
 import { getCartById, addToCart, createCart } from '@src/services/CartService/CartService';
 import Cookies from 'js-cookie';
+import Toastify from 'toastify-js';
 
 const addItemCart = async (product: string, quantity = 1): Promise<{ productId: string; id: string }[] | false> => {
   const cartId = Cookies.get('cart-id');
@@ -41,6 +42,18 @@ const addItemCart = async (product: string, quantity = 1): Promise<{ productId: 
       productId: lineItem.productId,
       id: lineItem.id,
     }));
+    Toastify({
+      text: 'Product is added to the cart',
+      duration: 3000,
+      newWindow: true,
+      close: true,
+      gravity: 'top',
+      position: 'right',
+      stopOnFocus: true,
+      style: {
+        background: 'linear-gradient(315deg, #7ee8fa 0%, #80ff72 74%)',
+      },
+    }).showToast();
     return formattedCart;
   }
 

@@ -1,6 +1,7 @@
 import { getNewToken } from '@src/services/AuthService/AuthService';
 import { getCartById, removeFromCart } from '@src/services/CartService/CartService';
 import Cookies from 'js-cookie';
+import Toastify from 'toastify-js';
 
 const removeItemCart = async (product: string): Promise<{ productId: string; id: string }[] | false> => {
   const cartId = Cookies.get('cart-id');
@@ -31,10 +32,21 @@ const removeItemCart = async (product: string): Promise<{ productId: string; id:
       productId: lineItem.productId,
       id: lineItem.id,
     }));
-    // setCartList(formattedCart);
-    return formattedCart; // Возвращаем formattedCart как результат промиса
+    Toastify({
+      text: 'Product is removed from the cart',
+      duration: 3000,
+      newWindow: true,
+      close: true,
+      gravity: 'top',
+      position: 'right',
+      stopOnFocus: true,
+      style: {
+        background: 'linear-gradient(315deg, #7ee8fa 0%, #80ff72 74%)',
+      },
+    }).showToast();
+    return formattedCart;
   }
-  return false; // Возвращаем пустой массив, если resultCart не определен
+  return false;
 };
 
 export default removeItemCart;
