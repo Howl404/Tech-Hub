@@ -3,13 +3,27 @@ import './CartItem.scss';
 import { CiSquareRemove } from 'react-icons/ci';
 import { AiOutlinePlus, AiOutlineMinus } from 'react-icons/ai';
 
-function CartItem({ id }: { id: string }): JSX.Element {
+function CartItem({
+  id,
+  price,
+  image,
+  name,
+}: {
+  id: string;
+  price: { currencyCode: string; centAmount: number; fractionDigits: number };
+  image: { url: string }[];
+  name: string;
+}): JSX.Element {
   const [quantity, setQuantity] = useState(1);
   return (
     <div className="cart-item-container" id={id}>
-      <div className="cart-image">image</div>
-      <div className="cart-title">title product</div>
-      <div className="cart-price">120 EUR</div>
+      <div className="cart-image">
+        <img srcSet={image[0].url} key={id} alt="" />
+      </div>
+      <div className="cart-title">{name}</div>
+      <div className="cart-price">{`${price.centAmount.toString().slice(0, price.fractionDigits)} ${
+        price.currencyCode
+      }`}</div>
       <div className="cart-quantity">
         <button type="button" className="button__quantity" onClick={(): void => setQuantity(quantity - 1)}>
           <AiOutlineMinus color="#C4C4C4" />

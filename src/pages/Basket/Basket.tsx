@@ -1,18 +1,63 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import './Basket.scss';
 import Breadcrumbs from '@src/components/Breadcrumbs/Breadcrumbs';
 import CartItem from '@src/components/CartItem/CartItem';
-// import Cookies from 'js-cookie';
-// import { addToCart, getCartById } from '@src/services/CartService/CartService';
+import Cookies from 'js-cookie';
+import { Cart } from '@src/interfaces/Cart';
+import { getCartByAnonId, getCartById } from '@src/services/CartService/CartService';
 
 function Basket(): JSX.Element {
-  // useEffect(() => {
-  //   const token = Cookies.get('access-token') as string;
-  //   getCartById(token, id).then((item) =>
-  //     addToCart(token, item.id, 'DEXP-Atlas-H343', item.version, 1).then(console.log),
-  //   );
-  // }, []);
-  const resultBasket = [1];
+  const [cart, setCart] = useState<Cart>({
+    type: '',
+    id: '',
+    version: 0,
+    versionModifiedAt: '',
+    lastMessageSequenceNumber: 0,
+    createdAt: '',
+    lastModifiedAt: '',
+    anonymousId: '',
+    lineItems: [],
+    lastModifiedBy: { clientId: '', isPlatformClient: false, anonymousId: '' },
+    createdBy: { clientId: '', isPlatformClient: false, anonymousId: '' },
+    cartState: '',
+    totalPrice: '',
+    shippingMode: '',
+    shipping: [],
+    customLineItems: [],
+    discountCodes: [],
+    directDiscounts: [],
+    inventoryMode: '',
+    taxMode: '',
+    taxRoundingMode: '',
+    taxCalculationMode: '',
+    deleteDaysAfterLastModification: 0,
+    refusedGifts: [],
+    origin: '',
+    itemShippingAddresses: [],
+  });
+  const [cartItems, setCartItems] = useState<JSX.Element[]>([]);
+
+  useEffect(() => {
+    if (Cookies.get('auth-type') === 'anon') {
+      const accToken = Cookies.get('anon-token') as string;
+      const cartId = Cookies.get('cart-id') as string;
+      getCartById(accToken, cartId).then((item) => {
+        getCartByAnonId(accToken, item.anonymousId).then((carta: Cart) => {
+          setCart(carta);
+        });
+      });
+    } else if (Cookies.get('auth-type') === 'auth') {
+      console.log('auth');
+    }
+  }, []);
+
+  useEffect(() => {
+    const test = cart.lineItems.map<JSX.Element>(({ variant, name, totalPrice, id }) => (
+      <CartItem id={id} key={id} price={totalPrice} image={variant.images} name={name.en} />
+    ));
+    setCartItems(test);
+  }, [cart]);
+
   return (
     <>
       <Breadcrumbs />
@@ -25,9 +70,7 @@ function Basket(): JSX.Element {
             <li className="table-text">QUANTITY</li>
             <li className="table-text">TOTAL</li>
           </ul>
-          <div className="cart-information">
-            {resultBasket.length === 0 ? 'Sorry, you cart empty' : <CartItem id="1" />}
-          </div>
+          <div className="cart-information">{cart.lineItems.length === 0 ? 'Sorry, you cart empty' : cartItems}</div>
         </div>
         <div className="sub-information-list-cart">
           <div className="discount-code">

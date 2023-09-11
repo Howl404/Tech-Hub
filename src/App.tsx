@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Route, Routes, useNavigate } from 'react-router-dom';
 import './App.scss';
-import Home from '@pages/Home/Home';
 import LoginPage from '@pages/Login/LoginPage';
 import NotFound from '@pages/NotFound/NotFound';
 import RegistrationPage from '@pages/Register/RegistrationPage';
@@ -11,6 +10,7 @@ import Header from '@components/Header/Header';
 import ProductPage from '@pages/Product/ProductPage';
 import AccountDashboard from '@pages/AccountDashboard/AccountDashboard';
 import { getClientAccessToken } from '@services/AuthService/AuthService';
+import Home from './pages/Home/Home';
 import Basket from './pages/Basket/Basket';
 
 function App(): JSX.Element {

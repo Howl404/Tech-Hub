@@ -147,4 +147,7 @@ h2 {
   font-style: normal;
   font-weight: 500;
   padding-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 35px;
 }

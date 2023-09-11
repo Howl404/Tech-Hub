@@ -34,11 +34,14 @@ export interface ProductInCart {
   productId: string;
   productKey: string;
   totalPrice: {
-    id: string;
-    typeId: string;
-    version: number;
+    centAmount: number;
+    currencyCode: string;
+    fractionDigits: number;
   };
   name: {
     en: string;
+  };
+  variant: {
+    images: { url: string }[];
   };
 }
