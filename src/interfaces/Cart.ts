@@ -13,9 +13,10 @@ export interface Cart {
   anonymousId: string;
   lineItems: ProductInCart[];
   cartState: string;
-  totalPrice: string;
+  totalPrice: { centAmount: number; currencyCode: string; fractionDigits: number };
   shippingMode: string;
   shipping: string[];
+  customerId: string;
   customLineItems: string[];
   discountCodes: string[];
   directDiscounts: string[];
@@ -33,6 +34,14 @@ export interface ProductInCart {
   id: string;
   productId: string;
   productKey: string;
+  quantity: string;
+  price: {
+    value: {
+      centAmount: number;
+      currencyCode: string;
+      fractionDigits: number;
+    };
+  };
   totalPrice: {
     centAmount: number;
     currencyCode: string;

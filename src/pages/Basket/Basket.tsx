@@ -4,7 +4,7 @@ import Breadcrumbs from '@src/components/Breadcrumbs/Breadcrumbs';
 import CartItem from '@src/components/CartItem/CartItem';
 import Cookies from 'js-cookie';
 import { Cart } from '@src/interfaces/Cart';
-import { getCartByAnonId, getCartById } from '@src/services/CartService/CartService';
+import { getCartByAnonId, getCartByCustomerId, getCartById } from '@src/services/CartService/CartService';
 
 function Basket(): JSX.Element {
   const [cart, setCart] = useState<Cart>({
@@ -20,7 +20,8 @@ function Basket(): JSX.Element {
     lastModifiedBy: { clientId: '', isPlatformClient: false, anonymousId: '' },
     createdBy: { clientId: '', isPlatformClient: false, anonymousId: '' },
     cartState: '',
-    totalPrice: '',
+    customerId: '',
+    totalPrice: { centAmount: 0, currencyCode: '', fractionDigits: 2 },
     shippingMode: '',
     shipping: [],
     customLineItems: [],
@@ -36,7 +37,11 @@ function Basket(): JSX.Element {
     itemShippingAddresses: [],
   });
   const [cartItems, setCartItems] = useState<JSX.Element[]>([]);
-
+  const [totalCart, setTotalCart] = useState<{ centAmount: number; currencyCode: string; fractionDigits: number }>({
+    centAmount: 0,
+    currencyCode: '',
+    fractionDigits: 2,
+  });
   useEffect(() => {
     if (Cookies.get('auth-type') === 'anon') {
       const accToken = Cookies.get('anon-token') as string;
@@ -46,18 +51,34 @@ function Basket(): JSX.Element {
           setCart(carta);
         });
       });
-    } else if (Cookies.get('auth-type') === 'auth') {
-      console.log('auth');
+    } else if (Cookies.get('auth-type') === 'password') {
+      const accToken = Cookies.get('access-token') as string;
+      const cartId = Cookies.get('cart-id') as string;
+      getCartById(accToken, cartId).then((item) => {
+        console.log(item);
+        getCartByCustomerId(accToken, item.customerId).then((carta: Cart) => {
+          setCart(carta);
+        });
+      });
     }
   }, []);
 
   useEffect(() => {
-    const test = cart.lineItems.map<JSX.Element>(({ variant, name, totalPrice, id }) => (
-      <CartItem id={id} key={id} price={totalPrice} image={variant.images} name={name.en} />
+    const test = cart.lineItems.map<JSX.Element>(({ variant, name, totalPrice, id, quantity, price }) => (
+      <CartItem
+        id={id}
+        key={id}
+        totalPrice={totalPrice}
+        image={variant.images}
+        name={name.en}
+        setCart={setCart}
+        quantity={quantity}
+        price={price.value}
+      />
     ));
+    setTotalCart(cart.totalPrice);
     setCartItems(test);
   }, [cart]);
-
   return (
     <>
       <Breadcrumbs />
@@ -80,7 +101,9 @@ function Basket(): JSX.Element {
           <div className="total-sum-block">
             <div className="subtotal-sum">
               <div>Subtotal</div>
-              <div>0.0 EUR</div>
+              <div>{`${String(totalCart.centAmount).slice(0, -totalCart.fractionDigits)}.${String(
+                totalCart.centAmount,
+              ).slice(-totalCart.fractionDigits)} ${totalCart.currencyCode}`}</div>
             </div>
             <div className="subtotal-discount">
               <div>Discount</div>
