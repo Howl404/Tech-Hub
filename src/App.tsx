@@ -12,6 +12,7 @@ import ProductPage from '@pages/Product/ProductPage';
 import AccountDashboard from '@pages/AccountDashboard/AccountDashboard';
 import { getClientAccessToken } from '@services/AuthService/AuthService';
 import ClipLoader from 'react-spinners/ClipLoader';
+import AboutPage from '@pages/About/AboutPage';
 
 function App(): JSX.Element {
   const [isLoading, setIsLoading] = useState(true);
@@ -65,6 +66,7 @@ function App(): JSX.Element {
         <Route path="/products/:key?" element={<ProductPage />} />
         <Route path="/MyAccount/*" element={<AccountDashboard onLogOut={onLogOut} />} />
         <Route path="/catalog/:categoryslug?/:subcategoryslug?" element={<CatalogPage />} />
+        <Route path="/about" element={<AboutPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>
