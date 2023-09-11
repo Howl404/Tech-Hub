@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { CustomersId } from '@src/interfaces/Customer';
 import { getCustomerId } from '@src/services/AuthService/AuthService';
 import './NameAccount.scss';
+import { getCartByCustomerId } from '@src/services/CartService/CartService';
+import Cookies from 'js-cookie';
 
 function NameAccount({ logOut }: { logOut: () => void }): JSX.Element {
   const [data, setData] = useState<CustomersId>({
@@ -27,8 +29,17 @@ function NameAccount({ logOut }: { logOut: () => void }): JSX.Element {
   });
 
   useEffect(() => {
-    getCustomerId().then((item) => {
+    getCustomerId().then(async (item) => {
       setData(item);
+      const token = Cookies.get('access-token');
+      if (token) {
+        try {
+          const result = await getCartByCustomerId(token, item.id);
+          Cookies.set('cart-id', result.id, { expires: 999 });
+        } catch (error) {
+          // no cart found
+        }
+      }
     });
   }, []);
 

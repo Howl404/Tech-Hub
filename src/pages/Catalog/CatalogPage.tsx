@@ -12,6 +12,9 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import Breadcrumb from '@src/components/Breadcrumb/Breadcrumb';
 import sortingOptions from '@src/utilities/sortingOptions';
 import searchIcon from '@assets/search.svg';
+import removeItemCart from '@src/utilities/removeItemCart';
+import addItemCart from '@src/utilities/addItemCart';
+import getFormattedCart from '@src/utilities/getFormattedCart';
 
 export default function Catalog(): JSX.Element {
   const navigate = useNavigate();
@@ -34,6 +37,8 @@ export default function Catalog(): JSX.Element {
   const [currentCategory, setCurrentCategory] = useState<{ name: string; key?: string }[]>([]);
   const [breadcrumb, setBreadcrumb] = useState<{ name: string; slug: string }[]>([]);
 
+  const [cartList, setCartList] = useState<{ id: string; productId: string }[]>([]);
+
   const [displayCategories, setDisplayCategories] = useState(false);
 
   const handleSortingChange = (newOption: string): void => {
@@ -46,6 +51,22 @@ export default function Catalog(): JSX.Element {
 
   const handleBrandChange = (newBrand: string): void => {
     setBrand(newBrand);
+  };
+
+  const handleAddToCart = async (productSku: string): Promise<void> => {
+    const result = await addItemCart(productSku);
+    if (result) {
+      setCartList(result);
+    }
+    return Promise.resolve();
+  };
+
+  const handleRemoveFromCart = async (productSku: string): Promise<void> => {
+    const result = await removeItemCart(productSku);
+    if (result) {
+      setCartList(result);
+    }
+    return Promise.resolve();
   };
 
   const clearBrand = useCallback(() => {
@@ -90,20 +111,32 @@ export default function Catalog(): JSX.Element {
       };
     };
 
-    const updateBreadcrumb = async (): Promise<void> => {
-      const breadcrumbArray: { name: string; slug: string }[] = [];
+    async function fetchCategoriesInOrder(
+      currentCategories: {
+        name: string;
+        key?: string | undefined;
+      }[],
+    ): Promise<
+      {
+        name: string;
+        slug: string;
+      }[]
+    > {
+      const breadcrumbArray = [];
 
-      for (let i = 0; i < currentCategory.length; i += 1) {
-        fetchCategory(currentCategory[i].name).then((data) => {
-          breadcrumbArray.push(data);
-        });
-      }
+      const fetchPromises = currentCategories.map((category) => fetchCategory(category.name));
 
-      setBreadcrumb(breadcrumbArray);
-    };
+      const results = await Promise.all(fetchPromises);
+
+      breadcrumbArray.push(...results);
+
+      return breadcrumbArray;
+    }
 
     if (currentCategory.length > 0) {
-      updateBreadcrumb();
+      fetchCategoriesInOrder(currentCategory).then((array) => {
+        setBreadcrumb(array);
+      });
     }
   }, [currentCategory]);
 
@@ -111,6 +144,16 @@ export default function Catalog(): JSX.Element {
     formattedCategoryList().then((data) => {
       setCategories(data.mainCategories);
     });
+  }, []);
+
+  useEffect(() => {
+    async function fetchData(): Promise<void> {
+      const cart = await getFormattedCart();
+      if (cart) {
+        setCartList(cart);
+      }
+    }
+    fetchData();
   }, []);
 
   useEffect(() => {
@@ -216,7 +259,13 @@ export default function Catalog(): JSX.Element {
         </div>
         <div className="product-list">
           {products.map((product) => (
-            <CatalogProductCard key={product.name.en} product={product} />
+            <CatalogProductCard
+              key={product.name.en}
+              product={product}
+              cartList={cartList}
+              addToCart={handleAddToCart}
+              removeFromCart={handleRemoveFromCart}
+            />
           ))}
         </div>
       </div>

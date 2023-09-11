@@ -11,7 +11,7 @@ export interface Cart {
   lastModifiedBy: LastModifiedBy;
   createdBy: CreatedBy;
   anonymousId: string;
-  lineItems: string[];
+  lineItems: ProductInCart[];
   cartState: string;
   totalPrice: string;
   shippingMode: string;
@@ -27,4 +27,18 @@ export interface Cart {
   refusedGifts: string[];
   origin: string;
   itemShippingAddresses: BaseAddress[];
+}
+
+export interface ProductInCart {
+  id: string;
+  productId: string;
+  productKey: string;
+  totalPrice: {
+    id: string;
+    typeId: string;
+    version: number;
+  };
+  name: {
+    en: string;
+  };
 }

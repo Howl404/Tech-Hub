@@ -4,6 +4,7 @@ import { ResponseErrorItem } from '@interfaces/Errors';
 import { CustomerData, CustomerDraft, CustomersId, SendAddress } from '@interfaces/Customer';
 import 'toastify-js/src/toastify.css';
 import Cookies from 'js-cookie';
+import { Cart } from '@src/interfaces/Cart';
 
 const authHost = 'https://auth.europe-west1.gcp.commercetools.com';
 const apiUrl = 'https://api.europe-west1.gcp.commercetools.com';
@@ -101,6 +102,60 @@ const getAnonymousToken = async (): Promise<{
   return { accessToken, refreshToken };
 };
 
+const logInUserWithCart = async (
+  email: string,
+  password: string,
+): Promise<{ cart: Cart | undefined; customer: CustomerData } | undefined> => {
+  let errorText;
+  try {
+    const token = Cookies.get('anon-token');
+    const authHeader = `Bearer ${token}`;
+    const requestBody = {
+      email,
+      password,
+    };
+
+    const response = await axios.post(`${apiUrl}/${projectKey}/me/login`, requestBody, {
+      headers: {
+        Authorization: authHeader,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    const { customer, cart } = response.data;
+
+    return { customer, cart };
+  } catch (e) {
+    if (e instanceof AxiosError && e.response?.data) {
+      if (e.response.data?.errors.length) {
+        errorText = e.response.data.errors
+          .map((errItem: ResponseErrorItem) => errItem.detailedErrorMessage || errItem.message)
+          .join('\r\n');
+      } else {
+        errorText = e.response.data?.message;
+      }
+    } else if (e instanceof Error) {
+      errorText = e.message;
+    } else if (typeof e === 'string') {
+      errorText = e;
+    }
+  }
+
+  Toastify({
+    text: errorText,
+    duration: 3000,
+    newWindow: true,
+    close: true,
+    gravity: 'top',
+    position: 'right',
+    stopOnFocus: true,
+    style: {
+      background: 'linear-gradient(to right, #ff0000, #fdacac)',
+    },
+  }).showToast();
+  return undefined;
+};
+
 const logInUser = async (
   email: string,
   password: string,
@@ -166,6 +221,27 @@ const getCustomerId = async (): Promise<CustomersId> => {
     },
   });
   return response.data;
+};
+
+const getNewToken = async (
+  refreshToken: string,
+): Promise<{
+  accessToken: string;
+}> => {
+  const authHeader = `Basic ${btoa(`${anonId}:${anonSecret}`)}`;
+  const response = await axios.post(
+    `${authHost}/oauth/token`,
+    `grant_type=refresh_token&refresh_token=${refreshToken}`,
+    {
+      headers: {
+        Authorization: authHeader,
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    },
+  );
+
+  const accessToken = response.data.access_token;
+  return { accessToken };
 };
 
 const sendData = async (data: SendAddress, id: string, addressId: string): Promise<CustomersId> => {
@@ -724,9 +800,11 @@ const requestDefaultShippingAddress = async (addressId: string): Promise<Custome
 export {
   registerUser,
   logInUser,
+  logInUserWithCart,
   getAnonymousToken,
   getClientAccessToken,
   getCustomerId,
+  getNewToken,
   sendData,
   changePasswordRequest,
   changeEmailRequest,

@@ -1,4 +1,5 @@
 export interface ProductCatalog {
+  id: string;
   description: {
     en: string;
   };
@@ -42,6 +43,7 @@ export interface ProductCatalog {
       id: string;
     },
   ];
+  inCart?: boolean;
 }
 
 export interface ProductDetailedPage {

@@ -66,7 +66,7 @@ const getCartByCustomerId = async (token: string, customerId: string): Promise<C
     },
   });
 
-  const cart: Cart = response.data;
+  const cart: Cart = response.data.results[0];
   return cart;
 };
 
@@ -87,7 +87,7 @@ const getCartByAnonId = async (token: string, anonymousId: string): Promise<Cart
 };
 
 const getCartById = async (token: string, id: string): Promise<Cart> => {
-  const url = `${apiUrl}/${projectKey}/me${id}`;
+  const url = `${apiUrl}/${projectKey}/me/carts/${id}`;
 
   const response = await axios.get(url, {
     headers: {
@@ -103,9 +103,9 @@ const getCartById = async (token: string, id: string): Promise<Cart> => {
 const removeFromCart = async (
   token: string,
   cartId: string,
-  productSku: string,
+  itemId: string,
   version: number,
-  quantity?: string,
+  quantity?: number,
 ): Promise<Cart> => {
   const cartEndpoint = `${apiUrl}/${projectKey}/me/carts/${cartId}`;
 
@@ -113,8 +113,8 @@ const removeFromCart = async (
     version,
     actions: [
       {
-        action: 'addLineItem',
-        sku: productSku,
+        action: 'removeLineItem',
+        lineItemId: itemId,
         quantity,
       },
     ],
