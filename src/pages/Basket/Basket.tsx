@@ -78,7 +78,6 @@ function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAct
       if (i === -1) return;
       if (authType === 'password' && accessToken) {
         if (i !== -1) {
-          // removeFromCart(accessToken, cart.id, cart.lineItems[1].id, version).then(console.log);
           removeFromCart(accessToken, cart.id, cart.lineItems[i].id, version).then((item) => {
             if (i === 0) setCart(item);
             anonFunc(item.version);

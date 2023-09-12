@@ -31,11 +31,9 @@ function CartItem({
     const anonRefreshToken = Cookies.get('anon-refresh-token');
     const cartId = Cookies.get('cart-id');
     const idTarget = event.currentTarget.id;
-    console.log(cartId);
     if (cartId) {
       if (authType === 'password' && accessToken) {
         getCartById(accessToken, cartId).then((item) => {
-          console.log('kkkk');
           removeFromCart(accessToken, cartId, idTarget, item.version).then((requestNewCart) => setCart(requestNewCart));
         });
       } else if (anonToken) {
