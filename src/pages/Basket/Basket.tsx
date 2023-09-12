@@ -4,8 +4,14 @@ import Breadcrumbs from '@src/components/Breadcrumbs/Breadcrumbs';
 import CartItem from '@src/components/CartItem/CartItem';
 import Cookies from 'js-cookie';
 import { Cart } from '@src/interfaces/Cart';
-import { getCartByAnonId, getCartByCustomerId, getCartById } from '@src/services/CartService/CartService';
+import {
+  getCartByAnonId,
+  getCartByCustomerId,
+  getCartById,
+  removeFromCart,
+} from '@src/services/CartService/CartService';
 import { Link } from 'react-router-dom';
+import { getNewToken } from '@src/services/AuthService/AuthService';
 
 function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAction<number>> }): JSX.Element {
   const [cart, setCart] = useState<Cart>({
@@ -39,19 +45,55 @@ function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAct
   });
 
   const checkCartUpdateHeader = (): void => {
-    if (Cookies.get('auth-type') === 'anon') {
-      const accToken = Cookies.get('anon-token') as string;
-      const cartId = Cookies.get('cart-id') as string;
-      getCartById(accToken, cartId).then((item) => {
-        setTotalSumInCart(item.totalPrice.centAmount);
-      });
-    } else if (Cookies.get('auth-type') === 'password') {
-      const accToken = Cookies.get('access-token') as string;
-      const cartId = Cookies.get('cart-id') as string;
-      getCartById(accToken, cartId).then((item) => {
-        setTotalSumInCart(item.totalPrice.centAmount);
-      });
+    const authType = Cookies.get('auth-type');
+    const accessToken = Cookies.get('access-token');
+    const anonToken = Cookies.get('anon-token');
+    const anonRefreshToken = Cookies.get('anon-refresh-token');
+    const cartId = Cookies.get('cart-id');
+    if (cartId) {
+      if (authType === 'password' && accessToken) {
+        getCartById(accessToken, cartId).then((item) => {
+          setTotalSumInCart(item.totalPrice.centAmount);
+        });
+      } else if (anonToken) {
+        getCartById(anonToken, cartId).then((item) => {
+          setTotalSumInCart(item.totalPrice.centAmount);
+        });
+      } else if (anonRefreshToken) {
+        getNewToken(anonRefreshToken).then((item) => {
+          Cookies.set('anon-token', item.accessToken, { expires: 2 });
+          getCartById(item.accessToken, cartId).then((items) => setTotalSumInCart(items.totalPrice.centAmount));
+        });
+      }
     }
+  };
+
+  const handleClearCart = (): void => {
+    let i = cart.lineItems.length;
+    const anonFunc = (version: number): void => {
+      const authType = Cookies.get('auth-type');
+      const accessToken = Cookies.get('access-token');
+      const anonToken = Cookies.get('anon-token');
+      i -= 1;
+      if (i === -1) return;
+      if (authType === 'password' && accessToken) {
+        if (i !== -1) {
+          // removeFromCart(accessToken, cart.id, cart.lineItems[1].id, version).then(console.log);
+          removeFromCart(accessToken, cart.id, cart.lineItems[i].id, version).then((item) => {
+            if (i === 0) setCart(item);
+            anonFunc(item.version);
+          });
+        }
+      } else if (anonToken) {
+        if (i !== -1) {
+          removeFromCart(anonToken, cart.id, cart.lineItems[i].id, version).then((item) => {
+            if (i === 0) setCart(item);
+            anonFunc(item.version);
+          });
+        }
+      }
+    };
+    anonFunc(cart.version);
   };
 
   const [cartItems, setCartItems] = useState<JSX.Element[]>([]);
@@ -61,40 +103,53 @@ function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAct
     fractionDigits: 2,
   });
   useEffect(() => {
-    if (Cookies.get('auth-type') === 'anon') {
-      const accToken = Cookies.get('anon-token') as string;
-      const cartId = Cookies.get('cart-id') as string;
-      getCartById(accToken, cartId).then((item) => {
-        getCartByAnonId(accToken, item.anonymousId).then((carta: Cart) => {
-          setCart(carta);
+    const authType = Cookies.get('auth-type');
+    const accessToken = Cookies.get('access-token');
+    const anonToken = Cookies.get('anon-token');
+    const anonRefreshToken = Cookies.get('anon-refresh-token');
+    const cartId = Cookies.get('cart-id');
+    if (cartId) {
+      if (authType === 'password' && accessToken) {
+        getCartById(accessToken, cartId).then((item) => {
+          getCartByCustomerId(accessToken, item.customerId).then((carta: Cart) => {
+            setCart(carta);
+          });
         });
-      });
-    } else if (Cookies.get('auth-type') === 'password') {
-      const accToken = Cookies.get('access-token') as string;
-      const cartId = Cookies.get('cart-id') as string;
-      getCartById(accToken, cartId).then((item) => {
-        getCartByCustomerId(accToken, item.customerId).then((carta: Cart) => {
-          setCart(carta);
+      } else if (anonToken) {
+        getCartById(anonToken, cartId).then((item) => {
+          getCartByAnonId(anonToken, item.anonymousId).then((carta: Cart) => {
+            setCart(carta);
+          });
         });
-      });
+      } else if (anonRefreshToken) {
+        getNewToken(anonRefreshToken).then((item) => {
+          Cookies.set('anon-token', item.accessToken, { expires: 2 });
+          getCartById(item.accessToken, cartId).then((items) => setCart(items));
+        });
+      }
     }
   }, []);
 
   useEffect(() => {
-    const test = cart.lineItems.map<JSX.Element>(({ variant, name, totalPrice, id, quantity, price }) => (
-      <CartItem
-        id={id}
-        key={id}
-        totalPrice={totalPrice}
-        image={variant.images}
-        name={name.en}
-        setCart={setCart}
-        quantity={quantity}
-        price={price.value}
-      />
-    ));
+    if (cart.lineItems.length !== 0) {
+      const carts = cart.lineItems.map<JSX.Element>(({ variant, name, totalPrice, id, quantity, price }) => (
+        <CartItem
+          id={id}
+          key={id}
+          totalPrice={totalPrice}
+          image={variant.images}
+          name={name.en}
+          setCart={setCart}
+          quantity={quantity}
+          price={price.value}
+        />
+      ));
+      // setTotalCart(cart.totalPrice);
+      setCartItems(carts);
+
+      // checkCartUpdateHeader();
+    }
     setTotalCart(cart.totalPrice);
-    setCartItems(test);
     checkCartUpdateHeader();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cart]);
@@ -121,7 +176,12 @@ function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAct
                 </Link>
               </div>
             ) : (
-              cartItems
+              <>
+                {cartItems}
+                <button type="button" className="clear-cart" onClick={handleClearCart}>
+                  clear cart
+                </button>
+              </>
             )}
           </div>
         </div>

@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { Dispatch, SetStateAction, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import './ProductPage.scss';
 
@@ -19,8 +19,11 @@ import cartRemove from '@assets/cart-shopping-solid.svg';
 import addItemCart from '@src/utilities/addItemCart';
 import removeItemCart from '@src/utilities/removeItemCart';
 import getFormattedCart from '@src/utilities/getFormattedCart';
+import Cookies from 'js-cookie';
+import { getNewToken } from '@src/services/AuthService/AuthService';
+import { getCartById } from '@src/services/CartService/CartService';
 
-function ProductPage(): JSX.Element {
+function ProductPage({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAction<number>> }): JSX.Element {
   const { key = '' } = useParams<{
     key: string;
   }>();
@@ -52,11 +55,36 @@ function ProductPage(): JSX.Element {
     });
   }, [formData.key]);
 
+  const checkCartUpdateHeader = (): void => {
+    const authType = Cookies.get('auth-type');
+    const accessToken = Cookies.get('access-token');
+    const anonToken = Cookies.get('anon-token');
+    const anonRefreshToken = Cookies.get('anon-refresh-token');
+    const cartId = Cookies.get('cart-id');
+    if (cartId) {
+      if (authType === 'password' && accessToken) {
+        getCartById(accessToken, cartId).then((item) => {
+          setTotalSumInCart(item.totalPrice.centAmount);
+        });
+      } else if (anonToken) {
+        getCartById(anonToken, cartId).then((item) => {
+          setTotalSumInCart(item.totalPrice.centAmount);
+        });
+      } else if (anonRefreshToken) {
+        getNewToken(anonRefreshToken).then((item) => {
+          Cookies.set('anon-token', item.accessToken, { expires: 2 });
+          getCartById(item.accessToken, cartId).then((items) => setTotalSumInCart(items.totalPrice.centAmount));
+        });
+      }
+    }
+  };
+
   const handleAddToCart = async (productSku: string): Promise<void> => {
     const result = await addItemCart(productSku, formData.count);
     if (result) {
       setCartList(result);
     }
+    checkCartUpdateHeader();
     return Promise.resolve();
   };
 

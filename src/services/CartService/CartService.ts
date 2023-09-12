@@ -187,6 +187,20 @@ const removeDiscountCode = async (
   return cart;
 };
 
+// const removeCart = async (token: string, cartId: string, version: string): Promise<Cart> => {
+//   const url = `${apiUrl}/${projectKey}/me/carts/${cartId}/?version=${version}`;
+
+//   const response = await axios.delete(url, {
+//     headers: {
+//       Authorization: `Bearer ${token}`,
+//       'Content-Type': 'application/json',
+//     },
+//   });
+//   // console.log(response);
+//   const cart: Cart = response.data;
+//   return cart;
+// };
+
 export {
   createCart,
   addToCart,
@@ -196,4 +210,5 @@ export {
   getCartByCustomerId,
   getCartByAnonId,
   getCartById,
+  // removeCart,
 };

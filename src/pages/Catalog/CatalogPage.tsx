@@ -17,6 +17,7 @@ import addItemCart from '@src/utilities/addItemCart';
 import getFormattedCart from '@src/utilities/getFormattedCart';
 import Cookies from 'js-cookie';
 import { getCartById } from '@src/services/CartService/CartService';
+import { getNewToken } from '@src/services/AuthService/AuthService';
 
 export default function Catalog({
   setTotalSumInCart,
@@ -26,18 +27,26 @@ export default function Catalog({
   const navigate = useNavigate();
 
   const checkCartUpdateHeader = (): void => {
-    if (Cookies.get('auth-type') === 'anon') {
-      const accToken = Cookies.get('anon-token') as string;
-      const cartId = Cookies.get('cart-id') as string;
-      getCartById(accToken, cartId).then((item) => {
-        setTotalSumInCart(item.totalPrice.centAmount);
-      });
-    } else if (Cookies.get('auth-type') === 'password') {
-      const accToken = Cookies.get('access-token') as string;
-      const cartId = Cookies.get('cart-id') as string;
-      getCartById(accToken, cartId).then((item) => {
-        setTotalSumInCart(item.totalPrice.centAmount);
-      });
+    const authType = Cookies.get('auth-type');
+    const accessToken = Cookies.get('access-token');
+    const anonToken = Cookies.get('anon-token');
+    const anonRefreshToken = Cookies.get('anon-refresh-token');
+    const cartId = Cookies.get('cart-id');
+    if (cartId) {
+      if (authType === 'password' && accessToken) {
+        getCartById(accessToken, cartId).then((item) => {
+          setTotalSumInCart(item.totalPrice.centAmount);
+        });
+      } else if (anonToken) {
+        getCartById(anonToken, cartId).then((item) => {
+          setTotalSumInCart(item.totalPrice.centAmount);
+        });
+      } else if (anonRefreshToken) {
+        getNewToken(anonRefreshToken).then((item) => {
+          Cookies.set('anon-token', item.accessToken, { expires: 2 });
+          getCartById(item.accessToken, cartId).then((items) => setTotalSumInCart(items.totalPrice.centAmount));
+        });
+      }
     }
   };
 
