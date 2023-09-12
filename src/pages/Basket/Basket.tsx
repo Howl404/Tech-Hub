@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import './Basket.scss';
 import Breadcrumbs from '@src/components/Breadcrumbs/Breadcrumbs';
 import CartItem from '@src/components/CartItem/CartItem';
@@ -6,7 +6,7 @@ import Cookies from 'js-cookie';
 import { Cart } from '@src/interfaces/Cart';
 import { getCartByAnonId, getCartByCustomerId, getCartById } from '@src/services/CartService/CartService';
 
-function Basket(): JSX.Element {
+function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAction<number>> }): JSX.Element {
   const [cart, setCart] = useState<Cart>({
     type: '',
     id: '',
@@ -36,6 +36,23 @@ function Basket(): JSX.Element {
     origin: '',
     itemShippingAddresses: [],
   });
+
+  const checkCartUpdateHeader = (): void => {
+    if (Cookies.get('auth-type') === 'anon') {
+      const accToken = Cookies.get('anon-token') as string;
+      const cartId = Cookies.get('cart-id') as string;
+      getCartById(accToken, cartId).then((item) => {
+        setTotalSumInCart(item.totalPrice.centAmount);
+      });
+    } else if (Cookies.get('auth-type') === 'password') {
+      const accToken = Cookies.get('access-token') as string;
+      const cartId = Cookies.get('cart-id') as string;
+      getCartById(accToken, cartId).then((item) => {
+        setTotalSumInCart(item.totalPrice.centAmount);
+      });
+    }
+  };
+
   const [cartItems, setCartItems] = useState<JSX.Element[]>([]);
   const [totalCart, setTotalCart] = useState<{ centAmount: number; currencyCode: string; fractionDigits: number }>({
     centAmount: 0,
@@ -55,7 +72,6 @@ function Basket(): JSX.Element {
       const accToken = Cookies.get('access-token') as string;
       const cartId = Cookies.get('cart-id') as string;
       getCartById(accToken, cartId).then((item) => {
-        console.log(item);
         getCartByCustomerId(accToken, item.customerId).then((carta: Cart) => {
           setCart(carta);
         });
@@ -78,6 +94,8 @@ function Basket(): JSX.Element {
     ));
     setTotalCart(cart.totalPrice);
     setCartItems(test);
+    checkCartUpdateHeader();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cart]);
   return (
     <>
@@ -101,9 +119,11 @@ function Basket(): JSX.Element {
           <div className="total-sum-block">
             <div className="subtotal-sum">
               <div>Subtotal</div>
-              <div>{`${String(totalCart.centAmount).slice(0, -totalCart.fractionDigits)}.${String(
-                totalCart.centAmount,
-              ).slice(-totalCart.fractionDigits)} ${totalCart.currencyCode}`}</div>
+              <div>
+                {totalCart.centAmount !== 0
+                  ? `${String(totalCart.centAmount).slice(0, -2)}.${String(totalCart.centAmount).slice(-2)}`
+                  : `0 ${totalCart.currencyCode}`}
+              </div>
             </div>
             <div className="subtotal-discount">
               <div>Discount</div>

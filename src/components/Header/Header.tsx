@@ -1,9 +1,10 @@
-import React, { useState, MouseEvent } from 'react';
+import React, { useState, MouseEvent, useContext } from 'react';
 import './Header.scss';
 import { Link } from 'react-router-dom';
 import logoIcon from '@assets/logo.svg';
 import cartIcon from '@assets/cart.svg';
 // import searchIcon from '@assets/search.svg';
+import AppContext from '@src/AppContext';
 import ButtonsAccount from '../ButtonsAccount/ButtonsAccount';
 import NameAccount from '../NameAccount/NameAccount';
 
@@ -15,7 +16,9 @@ const buttonsData = [
 
 function Header({ authh, logOut }: { authh: boolean; logOut: () => void }): JSX.Element {
   const [isOpen, setIsOpen] = useState(false);
-
+  const totalSumCart = useContext(AppContext);
+  const refactorSum =
+    totalSumCart !== 0 ? `${String(totalSumCart).slice(0, -2)}.${String(totalSumCart).slice(-2)}` : '0';
   const toggleMenu = (event: MouseEvent<HTMLElement>): void => {
     const eventTarget = event.target as HTMLElement;
     if (!eventTarget.className.includes('header__search') && !eventTarget.className.includes('search-box'))
@@ -66,7 +69,7 @@ function Header({ authh, logOut }: { authh: boolean; logOut: () => void }): JSX.
             </div>
             <div className="cart__title_container">
               <div className="cart__title">Shopping Cart</div>
-              <div className="cart__sell">{`${0}EUR`}</div>
+              <div className="cart__sell">{`${refactorSum} EUR`}</div>
             </div>
           </Link>
         </nav>

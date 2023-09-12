@@ -12,11 +12,13 @@ import AccountDashboard from '@pages/AccountDashboard/AccountDashboard';
 import { getClientAccessToken } from '@services/AuthService/AuthService';
 import Home from './pages/Home/Home';
 import Basket from './pages/Basket/Basket';
+import AppContext from './AppContext';
 
 function App(): JSX.Element {
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   const [auth, setIsAuth] = useState(false);
+  const [totalSumInCart, setTotalSumInCart] = useState(0);
 
   const onLogOut = (): void => {
     Object.keys(Cookies.get()).forEach((item) => {
@@ -55,15 +57,20 @@ function App(): JSX.Element {
     <div>loading</div>
   ) : (
     <>
-      <Header authh={auth} logOut={onLogOut} />
+      <AppContext.Provider value={totalSumInCart}>
+        <Header authh={auth} logOut={onLogOut} />
+      </AppContext.Provider>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/register" element={<RegistrationPage checkLogIn={checkLogIn} />} />
         <Route path="/login" element={<LoginPage checkLogIn={checkLogIn} />} />
         <Route path="/products/:key?" element={<ProductPage />} />
         <Route path="/MyAccount/*" element={<AccountDashboard onLogOut={onLogOut} />} />
-        <Route path="/catalog/:categoryslug?/:subcategoryslug?" element={<CatalogPage />} />
-        <Route path="/basket" element={<Basket />} />
+        <Route
+          path="/catalog/:categoryslug?/:subcategoryslug?"
+          element={<CatalogPage setTotalSumInCart={setTotalSumInCart} />}
+        />
+        <Route path="/basket" element={<Basket setTotalSumInCart={setTotalSumInCart} />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>

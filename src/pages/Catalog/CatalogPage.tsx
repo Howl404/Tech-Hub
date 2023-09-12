@@ -1,6 +1,6 @@
 import { getCategories, getProductsByCategory } from '@src/services/ProductsService/ProductsService';
 import CatalogProductCard from '@src/components/CatalogProductCard/CatalogProductCard';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { Dispatch, SetStateAction, useCallback, useEffect, useState } from 'react';
 import { ProductCatalog, ProductFormattedData } from '@src/interfaces/Product';
 import CategoryCard from '@src/components/CategoryCard/CategoryCard';
 import './CatalogPage.scss';
@@ -15,9 +15,31 @@ import searchIcon from '@assets/search.svg';
 import removeItemCart from '@src/utilities/removeItemCart';
 import addItemCart from '@src/utilities/addItemCart';
 import getFormattedCart from '@src/utilities/getFormattedCart';
+import Cookies from 'js-cookie';
+import { getCartById } from '@src/services/CartService/CartService';
 
-export default function Catalog(): JSX.Element {
+export default function Catalog({
+  setTotalSumInCart,
+}: {
+  setTotalSumInCart: Dispatch<SetStateAction<number>>;
+}): JSX.Element {
   const navigate = useNavigate();
+
+  const checkCartUpdateHeader = (): void => {
+    if (Cookies.get('auth-type') === 'anon') {
+      const accToken = Cookies.get('anon-token') as string;
+      const cartId = Cookies.get('cart-id') as string;
+      getCartById(accToken, cartId).then((item) => {
+        setTotalSumInCart(item.totalPrice.centAmount);
+      });
+    } else if (Cookies.get('auth-type') === 'password') {
+      const accToken = Cookies.get('access-token') as string;
+      const cartId = Cookies.get('cart-id') as string;
+      getCartById(accToken, cartId).then((item) => {
+        setTotalSumInCart(item.totalPrice.centAmount);
+      });
+    }
+  };
 
   const { categoryslug, subcategoryslug, subcategoryslug2 } = useParams<{
     categoryslug: string;
@@ -58,6 +80,7 @@ export default function Catalog(): JSX.Element {
     if (result) {
       setCartList(result);
     }
+    checkCartUpdateHeader();
     return Promise.resolve();
   };
 
@@ -66,6 +89,7 @@ export default function Catalog(): JSX.Element {
     if (result) {
       setCartList(result);
     }
+    checkCartUpdateHeader();
     return Promise.resolve();
   };
 
