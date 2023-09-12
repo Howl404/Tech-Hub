@@ -14,6 +14,7 @@ function CartItem({
   setCart,
   quantity,
   price,
+  discountedPrice,
 }: {
   id: string;
   totalPrice: { currencyCode: string; centAmount: number; fractionDigits: number };
@@ -22,6 +23,7 @@ function CartItem({
   setCart: React.Dispatch<React.SetStateAction<Cart>>;
   quantity: string;
   price: { currencyCode: string; centAmount: number; fractionDigits: number };
+  discountedPrice: { currencyCode: string; centAmount: number; fractionDigits: number } | undefined;
 }): JSX.Element {
   const handlerRemove = (event: MouseEvent<HTMLButtonElement>): void => {
     const accToken = Cookies.get('access-token') as string;
@@ -38,9 +40,28 @@ function CartItem({
         <img srcSet={image[0].url} key={id} alt="" />
       </div>
       <div className="cart-title">{name}</div>
-      <div className="cart-price">{`${price.centAmount.toString().slice(0, -price.fractionDigits)}.${price.centAmount
-        .toString()
-        .slice(-price.fractionDigits)} ${price.currencyCode}`}</div>
+      <div>
+        {!discountedPrice ? (
+          <div className="cart-price">{`${price.centAmount
+            .toString()
+            .slice(0, -price.fractionDigits)}.${price.centAmount.toString().slice(-price.fractionDigits)} ${
+            price.currencyCode
+          }`}</div>
+        ) : (
+          <>
+            <div className="cart-price-orig">{`${price.centAmount
+              .toString()
+              .slice(0, -price.fractionDigits)}.${price.centAmount.toString().slice(-price.fractionDigits)} ${
+              price.currencyCode
+            }`}</div>
+            <div className="cart-price-discount">{`${discountedPrice.centAmount
+              .toString()
+              .slice(0, -price.fractionDigits)}.${discountedPrice.centAmount
+              .toString()
+              .slice(-discountedPrice.fractionDigits)} ${discountedPrice.currencyCode}`}</div>
+          </>
+        )}
+      </div>
       <div className="cart-quantity">
         <button
           type="button"

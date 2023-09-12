@@ -4,7 +4,13 @@ import Breadcrumbs from '@src/components/Breadcrumbs/Breadcrumbs';
 import CartItem from '@src/components/CartItem/CartItem';
 import Cookies from 'js-cookie';
 import { Cart } from '@src/interfaces/Cart';
-import { getCartByAnonId, getCartByCustomerId, getCartById } from '@src/services/CartService/CartService';
+import {
+  addDiscountCode,
+  getCartByAnonId,
+  getCartByCustomerId,
+  getCartById,
+  removeDiscountCode,
+} from '@src/services/CartService/CartService';
 import { Link } from 'react-router-dom';
 
 function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAction<number>> }): JSX.Element {
@@ -54,6 +60,38 @@ function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAct
     }
   };
 
+  const applyPromoCode = (event: React.MouseEvent<HTMLElement>): void => {
+    async function fetchData(): Promise<void> {
+      const accToken = Cookies.get('anon-token') as string;
+      const cartId = Cookies.get('cart-id') as string;
+      const btnNode = event.currentTarget as HTMLElement;
+      const inputNode = btnNode.previousElementSibling as HTMLInputElement;
+      const code = inputNode.value;
+      const cartDiscount = await addDiscountCode(accToken, cartId, cart.version, code);
+      if (cartDiscount) {
+        setCart(cartDiscount);
+      }
+    }
+    fetchData();
+  };
+
+  const deletePromoCode = (): void => {
+    async function fetchData(): Promise<void> {
+      const accToken = Cookies.get('anon-token') as string;
+      const cartId = Cookies.get('cart-id') as string;
+      const cartDiscount = await removeDiscountCode(
+        accToken,
+        cartId,
+        cart.version,
+        cart.discountCodes[0].discountCode.id,
+      );
+      if (cartDiscount) {
+        setCart(cartDiscount);
+      }
+    }
+    fetchData();
+  };
+
   const [cartItems, setCartItems] = useState<JSX.Element[]>([]);
   const [totalCart, setTotalCart] = useState<{ centAmount: number; currencyCode: string; fractionDigits: number }>({
     centAmount: 0,
@@ -81,18 +119,21 @@ function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAct
   }, []);
 
   useEffect(() => {
-    const test = cart.lineItems.map<JSX.Element>(({ variant, name, totalPrice, id, quantity, price }) => (
-      <CartItem
-        id={id}
-        key={id}
-        totalPrice={totalPrice}
-        image={variant.images}
-        name={name.en}
-        setCart={setCart}
-        quantity={quantity}
-        price={price.value}
-      />
-    ));
+    const test = cart.lineItems.map<JSX.Element>(
+      ({ variant, name, totalPrice, id, quantity, price, discountedPrice }) => (
+        <CartItem
+          id={id}
+          key={id}
+          totalPrice={totalPrice}
+          image={variant.images}
+          name={name.en}
+          setCart={setCart}
+          quantity={quantity}
+          price={price.value}
+          discountedPrice={discountedPrice?.value}
+        />
+      ),
+    );
     setTotalCart(cart.totalPrice);
     setCartItems(test);
     checkCartUpdateHeader();
@@ -127,8 +168,23 @@ function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAct
         </div>
         <div className="sub-information-list-cart">
           <div className="discount-code">
-            <h3>Apply Discount Code</h3>
-            <input placeholder="Enter discount code..." />
+            {cart.discountCodes.length ? (
+              <>
+                <h3>Delete Discount Code</h3>
+                <input disabled value="discount code" />
+                <button type="button" className="discount-btn" onClick={(): void => deletePromoCode()}>
+                  delete discount
+                </button>
+              </>
+            ) : (
+              <>
+                <h3>Apply Discount Code</h3>
+                <input placeholder="Enter discount code..." />
+                <button type="button" className="discount-btn" onClick={applyPromoCode}>
+                  Apply
+                </button>
+              </>
+            )}
           </div>
           <div className="total-sum-block">
             <div className="subtotal-sum">

@@ -169,7 +169,7 @@ const removeDiscountCode = async (
       {
         action: 'removeDiscountCode',
         discountCode: {
-          typeId: 'discountCode',
+          typeId: 'discount-code',
           id: discountId,
         },
       },

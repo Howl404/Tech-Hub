@@ -41,6 +41,17 @@
     max-width: 100px;
     // text-align: left;
   }
+  .cart-price-orig {
+    width: 100%;
+    max-width: 100px;
+    text-decoration: line-through;
+    font-size: 0.8em;
+  }
+  .cart-price-discount {
+    width: 100%;
+    max-width: 100px;
+    color: red;
+  }
   .cart-remove-item {
     font-size: 27px;
     transition: all 0.3s;

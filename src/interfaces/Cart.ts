@@ -18,7 +18,15 @@ export interface Cart {
   shipping: string[];
   customerId: string;
   customLineItems: string[];
-  discountCodes: string[];
+  discountCodes: [
+    {
+      discountCode: {
+        typeId: string;
+        id: string;
+      };
+      state: string;
+    },
+  ];
   directDiscounts: string[];
   inventoryMode: string;
   taxMode: string;
@@ -36,6 +44,13 @@ export interface ProductInCart {
   productKey: string;
   quantity: string;
   price: {
+    value: {
+      centAmount: number;
+      currencyCode: string;
+      fractionDigits: number;
+    };
+  };
+  discountedPrice?: {
     value: {
       centAmount: number;
       currencyCode: string;
