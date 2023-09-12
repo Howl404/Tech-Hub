@@ -20,6 +20,11 @@
     height: 45px;
     .quantity-number {
       padding: 0 15px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
     }
     div:first-child,
     div:last-child {
@@ -38,6 +43,11 @@
   }
   .cart-remove-item {
     font-size: 27px;
+    transition: all 0.3s;
+    &:hover {
+      transform: rotate(45deg);
+      transition: all 0.3s;
+    }
   }
   .cart-title {
     width: 100%;
@@ -47,4 +57,12 @@
 
 .button__quantity {
   height: 100%;
+}
+
+button:disabled {
+  background-color: #dbdbdb;
+}
+
+button[disabled] + .quantity-number {
+  background-color: #e3e3e3;
 }

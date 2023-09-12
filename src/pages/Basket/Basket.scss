@@ -151,3 +151,26 @@ h2 {
   flex-direction: column;
   gap: 35px;
 }
+
+.button__to-catalog {
+  border: none;
+  margin-top: 15px;
+  background: #000;
+  color: #fff;
+  text-align: center;
+  font-family: 'Oswald', sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  width: 150px;
+  height: 50px;
+  transition: all 0.3s;
+}
+
+.button__to-catalog:hover {
+  background: #434343;
+  border-radius: 5px;
+}

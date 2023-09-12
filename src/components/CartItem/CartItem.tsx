@@ -1,4 +1,4 @@
-import React, { MouseEvent } from 'react';
+import React, { MouseEvent, useState } from 'react';
 import './CartItem.scss';
 import { CiSquareRemove } from 'react-icons/ci';
 import { AiOutlinePlus, AiOutlineMinus } from 'react-icons/ai';
@@ -31,7 +31,7 @@ function CartItem({
       removeFromCart(accToken, cartId, idTarget, item.version).then((requestNewCart) => setCart(requestNewCart));
     });
   };
-
+  const [disabledButton, setDisabledButton] = useState(false);
   return (
     <div className="cart-item-container">
       <div className="cart-image">
@@ -45,11 +45,16 @@ function CartItem({
         <button
           type="button"
           className="button__quantity"
+          disabled={disabledButton}
           onClick={(): void => {
+            setDisabledButton(true);
             const accToken = Cookies.get('access-token') as string;
             const cartId = Cookies.get('cart-id') as string; // условие какая карзина анон или авториз
             getCartById(accToken, cartId).then((item) => {
-              removeFromCart(accToken, cartId, id, item.version, 1).then((items) => setCart(items));
+              removeFromCart(accToken, cartId, id, item.version, 1).then((items) => {
+                setCart(items);
+                setDisabledButton(false);
+              });
             });
           }}
         >
@@ -59,11 +64,16 @@ function CartItem({
         <button
           type="button"
           className="button__quantity"
+          disabled={disabledButton}
           onClick={(): void => {
+            setDisabledButton(true);
             const accToken = Cookies.get('access-token') as string;
             const cartId = Cookies.get('cart-id') as string; // условие какая карзина анон или авториз
             getCartById(accToken, cartId).then((item) => {
-              addToCart(accToken, cartId, name.split(' ').join('-'), item.version, 1).then((items) => setCart(items));
+              addToCart(accToken, cartId, name.split(' ').join('-'), item.version, 1).then((items) => {
+                setCart(items);
+                setDisabledButton(false);
+              });
             });
           }}
         >

@@ -5,6 +5,7 @@ import CartItem from '@src/components/CartItem/CartItem';
 import Cookies from 'js-cookie';
 import { Cart } from '@src/interfaces/Cart';
 import { getCartByAnonId, getCartByCustomerId, getCartById } from '@src/services/CartService/CartService';
+import { Link } from 'react-router-dom';
 
 function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAction<number>> }): JSX.Element {
   const [cart, setCart] = useState<Cart>({
@@ -109,7 +110,20 @@ function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAct
             <li className="table-text">QUANTITY</li>
             <li className="table-text">TOTAL</li>
           </ul>
-          <div className="cart-information">{cart.lineItems.length === 0 ? 'Sorry, you cart empty' : cartItems}</div>
+          <div className="cart-information">
+            {cart.lineItems.length === 0 ? (
+              <div>
+                <div>Sorry, you cart empty... try to find and add new purchases :)</div>
+                <Link to="/catalog">
+                  <button type="button" className="button__to-catalog">
+                    Catalog
+                  </button>
+                </Link>
+              </div>
+            ) : (
+              cartItems
+            )}
+          </div>
         </div>
         <div className="sub-information-list-cart">
           <div className="discount-code">
