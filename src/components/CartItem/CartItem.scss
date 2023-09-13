@@ -29,14 +29,20 @@
 }
 
 .cart-price-orig {
-  width: 100%;
-  max-width: 100px;
+  padding: 0 10px;
+  font-family: 'ABeeZee', sans-serif;
+  font-size: 12px;
+  font-style: normal;
+  text-align: center;
   text-decoration: line-through;
   font-size: 0.8em;
 }
 .cart-price-discount {
-  width: 100%;
-  max-width: 100px;
+  padding: 0 10px;
+  font-family: 'ABeeZee', sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  text-align: center;
   color: red;
 }
 

@@ -76,6 +76,8 @@ thead {
   h3 {
     margin: 36px 0 0 32px;
   }
+
+  .div-input,
   input {
     margin: 22px 0 43px 32px;
     font-family: 'Roboto', sans-serif;
@@ -89,6 +91,8 @@ thead {
     width: 75%;
     background: #fff;
     padding-left: 20px;
+    display: flex;
+    align-items: center;
   }
 }
 

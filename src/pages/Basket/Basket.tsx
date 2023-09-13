@@ -315,7 +315,8 @@ function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAct
             {cart.discountCodes.length ? (
               <>
                 <h3>Delete Discount Code</h3>
-                <input disabled value={currentDiscountCode} />
+                {/* <input disabled value={currentDiscountCode} /> */}
+                <div className="div-input">{currentDiscountCode}</div>
                 <button type="button" className="discount-btn" onClick={(): void => deletePromoCode()}>
                   delete discount
                 </button>
