@@ -22,17 +22,17 @@ export default function AboutCard({
         <h3 className="content__name">{member.name}</h3>
         {member.inverted ? (
           <div className="content__role-github">
-            <p className="role-github__role">{member.role}</p>
             <Link className="role-github__github" to={`https://github.com/${member.github}`}>
               @{member.github}
             </Link>
+            <p className="role-github__role">{member.role}</p>
           </div>
         ) : (
           <div className="content__role-github">
+            <p className="role-github__role">{member.role}</p>
             <Link className="role-github__github" to={`https://github.com/${member.github}`}>
               @{member.github}
             </Link>
-            <p className="role-github__role">{member.role}</p>
           </div>
         )}
 
