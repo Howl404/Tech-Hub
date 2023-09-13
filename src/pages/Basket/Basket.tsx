@@ -12,6 +12,7 @@ import {
   removeDiscountCode,
 } from '@src/services/CartService/CartService';
 import { Link } from 'react-router-dom';
+import { getDiscountCodeById } from '@src/services/DiscountService/DiscountService';
 
 function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAction<number>> }): JSX.Element {
   const [cart, setCart] = useState<Cart>({
@@ -60,6 +61,8 @@ function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAct
     }
   };
 
+  const [currentDiscountCode, setCurrentDiscountCode] = useState('');
+
   const applyPromoCode = (event: React.MouseEvent<HTMLElement>): void => {
     async function fetchData(): Promise<void> {
       const accToken = Cookies.get('anon-token') as string;
@@ -93,9 +96,19 @@ function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAct
   };
 
   const [cartItems, setCartItems] = useState<JSX.Element[]>([]);
-  const [totalCart, setTotalCart] = useState<{ centAmount: number; currencyCode: string; fractionDigits: number }>({
+  const [totalCart, setTotalCart] = useState<{
+    centAmount: number;
+    centAmountDiscount: number;
+    centAmountDiscountPromo: number;
+    centSubtotal: number;
+    currencyCode: string;
+    fractionDigits: number;
+  }>({
     centAmount: 0,
-    currencyCode: '',
+    centAmountDiscount: 0,
+    centAmountDiscountPromo: 0,
+    centSubtotal: 0,
+    currencyCode: 'EUR',
     fractionDigits: 2,
   });
   useEffect(() => {
@@ -119,26 +132,61 @@ function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAct
   }, []);
 
   useEffect(() => {
-    const test = cart.lineItems.map<JSX.Element>(
-      ({ variant, name, totalPrice, id, quantity, price, discountedPrice }) => (
-        <CartItem
-          id={id}
-          key={id}
-          totalPrice={totalPrice}
-          image={variant.images}
-          name={name.en}
-          setCart={setCart}
-          quantity={quantity}
-          price={price.value}
-          discountedPrice={discountedPrice?.value}
-        />
-      ),
+    const test = cart.lineItems.map<JSX.Element>(({ variant, name, id, quantity, price, discountedPrice }) => (
+      <CartItem
+        id={id}
+        key={id}
+        image={variant.images}
+        name={name.en}
+        setCart={setCart}
+        quantity={quantity}
+        price={price}
+        discountedPrice={discountedPrice?.value}
+      />
+    ));
+
+    const objDiscount = cart.lineItems.reduce(
+      (acc, val) => {
+        const price = val.price.value.centAmount;
+        const discountPrice = val.price.discounted?.value.centAmount || 0;
+        const discountedPrice = price - (val.price.discounted?.value.centAmount || price);
+        const lastPrice = discountPrice || price;
+        const discountedPricePromo = lastPrice - (val.discountedPrice?.value.centAmount || lastPrice);
+        return {
+          centSubtotal: price + acc.centSubtotal,
+          discountedPrice: discountedPrice + acc.discountedPrice,
+          discountedPricePromo: discountedPricePromo + acc.discountedPricePromo,
+        };
+      },
+      { centSubtotal: 0, discountedPrice: 0, discountedPricePromo: 0 },
     );
-    setTotalCart(cart.totalPrice);
+
+    setTotalCart({
+      ...cart.totalPrice,
+      centSubtotal: objDiscount.centSubtotal,
+      centAmountDiscount: objDiscount.discountedPrice,
+      centAmountDiscountPromo: objDiscount.discountedPricePromo,
+    });
     setCartItems(test);
     checkCartUpdateHeader();
+
+    async function fetchData(): Promise<void> {
+      if (cart.discountCodes.length) {
+        const discountInfo = await getDiscountCodeById(cart.discountCodes[0].discountCode.id);
+        if (discountInfo) setCurrentDiscountCode(discountInfo.code);
+      }
+    }
+    fetchData();
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cart]);
+
+  const getFormattedSum = (sum: number): string =>
+    new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'EUR',
+    }).format(sum / 100);
+
   return (
     <>
       <Breadcrumbs />
@@ -171,7 +219,7 @@ function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAct
             {cart.discountCodes.length ? (
               <>
                 <h3>Delete Discount Code</h3>
-                <input disabled value="discount code" />
+                <input disabled value={currentDiscountCode} />
                 <button type="button" className="discount-btn" onClick={(): void => deletePromoCode()}>
                   delete discount
                 </button>
@@ -189,19 +237,19 @@ function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAct
           <div className="total-sum-block">
             <div className="subtotal-sum">
               <div>Subtotal</div>
-              <div>
-                {totalCart.centAmount !== 0
-                  ? `${String(totalCart.centAmount).slice(0, -2)}.${String(totalCart.centAmount).slice(-2)}`
-                  : `0 ${totalCart.currencyCode}`}
-              </div>
+              <div>{getFormattedSum(totalCart.centSubtotal)}</div>
             </div>
             <div className="subtotal-discount">
               <div>Discount</div>
-              <div>0EUR</div>
+              <div>{getFormattedSum(totalCart.centAmountDiscount)}</div>
+            </div>
+            <div className="subtotal-discount">
+              <div>Promocode</div>
+              <div>{getFormattedSum(totalCart.centAmountDiscountPromo)}</div>
             </div>
             <div className="oreder-total">
               <div>ORDER TOTAL</div>
-              <div>0.0 EUR</div>
+              <div>{getFormattedSum(totalCart.centAmount)}</div>
             </div>
           </div>
           <button type="submit">proceed to checkout</button>
