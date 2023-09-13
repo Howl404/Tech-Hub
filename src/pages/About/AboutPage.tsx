@@ -1,22 +1,47 @@
 import AboutCard from '@src/components/AboutCard/AboutCard';
 import React from 'react';
+import './AboutPage.scss';
+
+import howlSvg from '@assets/howl.svg';
 
 export default function AboutPage(): JSX.Element {
   const info = [
     {
-      image: '1',
+      image: howlSvg,
       name: 'Arthur',
       role: 'Team Lead',
       github: 'howl404',
       bio: "I'm a JavaScript sorcerer, a TypeScript tamer, and a React wrangler. An algorithm wizard and a master of procrastination. If I had an algorithm to combat procrastination, I'd probably start using it... later, maybe",
       contributions: ['Catalog', 'Jira', 'About Us'],
+      inverted: false,
+    },
+    {
+      image: howlSvg,
+      name: 'Arthur',
+      role: 'Team Lead',
+      github: 'howl404',
+      bio: "I'm a JavaScript sorcerer, a TypeScript tamer, and a React wrangler. An algorithm wizard and a master of procrastination. If I had an algorithm to combat procrastination, I'd probably start using it... later, maybe",
+      contributions: ['Catalog', 'Jira', 'About Us'],
+      inverted: true,
+    },
+    {
+      image: howlSvg,
+      name: 'Arthur',
+      role: 'Team Lead',
+      github: 'howl404',
+      bio: "I'm a JavaScript sorcerer, a TypeScript tamer, and a React wrangler. An algorithm wizard and a master of procrastination. If I had an algorithm to combat procrastination, I'd probably start using it... later, maybe",
+      contributions: ['Catalog', 'Jira', 'About Us'],
+      inverted: false,
     },
   ];
   return (
-    <div className="about-container">
-      {info.map((member) => (
-        <AboutCard member={member} key={member.name} />
-      ))}
-    </div>
+    <>
+      <h1 className="about__main-heading">Who are we?</h1>
+      <div className="about__container">
+        {info.map((member) => (
+          <AboutCard member={member} key={member.name} />
+        ))}
+      </div>
+    </>
   );
 }
