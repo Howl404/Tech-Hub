@@ -15,10 +15,16 @@ h2 {
   margin-bottom: 55px;
 }
 
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
 .cart {
   display: flex;
   justify-content: center;
   gap: 70px;
+  flex-wrap: wrap;
 }
 
 .main-list-cart {
@@ -26,35 +32,22 @@ h2 {
   width: 100%;
 }
 
-.title-table {
-  display: flex;
-  list-style: none;
-  gap: 110px;
-  padding: 0;
-  //   flex: 1;
-  justify-content: center;
-  border-bottom: 2px solid #c4c4c4;
-  max-width: 900px;
-  padding-bottom: 10px;
-  padding-right: 25px;
-}
-
 .table-text {
+  &:first-child {
+    text-align: left;
+  }
+  text-transform: uppercase;
   color: #828282;
   font-family: 'Oswald', sans-serif;
   font-size: 18px;
   font-style: normal;
   font-weight: 500;
+  border-bottom: 2px solid #c4c4c4;
+  padding-bottom: 18px;
 }
 
-.table-text:first-child {
-  max-width: 400px;
-  width: 100%;
-}
-
-.table-text:last-child {
-  max-width: 150px;
-  width: 100%;
+thead {
+  margin-bottom: 25px;
 }
 
 .sub-information-list-cart {
@@ -84,16 +77,16 @@ h2 {
     margin: 36px 0 0 32px;
   }
   input {
-    margin: 22px 24px 43px 32px;
-    font-family: Roboto;
+    margin: 22px 0 43px 32px;
+    font-family: 'Roboto', sans-serif;
     font-size: 16px;
     font-style: normal;
     font-weight: 400;
-    font-family: 'Roboto', sans-serif;
+    // font-family: 'Roboto', sans-serif;
     border: 1px solid #c4c4c4;
     height: 44px;
     max-width: 410px;
-    width: 100%;
+    width: 75%;
     background: #fff;
     padding-left: 20px;
   }
@@ -197,4 +190,36 @@ h2 {
 .clear-cart:hover {
   background: #434343;
   border-radius: 5px;
+}
+
+.container-button-clear {
+  text-align: end;
+}
+
+.title-for-empty {
+  text-align: center;
+  padding-top: 25px;
+  font-family: 'Oswald', sans-serif;
+  font-size: 18px;
+}
+
+.title-for-empty > a > button {
+  margin: 0;
+}
+
+@media (max-width: 1500px) {
+  .cart {
+    flex-direction: column;
+    align-items: center;
+    padding: 0 20px;
+    overflow: auto;
+  }
+}
+
+@media (max-width: 890px) {
+  .cart-item-container .cart-image {
+    max-width: 100px;
+    max-height: 100px;
+    text-align: left;
+  }
 }

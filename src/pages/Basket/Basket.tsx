@@ -143,10 +143,7 @@ function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAct
           price={price.value}
         />
       ));
-      // setTotalCart(cart.totalPrice);
       setCartItems(carts);
-
-      // checkCartUpdateHeader();
     }
     setTotalCart(cart.totalPrice);
     checkCartUpdateHeader();
@@ -158,30 +155,50 @@ function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAct
       <h2>Shopping Cart</h2>
       <div className="cart">
         <div className="main-list-cart">
-          <ul className="title-table">
-            <li className="table-text">PRODUCT</li>
-            <li className="table-text">PRICE</li>
-            <li className="table-text">QUANTITY</li>
-            <li className="table-text">TOTAL</li>
-          </ul>
-          <div className="cart-information">
-            {cart.lineItems.length === 0 ? (
-              <div>
-                <div>Sorry, you cart empty... try to find and add new purchases :)</div>
-                <Link to="/catalog">
-                  <button type="button" className="button__to-catalog">
-                    Catalog
-                  </button>
-                </Link>
-              </div>
-            ) : (
-              <>
-                {cartItems}
-                <button type="button" className="clear-cart" onClick={handleClearCart}>
-                  clear cart
-                </button>
-              </>
-            )}
+          <div className="cart">
+            <table>
+              <thead>
+                <tr className="title-table">
+                  <th className="table-text">Product</th>
+                  <th className="table-text"> </th>
+                  <th className="table-text">Price</th>
+                  <th className="table-text">Quantity</th>
+                  <th className="table-text">Total</th>
+                  <th className="table-text"> </th>
+                </tr>
+              </thead>
+              <tbody>
+                {cart.lineItems.length === 0 ? (
+                  <>
+                    <tr>
+                      <td className="title-for-empty" colSpan={6}>
+                        Sorry, you cart empty... try to find and add new purchases :)
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="title-for-empty" colSpan={6}>
+                        <Link to="/catalog">
+                          <button type="button" className="button__to-catalog">
+                            Catalog
+                          </button>
+                        </Link>
+                      </td>
+                    </tr>
+                  </>
+                ) : (
+                  <>
+                    {cartItems}
+                    <tr>
+                      <td className="container-button-clear" colSpan={6}>
+                        <button type="button" className="clear-cart" onClick={handleClearCart}>
+                          clear cart
+                        </button>
+                      </td>
+                    </tr>
+                  </>
+                )}
+              </tbody>
+            </table>
           </div>
         </div>
         <div className="sub-information-list-cart">

@@ -112,52 +112,38 @@ function CartItem({
   };
 
   return (
-    <div className="cart-item-container">
-      <div className="cart-image">
+    <tr className="cart-item-container">
+      <td className="cart-image">
         <img srcSet={image[0].url} key={id} alt="" />
-      </div>
-      <div className="cart-title">{name}</div>
-      <div className="cart-price">{`${price.centAmount.toString().slice(0, -price.fractionDigits)}.${price.centAmount
-        .toString()
-        .slice(-price.fractionDigits)} ${price.currencyCode}`}</div>
-      <div className="cart-quantity">
-        <button type="button" className="button__quantity" disabled={disabledButton} onClick={handlerButtonDec}>
-          <AiOutlineMinus color="#C4C4C4" />
-        </button>
-        <div className="quantity-number">{quantity}</div>
-        <button
-          type="button"
-          className="button__quantity"
-          disabled={disabledButton}
-          onClick={
-            handlerButtonInc
-            // (): void => {
-            // setDisabledButton(true);
-            // const accToken = Cookies.get('access-token') as string;
-            // const cartId = Cookies.get('cart-id') as string; // условие какая карзина анон или авториз
-            // getCartById(accToken, cartId).then((item) => {
-            // addToCart(accToken, cartId, name.split(' ').join('-'), item.version, 1).then((items) => {
-            //   setCart(items);
-            //   setDisabledButton(false);
-            // });
-            // });
-            // }
-          }
-        >
-          <AiOutlinePlus color="#C4C4C4" />
-        </button>
-      </div>
-      <div className="cart-total">{`${Number(totalPrice.centAmount)
+      </td>
+      <td className="cart-title-product">{name}</td>
+      <td className="cart-price-product">
+        {`${price.centAmount.toString().slice(0, -price.fractionDigits)}.${price.centAmount
+          .toString()
+          .slice(-price.fractionDigits)} ${price.currencyCode}`}
+      </td>
+      <td>
+        <div className="cart-quantity">
+          <button type="button" className="button__quantity" disabled={disabledButton} onClick={handlerButtonDec}>
+            <AiOutlineMinus color="#C4C4C4" />
+          </button>
+          <div className="quantity-number">{quantity}</div>
+          <button type="button" className="button__quantity" disabled={disabledButton} onClick={handlerButtonInc}>
+            <AiOutlinePlus color="#C4C4C4" />
+          </button>
+        </div>
+      </td>
+      <td className="cart-total-price">{`${Number(totalPrice.centAmount)
         .toString()
         .slice(0, -totalPrice.fractionDigits)}.${Number(totalPrice.centAmount)
         .toString()
-        .slice(-totalPrice.fractionDigits)} ${totalPrice.currencyCode}`}</div>
-      <div className="cart-remove-item">
-        <button type="button" id={id} onClick={handlerRemove}>
+        .slice(-totalPrice.fractionDigits)} ${totalPrice.currencyCode}`}</td>
+      <td>
+        <button className="cart-remove-item" type="button" id={id} onClick={handlerRemove}>
           <CiSquareRemove pointerEvents="none" />
         </button>
-      </div>
-    </div>
+      </td>
+    </tr>
   );
 }
 
