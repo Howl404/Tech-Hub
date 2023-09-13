@@ -10,9 +10,12 @@ import {
   getCartByCustomerId,
   getCartById,
   removeDiscountCode,
+  removeFromCart,
 } from '@src/services/CartService/CartService';
 import { Link } from 'react-router-dom';
 import { getDiscountCodeById } from '@src/services/DiscountService/DiscountService';
+import { getNewToken } from '@src/services/AuthService/AuthService';
+import { ClipLoader } from 'react-spinners';
 
 function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAction<number>> }): JSX.Element {
   const [cart, setCart] = useState<Cart>({
@@ -45,19 +48,33 @@ function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAct
     itemShippingAddresses: [],
   });
 
+  const [loading, setLoading] = useState(true);
+
+  const onLoaded = (): void => {
+    setLoading(false);
+  };
+
   const checkCartUpdateHeader = (): void => {
-    if (Cookies.get('auth-type') === 'anon') {
-      const accToken = Cookies.get('anon-token') as string;
-      const cartId = Cookies.get('cart-id') as string;
-      getCartById(accToken, cartId).then((item) => {
-        setTotalSumInCart(item.totalPrice.centAmount);
-      });
-    } else if (Cookies.get('auth-type') === 'password') {
-      const accToken = Cookies.get('access-token') as string;
-      const cartId = Cookies.get('cart-id') as string;
-      getCartById(accToken, cartId).then((item) => {
-        setTotalSumInCart(item.totalPrice.centAmount);
-      });
+    const authType = Cookies.get('auth-type');
+    const accessToken = Cookies.get('access-token');
+    const anonToken = Cookies.get('anon-token');
+    const anonRefreshToken = Cookies.get('anon-refresh-token');
+    const cartId = Cookies.get('cart-id');
+    if (cartId) {
+      if (authType === 'password' && accessToken) {
+        getCartById(accessToken, cartId).then((item) => {
+          setTotalSumInCart(item.totalPrice.centAmount);
+        });
+      } else if (anonToken) {
+        getCartById(anonToken, cartId).then((item) => {
+          setTotalSumInCart(item.totalPrice.centAmount);
+        });
+      } else if (anonRefreshToken) {
+        getNewToken(anonRefreshToken).then((item) => {
+          Cookies.set('anon-token', item.accessToken, { expires: 2 });
+          getCartById(item.accessToken, cartId).then((items) => setTotalSumInCart(items.totalPrice.centAmount));
+        });
+      }
     }
   };
 
@@ -95,6 +112,33 @@ function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAct
     fetchData();
   };
 
+  const handleClearCart = (): void => {
+    let i = cart.lineItems.length;
+    const anonFunc = (version: number): void => {
+      const authType = Cookies.get('auth-type');
+      const accessToken = Cookies.get('access-token');
+      const anonToken = Cookies.get('anon-token');
+      i -= 1;
+      if (i === -1) return;
+      if (authType === 'password' && accessToken) {
+        if (i !== -1) {
+          removeFromCart(accessToken, cart.id, cart.lineItems[i].id, version).then((item) => {
+            if (i === 0) setCart(item);
+            anonFunc(item.version);
+          });
+        }
+      } else if (anonToken) {
+        if (i !== -1) {
+          removeFromCart(anonToken, cart.id, cart.lineItems[i].id, version).then((item) => {
+            if (i === 0) setCart(item);
+            anonFunc(item.version);
+          });
+        }
+      }
+    };
+    anonFunc(cart.version);
+  };
+
   const [cartItems, setCartItems] = useState<JSX.Element[]>([]);
   const [totalCart, setTotalCart] = useState<{
     centAmount: number;
@@ -112,27 +156,37 @@ function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAct
     fractionDigits: 2,
   });
   useEffect(() => {
-    if (Cookies.get('auth-type') === 'anon') {
-      const accToken = Cookies.get('anon-token') as string;
-      const cartId = Cookies.get('cart-id') as string;
-      getCartById(accToken, cartId).then((item) => {
-        getCartByAnonId(accToken, item.anonymousId).then((carta: Cart) => {
-          setCart(carta);
+    const authType = Cookies.get('auth-type');
+    const accessToken = Cookies.get('access-token');
+    const anonToken = Cookies.get('anon-token');
+    const anonRefreshToken = Cookies.get('anon-refresh-token');
+    const cartId = Cookies.get('cart-id');
+    if (cartId) {
+      if (authType === 'password' && accessToken) {
+        getCartById(accessToken, cartId).then((item) => {
+          getCartByCustomerId(accessToken, item.customerId).then((carta: Cart) => {
+            setCart(carta);
+            onLoaded();
+          });
         });
-      });
-    } else if (Cookies.get('auth-type') === 'password') {
-      const accToken = Cookies.get('access-token') as string;
-      const cartId = Cookies.get('cart-id') as string;
-      getCartById(accToken, cartId).then((item) => {
-        getCartByCustomerId(accToken, item.customerId).then((carta: Cart) => {
-          setCart(carta);
+      } else if (anonToken) {
+        getCartById(anonToken, cartId).then((item) => {
+          getCartByAnonId(anonToken, item.anonymousId).then((carta: Cart) => {
+            setCart(carta);
+            onLoaded();
+          });
         });
-      });
+      } else if (anonRefreshToken) {
+        getNewToken(anonRefreshToken).then((item) => {
+          Cookies.set('anon-token', item.accessToken, { expires: 2 });
+          getCartById(item.accessToken, cartId).then((items) => setCart(items));
+        });
+      }
     }
   }, []);
 
   useEffect(() => {
-    const test = cart.lineItems.map<JSX.Element>(({ variant, name, id, quantity, price, discountedPrice }) => (
+    const carts = cart.lineItems.map<JSX.Element>(({ variant, name, id, quantity, price, discountedPrice }) => (
       <CartItem
         id={id}
         key={id}
@@ -153,9 +207,9 @@ function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAct
         const lastPrice = discountPrice || price;
         const discountedPricePromo = lastPrice - (val.discountedPrice?.value.centAmount || lastPrice);
         return {
-          centSubtotal: price + acc.centSubtotal,
-          discountedPrice: discountedPrice + acc.discountedPrice,
-          discountedPricePromo: discountedPricePromo + acc.discountedPricePromo,
+          centSubtotal: price * val.quantity + acc.centSubtotal,
+          discountedPrice: discountedPrice * val.quantity + acc.discountedPrice,
+          discountedPricePromo: discountedPricePromo * val.quantity + acc.discountedPricePromo,
         };
       },
       { centSubtotal: 0, discountedPrice: 0, discountedPricePromo: 0 },
@@ -165,9 +219,10 @@ function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAct
       ...cart.totalPrice,
       centSubtotal: objDiscount.centSubtotal,
       centAmountDiscount: objDiscount.discountedPrice,
-      centAmountDiscountPromo: objDiscount.discountedPricePromo,
+      centAmountDiscountPromo: objDiscount.centSubtotal - objDiscount.discountedPrice - cart.totalPrice.centAmount,
     });
-    setCartItems(test);
+    setCartItems(carts);
+
     checkCartUpdateHeader();
 
     async function fetchData(): Promise<void> {
@@ -187,31 +242,72 @@ function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAct
       currency: 'EUR',
     }).format(sum / 100);
 
+  let content = (
+    <tr>
+      <td>a</td>
+    </tr>
+  );
+  if (loading) {
+    content = (
+      <tr>
+        <td className="loader" colSpan={6}>
+          <ClipLoader size={100} />
+        </td>
+      </tr>
+    );
+  } else {
+    content =
+      cart.lineItems.length !== 0 ? (
+        <>
+          {cartItems}
+          <tr>
+            <td className="container-button-clear" colSpan={6}>
+              <button type="button" className="clear-cart" onClick={handleClearCart}>
+                clear cart
+              </button>
+            </td>
+          </tr>
+        </>
+      ) : (
+        <>
+          <tr>
+            <td className="title-for-empty" colSpan={6}>
+              Sorry, you cart empty... try to find and add new purchases :)
+            </td>
+          </tr>
+          <tr>
+            <td className="title-for-empty" colSpan={6}>
+              <Link to="/catalog">
+                <button type="button" className="button__to-catalog">
+                  Catalog
+                </button>
+              </Link>
+            </td>
+          </tr>
+        </>
+      );
+  }
+
   return (
     <>
       <Breadcrumbs />
       <h2>Shopping Cart</h2>
       <div className="cart">
         <div className="main-list-cart">
-          <ul className="title-table">
-            <li className="table-text">PRODUCT</li>
-            <li className="table-text">PRICE</li>
-            <li className="table-text">QUANTITY</li>
-            <li className="table-text">TOTAL</li>
-          </ul>
-          <div className="cart-information">
-            {cart.lineItems.length === 0 ? (
-              <div>
-                <div>Sorry, you cart empty... try to find and add new purchases :)</div>
-                <Link to="/catalog">
-                  <button type="button" className="button__to-catalog">
-                    Catalog
-                  </button>
-                </Link>
-              </div>
-            ) : (
-              cartItems
-            )}
+          <div className="cart">
+            <table>
+              <thead>
+                <tr className="title-table">
+                  <th className="table-text">Product</th>
+                  <th className="table-text"> </th>
+                  <th className="table-text">Price</th>
+                  <th className="table-text">Quantity</th>
+                  <th className="table-text">Total</th>
+                  <th className="table-text"> </th>
+                </tr>
+              </thead>
+              <tbody>{content}</tbody>
+            </table>
           </div>
         </div>
         <div className="sub-information-list-cart">

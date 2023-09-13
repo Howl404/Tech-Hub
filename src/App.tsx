@@ -28,6 +28,7 @@ function App(): JSX.Element {
       Cookies.set('access-token', result.accessToken, { expires: 2 });
       Cookies.set('auth-type', 'anon', { expires: 2 });
     });
+    setTotalSumInCart(0);
     navigate('/');
     setIsAuth(false);
   };
@@ -64,7 +65,7 @@ function App(): JSX.Element {
         <Route path="/" element={<Home />} />
         <Route path="/register" element={<RegistrationPage checkLogIn={checkLogIn} />} />
         <Route path="/login" element={<LoginPage checkLogIn={checkLogIn} />} />
-        <Route path="/products/:key?" element={<ProductPage />} />
+        <Route path="/products/:key?" element={<ProductPage setTotalSumInCart={setTotalSumInCart} />} />
         <Route path="/MyAccount/*" element={<AccountDashboard onLogOut={onLogOut} />} />
         <Route
           path="/catalog/:categoryslug?/:subcategoryslug?"
