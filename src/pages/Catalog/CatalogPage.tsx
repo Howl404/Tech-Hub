@@ -12,20 +12,13 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import Breadcrumb from '@src/components/Breadcrumb/Breadcrumb';
 import sortingOptions from '@src/utilities/sortingOptions';
 import searchIcon from '@assets/search.svg';
-import AuthData from '@src/interfaces/AuthData';
-import { getCartById, createCart, addToCart, removeFromCart } from '@src/services/CartService/CartService';
-import { getAnonymousToken, getNewToken } from '@src/services/AuthService/AuthService';
-import Cookies from 'js-cookie';
+import removeItemCart from '@src/utilities/removeItemCart';
+import addItemCart from '@src/utilities/addItemCart';
+import getFormattedCart from '@src/utilities/getFormattedCart';
 import ReactPaginate from 'react-paginate';
 import { ClipLoader } from 'react-spinners';
 
-export default function Catalog({
-  authData,
-  updateAuthData,
-}: {
-  authData: AuthData;
-  updateAuthData: (newAuthData: AuthData) => void;
-}): JSX.Element {
+export default function Catalog(): JSX.Element {
   const navigate = useNavigate();
 
   const { categoryslug, subcategoryslug, subcategoryslug2 } = useParams<{
@@ -57,78 +50,19 @@ export default function Catalog({
 
   const [displayCategories, setDisplayCategories] = useState(false);
 
-  const handleAddToCart = async (product: string): Promise<void> => {
-    let resultCart;
-    if (authData.cartId) {
-      if (authData.anonToken) {
-        const cart = await getCartById(authData.anonToken, authData.cartId);
-        resultCart = await addToCart(authData.anonToken, cart.id, product, cart.version, 1);
-      } else {
-        const response = await getNewToken(authData.anonRefreshToken);
-        Cookies.set('anon-token', response.accessToken, { expires: 2 });
-        updateAuthData({ ...authData, anonToken: response.accessToken });
-        const cart = await getCartById(response.accessToken, authData.cartId);
-        resultCart = await addToCart(response.accessToken, cart.id, product, cart.version, 1);
-      }
-    } else {
-      const response = await getAnonymousToken();
-      const threeHours = 180 / (24 * 60);
-
-      Cookies.set('anon-token', response.accessToken, { expires: threeHours });
-      Cookies.set('anon-refresh-token', response.refreshToken, { expires: 200 });
-
-      const cart = await createCart(response.accessToken);
-      Cookies.set('cart-id', cart.id);
-
-      updateAuthData({
-        ...authData,
-        anonToken: response.accessToken,
-        cartId: cart.id,
-        anonRefreshToken: response.refreshToken,
-      });
-
-      resultCart = await addToCart(response.accessToken, cart.id, product, cart.version, 1);
+  const handleAddToCart = async (productSku: string): Promise<void> => {
+    const result = await addItemCart(productSku);
+    if (result) {
+      setCartList(result);
     }
-
-    if (resultCart) {
-      const formattedCart = resultCart.lineItems.map((lineItem) => ({
-        productId: lineItem.productId,
-        id: lineItem.id,
-      }));
-      setCartList(formattedCart);
-    }
-
     return Promise.resolve();
   };
 
-  const handleRemoveFromCart = async (product: string): Promise<void> => {
-    let resultCart;
-    if (authData.cartId) {
-      if (authData.anonToken) {
-        const cart = await getCartById(authData.anonToken, authData.cartId);
-        resultCart = await removeFromCart(authData.anonToken, cart.id, product, cart.version);
-      } else {
-        const response = await getNewToken(authData.anonRefreshToken);
-        Cookies.set('anon-token', response.accessToken, { expires: 2 });
-
-        updateAuthData({
-          ...authData,
-          anonToken: response.accessToken,
-        });
-
-        const cart = await getCartById(authData.anonToken, authData.cartId);
-        resultCart = await removeFromCart(authData.anonToken, cart.id, product, cart.version);
-      }
+  const handleRemoveFromCart = async (productSku: string): Promise<void> => {
+    const result = await removeItemCart(productSku);
+    if (result) {
+      setCartList(result);
     }
-
-    if (resultCart) {
-      const formattedCart = resultCart.lineItems.map((lineItem) => ({
-        productId: lineItem.productId,
-        id: lineItem.id,
-      }));
-      setCartList(formattedCart);
-    }
-
     return Promise.resolve();
   };
 
@@ -236,16 +170,14 @@ export default function Catalog({
   }, []);
 
   useEffect(() => {
-    if (authData.cartId && authData.anonToken) {
-      getCartById(authData.anonToken, authData.cartId).then((cart) => {
-        const formattedCart = cart.lineItems.map((lineItem) => ({
-          productId: lineItem.productId,
-          id: lineItem.id,
-        }));
-        setCartList(formattedCart);
-      });
+    async function fetchData(): Promise<void> {
+      const cart = await getFormattedCart();
+      if (cart) {
+        setCartList(cart);
+      }
     }
-  }, [authData]);
+    fetchData();
+  }, []);
 
   useEffect(() => {
     getNewProducts();
@@ -377,16 +309,16 @@ export default function Catalog({
           </div>
         </div>
       </div>
-      {gettingNewProducts ? (
-        <div className="centered-loader">
-          <ClipLoader size={160} />
+      <div className="main-content">
+        <div className="filter-list">
+          <PriceRangeSlider min={minPrice} max={maxPrice} onChange={handlePriceChange} />
+          <BrandFilter products={savedBrands} onChange={handleBrandChange} clearBrand={clearBrand} />
         </div>
-      ) : (
-        <div className="main-content">
-          <div className="filter-list">
-            <PriceRangeSlider min={minPrice} max={maxPrice} onChange={handlePriceChange} />
-            <BrandFilter products={savedBrands} onChange={handleBrandChange} clearBrand={clearBrand} />
+        {gettingNewProducts ? (
+          <div className="centered-loader">
+            <ClipLoader size={160} />
           </div>
+        ) : (
           <div className="product-list">
             {products.map((product) => (
               <CatalogProductCard
@@ -398,8 +330,8 @@ export default function Catalog({
               />
             ))}
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       <ReactPaginate
         pageCount={Math.ceil(amountOfProducts / productsPerPage)}
