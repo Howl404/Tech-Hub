@@ -3,6 +3,7 @@ import React from 'react';
 import './AboutPage.scss';
 
 import howlSvg from '@assets/howl.svg';
+import { Link } from 'react-router-dom';
 
 export default function AboutPage(): JSX.Element {
   const info = [
@@ -41,6 +42,11 @@ export default function AboutPage(): JSX.Element {
         {info.map((member) => (
           <AboutCard member={member} key={member.name} />
         ))}
+      </div>
+      <div className="about__rs-school">
+        <Link className="rs-school_link" to="https://rs.school">
+          <img className="rs-school_logo" src="https://rs.school/images/rs_school_js.svg" alt="RS School" />
+        </Link>
       </div>
     </>
   );

@@ -23,7 +23,7 @@
   .content__role-github {
     color: #000;
     font-family: Oswald;
-    font-size: 14px;
+    font-size: 16px;
     font-style: normal;
     font-weight: 500;
     line-height: normal;
@@ -33,6 +33,16 @@
     display: flex;
     align-items: center;
     justify-content: flex-start;
+
+    .role-github__github {
+      font-size: 14px;
+      text-transform: none;
+      text-decoration: none;
+      color: rgba(0, 0, 0, 0.822);
+      &:hover {
+        text-decoration: underline;
+      }
+    }
   }
 
   .content__vertical-line {

@@ -54,3 +54,16 @@
     }
   }
 }
+
+.about__rs-school {
+  display: flex;
+  align-items: center;
+
+  .rs-school_logo {
+    width: 320px;
+  }
+
+  .rs-school_link {
+    margin: 0 auto;
+  }
+}
