@@ -37,6 +37,7 @@
     .about-card:last-of-type {
       flex-wrap: nowrap;
       margin-top: 0px;
+      gap: 40px;
     }
     .about-card__content {
       max-width: 260px;
@@ -65,5 +66,22 @@
 
   .rs-school_link {
     margin: 0 auto;
+    padding: 0 10px;
+  }
+}
+.about__collaboration-wrapper {
+  margin: 0 auto 50px auto;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  .item {
+    padding: 0 20px;
+    max-width: 700px;
+    color: #000;
+    font-family: Oswald;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 160%;
   }
 }
