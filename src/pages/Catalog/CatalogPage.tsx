@@ -50,18 +50,6 @@ export default function Catalog(): JSX.Element {
 
   const [displayCategories, setDisplayCategories] = useState(false);
 
-  const handleSortingChange = (newOption: string): void => {
-    setSort(newOption);
-  };
-
-  const handlePriceChange = (newRange: number[]): void => {
-    setPriceRange(newRange);
-  };
-
-  const handleBrandChange = (newBrand: string): void => {
-    setBrand(newBrand);
-  };
-
   const handleAddToCart = async (productSku: string): Promise<void> => {
     const result = await addItemCart(productSku);
     if (result) {
