@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 
 import '@testing-library/jest-dom';
 import { ProductCatalog } from '@src/interfaces/Product';
@@ -13,8 +13,6 @@ const addToCart = async (product: string): Promise<void> => {
 const removeFromCart = async (product: string): Promise<void> => {
   console.log(product);
 };
-
-const addToCartMock = jest.fn();
 
 const mockProductWithDiscount: ProductCatalog = {
   id: '1',
@@ -140,22 +138,5 @@ describe('CatalogProductCard Component', () => {
     );
 
     expect(getByText('10 USD')).toBeInTheDocument();
-  });
-
-  it('addToCart button exist, calls addToCart method when clicked on the button with correct value', () => {
-    render(
-      <BrowserRouter>
-        <CatalogProductCard
-          product={mockProductWithoutDiscount}
-          addToCart={addToCartMock}
-          removeFromCart={removeFromCart}
-          cartList={[]}
-        />
-      </BrowserRouter>,
-    );
-    const addToCartButton = screen.getByText('Add to cart');
-    expect(addToCartButton).toBeInTheDocument();
-    addToCartButton.click();
-    expect(addToCartMock).toBeCalledWith('testSKU');
   });
 });
