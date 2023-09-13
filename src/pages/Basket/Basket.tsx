@@ -12,6 +12,7 @@ import {
 } from '@src/services/CartService/CartService';
 import { Link } from 'react-router-dom';
 import { getNewToken } from '@src/services/AuthService/AuthService';
+import { ClipLoader } from 'react-spinners';
 
 function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAction<number>> }): JSX.Element {
   const [cart, setCart] = useState<Cart>({
@@ -43,6 +44,12 @@ function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAct
     origin: '',
     itemShippingAddresses: [],
   });
+
+  const [loading, setLoading] = useState(true);
+
+  const onLoaded = (): void => {
+    setLoading(false);
+  };
 
   const checkCartUpdateHeader = (): void => {
     const authType = Cookies.get('auth-type');
@@ -112,12 +119,14 @@ function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAct
         getCartById(accessToken, cartId).then((item) => {
           getCartByCustomerId(accessToken, item.customerId).then((carta: Cart) => {
             setCart(carta);
+            onLoaded();
           });
         });
       } else if (anonToken) {
         getCartById(anonToken, cartId).then((item) => {
           getCartByAnonId(anonToken, item.anonymousId).then((carta: Cart) => {
             setCart(carta);
+            onLoaded();
           });
         });
       } else if (anonRefreshToken) {
@@ -149,6 +158,51 @@ function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAct
     checkCartUpdateHeader();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cart]);
+  let content = (
+    <tr>
+      <td>a</td>
+    </tr>
+  );
+  if (loading) {
+    content = (
+      <tr>
+        <td className="loader" colSpan={6}>
+          <ClipLoader size={100} />
+        </td>
+      </tr>
+    );
+  } else {
+    content =
+      cart.lineItems.length !== 0 ? (
+        <>
+          {cartItems}
+          <tr>
+            <td className="container-button-clear" colSpan={6}>
+              <button type="button" className="clear-cart" onClick={handleClearCart}>
+                clear cart
+              </button>
+            </td>
+          </tr>
+        </>
+      ) : (
+        <>
+          <tr>
+            <td className="title-for-empty" colSpan={6}>
+              Sorry, you cart empty... try to find and add new purchases :)
+            </td>
+          </tr>
+          <tr>
+            <td className="title-for-empty" colSpan={6}>
+              <Link to="/catalog">
+                <button type="button" className="button__to-catalog">
+                  Catalog
+                </button>
+              </Link>
+            </td>
+          </tr>
+        </>
+      );
+  }
   return (
     <>
       <Breadcrumbs />
@@ -167,37 +221,7 @@ function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAct
                   <th className="table-text"> </th>
                 </tr>
               </thead>
-              <tbody>
-                {cart.lineItems.length === 0 ? (
-                  <>
-                    <tr>
-                      <td className="title-for-empty" colSpan={6}>
-                        Sorry, you cart empty... try to find and add new purchases :)
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="title-for-empty" colSpan={6}>
-                        <Link to="/catalog">
-                          <button type="button" className="button__to-catalog">
-                            Catalog
-                          </button>
-                        </Link>
-                      </td>
-                    </tr>
-                  </>
-                ) : (
-                  <>
-                    {cartItems}
-                    <tr>
-                      <td className="container-button-clear" colSpan={6}>
-                        <button type="button" className="clear-cart" onClick={handleClearCart}>
-                          clear cart
-                        </button>
-                      </td>
-                    </tr>
-                  </>
-                )}
-              </tbody>
+              <tbody>{content}</tbody>
             </table>
           </div>
         </div>

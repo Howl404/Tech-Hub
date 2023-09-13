@@ -35,9 +35,10 @@
   font-family: 'ABeeZee', sans-serif;
   height: 45px;
   justify-content: center;
-  max-width: 94px;
+  max-width: 105px;
   margin: 0 auto;
   .quantity-number {
+    width: 50px;
     padding: 0 15px;
     height: 100%;
     display: flex;
