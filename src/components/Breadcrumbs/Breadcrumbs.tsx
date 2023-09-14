@@ -15,6 +15,8 @@ function Breadcrumbs(): JSX.Element {
     result = 'Address';
   } else if (location.pathname.includes('Order')) {
     result = 'Order';
+  } else if (location.pathname.includes('basket')) {
+    result = 'Basket';
   }
 
   return (
@@ -22,8 +24,8 @@ function Breadcrumbs(): JSX.Element {
       <Link className={styles.link} to="/">
         Home
       </Link>
-      <span>&nbsp;/&nbsp;</span>
-      <p>My Dashboard</p>
+      {/* <span>&nbsp;/&nbsp;</span> */}
+      {/* <p>My Dashboard</p> */}
       <span>&nbsp;/&nbsp;</span>
       <p>{result}</p>
     </div>

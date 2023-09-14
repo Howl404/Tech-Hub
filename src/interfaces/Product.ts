@@ -53,20 +53,8 @@ export interface ProductDetailedPage {
   lastMessageSequenceNumber: number;
   createdAt: string;
   lastModifiedAt: string;
-  lastModifiedBy: {
-    isPlatformClient: true;
-    user: {
-      typeId: string;
-      id: string;
-    };
-  };
-  createdBy: {
-    isPlatformClient: boolean;
-    user: {
-      typeId: string;
-      id: string;
-    };
-  };
+  lastModifiedBy: AuthorBy;
+  createdBy: AuthorBy;
   productType: {
     typeId: string;
     id: string;
@@ -147,4 +135,12 @@ export interface ProductFormattedData {
   slug: string;
   ancestors: ProductFormattedData[];
   parent?: string;
+}
+
+export interface AuthorBy {
+  isPlatformClient: true;
+  user: {
+    typeId: string;
+    id: string;
+  };
 }

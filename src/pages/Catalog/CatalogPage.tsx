@@ -1,6 +1,6 @@
 import { getCategories, getProductsByCategory } from '@src/services/ProductsService/ProductsService';
 import CatalogProductCard from '@src/components/CatalogProductCard/CatalogProductCard';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { Dispatch, SetStateAction, useCallback, useEffect, useState } from 'react';
 import { ProductCatalog, ProductFormattedData } from '@src/interfaces/Product';
 import CategoryCard from '@src/components/CategoryCard/CategoryCard';
 import './CatalogPage.scss';
@@ -15,11 +15,42 @@ import searchIcon from '@assets/search.svg';
 import removeItemCart from '@src/utilities/removeItemCart';
 import addItemCart from '@src/utilities/addItemCart';
 import getFormattedCart from '@src/utilities/getFormattedCart';
+import Cookies from 'js-cookie';
+import { getCartById } from '@src/services/CartService/CartService';
+import { getNewToken } from '@src/services/AuthService/AuthService';
 import ReactPaginate from 'react-paginate';
 import { ClipLoader } from 'react-spinners';
 
-export default function Catalog(): JSX.Element {
+export default function Catalog({
+  setTotalSumInCart,
+}: {
+  setTotalSumInCart: Dispatch<SetStateAction<number>>;
+}): JSX.Element {
   const navigate = useNavigate();
+
+  const checkCartUpdateHeader = (): void => {
+    const authType = Cookies.get('auth-type');
+    const accessToken = Cookies.get('access-token');
+    const anonToken = Cookies.get('anon-token');
+    const anonRefreshToken = Cookies.get('anon-refresh-token');
+    const cartId = Cookies.get('cart-id');
+    if (cartId) {
+      if (authType === 'password' && accessToken) {
+        getCartById(accessToken, cartId).then((item) => {
+          setTotalSumInCart(item.totalPrice.centAmount);
+        });
+      } else if (anonToken) {
+        getCartById(anonToken, cartId).then((item) => {
+          setTotalSumInCart(item.totalPrice.centAmount);
+        });
+      } else if (anonRefreshToken) {
+        getNewToken(anonRefreshToken).then((item) => {
+          Cookies.set('anon-token', item.accessToken, { expires: 2 });
+          getCartById(item.accessToken, cartId).then((items) => setTotalSumInCart(items.totalPrice.centAmount));
+        });
+      }
+    }
+  };
 
   const { categoryslug, subcategoryslug, subcategoryslug2 } = useParams<{
     categoryslug: string;
@@ -55,6 +86,7 @@ export default function Catalog(): JSX.Element {
     if (result) {
       setCartList(result);
     }
+    checkCartUpdateHeader();
     return Promise.resolve();
   };
 
@@ -63,6 +95,7 @@ export default function Catalog(): JSX.Element {
     if (result) {
       setCartList(result);
     }
+    checkCartUpdateHeader();
     return Promise.resolve();
   };
 
