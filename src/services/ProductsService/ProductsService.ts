@@ -122,6 +122,8 @@ const getProductsByCategory = async (
   sort: string,
   text?: string,
   brand?: string,
+  limit?: number,
+  offset?: number,
 ): Promise<{
   limit: number;
   offset: number;
@@ -138,6 +140,14 @@ const getProductsByCategory = async (
 
   if (brand) {
     url += `&filter=variants.attributes.brand:"${brand}"`;
+  }
+
+  if (limit) {
+    url += `&limit=${limit}`;
+  }
+
+  if (offset) {
+    url += `&offset=${offset}`;
   }
 
   const response = await axios.get(url, {
