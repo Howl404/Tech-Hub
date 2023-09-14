@@ -15,7 +15,7 @@ export default function AboutPage(): JSX.Element {
       role: 'Team Lead',
       github: 'howl404',
       bio: "I'm a JavaScript sorcerer, a TypeScript tamer, and a React wrangler. An algorithm wizard and a master of procrastination. If I had an algorithm to combat procrastination, I'd probably start using it... later, maybe",
-      contributions: ['Catalog', 'Jira', 'About Us'],
+      contributions: ['Catalog', 'About Us'],
       inverted: false,
     },
     {
@@ -24,7 +24,7 @@ export default function AboutPage(): JSX.Element {
       role: 'Developer',
       github: 'capapa',
       bio: "I love JavaScript, I love new technologies and VSCode. I'm developer. Developers are creators of beauty things!",
-      contributions: ['Product page', 'Promocode functionality', 'Jira'],
+      contributions: ['Product', 'Promocodes'],
       inverted: false,
     },
     {
@@ -33,7 +33,7 @@ export default function AboutPage(): JSX.Element {
       role: 'designer & developer',
       github: 'academeg1',
       bio: 'I am a junior web developer. I have experience in web development and I want to develop in this area. I am passionate about new technologies and am ready to learn anything that can make my experience more valuable and increase my productivity.',
-      contributions: ['Account page', 'Cart', 'Jira'],
+      contributions: ['Account', 'Cart'],
       inverted: false,
     },
   ];
