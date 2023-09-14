@@ -4,6 +4,7 @@ import './AboutPage.scss';
 
 import howlPng from '@assets/howl.png';
 import academegPng from '@assets/academeg.png';
+import capapaJpg from '@assets/capapa.jpg';
 import { Link } from 'react-router-dom';
 
 export default function AboutPage(): JSX.Element {
@@ -18,13 +19,13 @@ export default function AboutPage(): JSX.Element {
       inverted: false,
     },
     {
-      image: howlPng,
-      name: 'Arthur',
-      role: 'Team Lead',
-      github: 'howl404',
-      bio: "I'm a JavaScript sorcerer, a TypeScript tamer, and a React wrangler. An algorithm wizard and a master of procrastination. If I had an algorithm to combat procrastination, I'd probably start using it... later, maybe",
-      contributions: ['Catalog', 'Jira', 'About Us'],
-      inverted: true,
+      image: capapaJpg,
+      name: 'Rashit',
+      role: 'Developer',
+      github: 'capapa',
+      bio: "I love JavaScript, I love new technologies and VSCode. I'm developer. Developers are creators of beauty things!",
+      contributions: ['Product page', 'Promocode functionality', 'Jira'],
+      inverted: false,
     },
     {
       image: academegPng,
