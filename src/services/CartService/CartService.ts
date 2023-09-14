@@ -1,6 +1,7 @@
-import axios from 'axios';
-
+import axios, { AxiosError } from 'axios';
+import Toastify from 'toastify-js';
 import { Cart } from '@interfaces/Cart';
+import { ResponseErrorItem } from '@src/interfaces/Errors';
 
 const projectKey = 'rs-alchemists-ecommerce';
 const apiUrl = 'https://api.europe-west1.gcp.commercetools.com';
@@ -131,7 +132,12 @@ const removeFromCart = async (
   return cart;
 };
 
-const addDiscountCode = async (token: string, cartId: string, version: number, code: string): Promise<Cart> => {
+const addDiscountCode = async (
+  token: string,
+  cartId: string,
+  version: number,
+  code: string,
+): Promise<Cart | undefined> => {
   const cartEndpoint = `${apiUrl}/${projectKey}/me/carts/${cartId}`;
 
   const requestBody = {
@@ -144,15 +150,46 @@ const addDiscountCode = async (token: string, cartId: string, version: number, c
     ],
   };
 
-  const response = await axios.post(cartEndpoint, JSON.stringify(requestBody), {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-  });
+  let errorText;
+  try {
+    const response = await axios.post(cartEndpoint, JSON.stringify(requestBody), {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
 
-  const cart: Cart = response.data;
-  return cart;
+    const cart: Cart = response.data;
+    return cart;
+  } catch (e) {
+    if (e instanceof AxiosError && e.response?.data) {
+      if (e.response.data?.errors.length) {
+        errorText = e.response.data.errors
+          .map((errItem: ResponseErrorItem) => errItem.detailedErrorMessage || errItem.message)
+          .join('\r\n');
+      } else {
+        errorText = e.response.data?.message;
+      }
+    } else if (e instanceof Error) {
+      errorText = e.message;
+    } else if (typeof e === 'string') {
+      errorText = e;
+    }
+  }
+
+  Toastify({
+    text: errorText,
+    duration: 3000,
+    newWindow: true,
+    close: true,
+    gravity: 'top',
+    position: 'right',
+    stopOnFocus: true,
+    style: {
+      background: 'linear-gradient(to right, #ff0000, #fdacac)',
+    },
+  }).showToast();
+  return undefined;
 };
 
 const removeDiscountCode = async (
@@ -160,7 +197,7 @@ const removeDiscountCode = async (
   cartId: string,
   version: number,
   discountId: string,
-): Promise<Cart> => {
+): Promise<Cart | undefined> => {
   const cartEndpoint = `${apiUrl}/${projectKey}/me/carts/${cartId}`;
 
   const requestBody = {
@@ -169,22 +206,52 @@ const removeDiscountCode = async (
       {
         action: 'removeDiscountCode',
         discountCode: {
-          typeId: 'discountCode',
+          typeId: 'discount-code',
           id: discountId,
         },
       },
     ],
   };
+  let errorText;
+  try {
+    const response = await axios.post(cartEndpoint, JSON.stringify(requestBody), {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
 
-  const response = await axios.post(cartEndpoint, JSON.stringify(requestBody), {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
+    const cart: Cart = response.data;
+    return cart;
+  } catch (e) {
+    if (e instanceof AxiosError && e.response?.data) {
+      if (e.response.data?.errors.length) {
+        errorText = e.response.data.errors
+          .map((errItem: ResponseErrorItem) => errItem.detailedErrorMessage || errItem.message)
+          .join('\r\n');
+      } else {
+        errorText = e.response.data?.message;
+      }
+    } else if (e instanceof Error) {
+      errorText = e.message;
+    } else if (typeof e === 'string') {
+      errorText = e;
+    }
+  }
+
+  Toastify({
+    text: errorText,
+    duration: 3000,
+    newWindow: true,
+    close: true,
+    gravity: 'top',
+    position: 'right',
+    stopOnFocus: true,
+    style: {
+      background: 'linear-gradient(to right, #ff0000, #fdacac)',
     },
-  });
-
-  const cart: Cart = response.data;
-  return cart;
+  }).showToast();
+  return undefined;
 };
 
 export {
