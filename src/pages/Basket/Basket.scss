@@ -27,9 +27,14 @@ table {
   flex-wrap: wrap;
 }
 
+// .cart-main {
+// }
+
 .main-list-cart {
   max-width: 900px;
   width: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .table-text {
@@ -173,8 +178,10 @@ thead {
 }
 
 .clear-cart {
+  margin-top: 20px;
+  margin-right: 20px;
+  align-items: flex-end;
   border: none;
-  margin-top: 25px;
   background: #000;
   color: #fff;
   text-align: center;
@@ -211,11 +218,12 @@ thead {
   margin: 0;
 }
 .loader {
-  padding-top: 40px;
+  padding-top: 20px;
+  padding-bottom: 20px;
   text-align: center;
 }
 @media (max-width: 1500px) {
-  .cart {
+  .cart-main {
     flex-direction: column;
     align-items: center;
     padding: 0 20px;
@@ -228,5 +236,19 @@ thead {
     max-width: 100px;
     max-height: 100px;
     text-align: left;
+  }
+}
+
+@media (max-width: 600px) {
+  .cart {
+    gap: 30px;
+  }
+
+  .sub-information-list-cart {
+    padding: 0 10px;
+  }
+
+  .discount-code {
+    margin-bottom: 30px;
   }
 }

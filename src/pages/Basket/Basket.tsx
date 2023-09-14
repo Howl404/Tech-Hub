@@ -180,8 +180,11 @@ function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAct
         getNewToken(anonRefreshToken).then((item) => {
           Cookies.set('anon-token', item.accessToken, { expires: 2 });
           getCartById(item.accessToken, cartId).then((items) => setCart(items));
+          onLoaded();
         });
       }
+    } else {
+      onLoaded();
     }
   }, []);
 
@@ -244,7 +247,7 @@ function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAct
 
   let content = (
     <tr>
-      <td>a</td>
+      <td>loading</td>
     </tr>
   );
   if (loading) {
@@ -260,13 +263,11 @@ function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAct
       cart.lineItems.length !== 0 ? (
         <>
           {cartItems}
-          <tr>
+          {/* <tr>
             <td className="container-button-clear" colSpan={6}>
-              <button type="button" className="clear-cart" onClick={handleClearCart}>
-                clear cart
-              </button>
+              
             </td>
-          </tr>
+          </tr> */}
         </>
       ) : (
         <>
@@ -294,7 +295,7 @@ function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAct
       <h2>Shopping Cart</h2>
       <div className="cart">
         <div className="main-list-cart">
-          <div className="cart">
+          <div className="cart-main">
             <table>
               <thead>
                 <tr className="title-table">
@@ -309,6 +310,11 @@ function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAct
               <tbody>{content}</tbody>
             </table>
           </div>
+          {cart.lineItems.length !== 0 && (
+            <button type="button" className="clear-cart" onClick={handleClearCart}>
+              clear cart
+            </button>
+          )}
         </div>
         <div className="sub-information-list-cart">
           <div className="discount-code">
