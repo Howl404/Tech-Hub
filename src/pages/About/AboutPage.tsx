@@ -27,11 +27,11 @@ export default function AboutPage(): JSX.Element {
     },
     {
       image: howlSvg,
-      name: 'Arthur',
-      role: 'Team Lead',
-      github: 'howl404',
-      bio: "I'm a JavaScript sorcerer, a TypeScript tamer, and a React wrangler. An algorithm wizard and a master of procrastination. If I had an algorithm to combat procrastination, I'd probably start using it... later, maybe",
-      contributions: ['Catalog', 'Jira', 'About Us'],
+      name: 'Mikhail',
+      role: 'designer & developer',
+      github: 'academeg1',
+      bio: '',
+      contributions: ['Account page', 'Cart', 'Jira'],
       inverted: false,
     },
   ];
