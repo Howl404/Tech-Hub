@@ -10,9 +10,10 @@ import Header from '@components/Header/Header';
 import ProductPage from '@pages/Product/ProductPage';
 import AccountDashboard from '@pages/AccountDashboard/AccountDashboard';
 import { getClientAccessToken } from '@services/AuthService/AuthService';
-import Home from './pages/Home/Home';
-import Basket from './pages/Basket/Basket';
+import Home from '@pages/Home/Home';
+import Basket from '@pages/Basket/Basket';
 import AppContext from './AppContext';
+import ClipLoader from 'react-spinners/ClipLoader';
 
 function App(): JSX.Element {
   const [isLoading, setIsLoading] = useState(true);
@@ -55,7 +56,9 @@ function App(): JSX.Element {
   }, []);
 
   return isLoading ? (
-    <div>loading</div>
+    <div className="centered-loader">
+      <ClipLoader size={160} />
+    </div>
   ) : (
     <>
       <AppContext.Provider value={totalSumInCart}>

@@ -18,6 +18,8 @@ import getFormattedCart from '@src/utilities/getFormattedCart';
 import Cookies from 'js-cookie';
 import { getCartById } from '@src/services/CartService/CartService';
 import { getNewToken } from '@src/services/AuthService/AuthService';
+import ReactPaginate from 'react-paginate';
+import { ClipLoader } from 'react-spinners';
 
 export default function Catalog({
   setTotalSumInCart,
@@ -58,9 +60,11 @@ export default function Catalog({
 
   const minPrice = 0;
   const maxPrice = 5000;
+
   const [priceRange, setPriceRange] = useState([minPrice, maxPrice]);
   const [search, setSearch] = useState('');
   const [products, setProducts] = useState<ProductCatalog[]>([]);
+  const [amountOfProducts, setAmountOfProducts] = useState(0);
   const [categories, setCategories] = useState<ProductFormattedData[]>([]);
   const [sort, setSort] = useState('name.en asc');
   const [brand, setBrand] = useState('');
@@ -68,21 +72,14 @@ export default function Catalog({
   const [currentCategory, setCurrentCategory] = useState<{ name: string; key?: string }[]>([]);
   const [breadcrumb, setBreadcrumb] = useState<{ name: string; slug: string }[]>([]);
 
+  const productsPerPage = 6;
+  const [currentOffset, setCurrentOffset] = useState(0);
+
+  const [gettingNewProducts, setGettingNewProducts] = useState(false);
+
   const [cartList, setCartList] = useState<{ id: string; productId: string }[]>([]);
 
   const [displayCategories, setDisplayCategories] = useState(false);
-
-  const handleSortingChange = (newOption: string): void => {
-    setSort(newOption);
-  };
-
-  const handlePriceChange = (newRange: number[]): void => {
-    setPriceRange(newRange);
-  };
-
-  const handleBrandChange = (newBrand: string): void => {
-    setBrand(newBrand);
-  };
 
   const handleAddToCart = async (productSku: string): Promise<void> => {
     const result = await addItemCart(productSku);
@@ -107,6 +104,7 @@ export default function Catalog({
   }, []);
 
   const getNewProducts = useCallback(() => {
+    setGettingNewProducts(true);
     let formatPriceRange;
     if (priceRange[0] === 0) {
       formatPriceRange = `variants.price.centAmount:range (0 to ${priceRange[1]}00)`;
@@ -120,15 +118,40 @@ export default function Catalog({
         sort,
         search,
         brand,
+        productsPerPage,
+        currentOffset,
       ).then((data) => {
         setProducts(data.results);
+        setAmountOfProducts(data.total);
+        setGettingNewProducts(false);
       });
     } else {
-      getProductsByCategory(`${formatPriceRange}`, sort, search, brand).then((data) => {
+      getProductsByCategory(`${formatPriceRange}`, sort, search, brand, productsPerPage, currentOffset).then((data) => {
         setProducts(data.results);
+        setAmountOfProducts(data.total);
+        setGettingNewProducts(false);
       });
     }
-  }, [priceRange, sort, brand, currentCategory, search]);
+  }, [priceRange, sort, brand, currentCategory, search, currentOffset]);
+
+  const handlePageChange = (selectedPage: { selected: number }): void => {
+    setCurrentOffset(selectedPage.selected * productsPerPage);
+  };
+
+  const handleSortingChange = (newOption: string): void => {
+    setSort(newOption);
+    setCurrentOffset(0);
+  };
+
+  const handlePriceChange = (newRange: number[]): void => {
+    setPriceRange(newRange);
+    setCurrentOffset(0);
+  };
+
+  const handleBrandChange = (newBrand: string): void => {
+    setBrand(newBrand);
+    setCurrentOffset(0);
+  };
 
   useEffect(() => {
     const fetchCategory = async (
@@ -194,6 +217,7 @@ export default function Catalog({
   }, [sort, priceRange, getNewProducts]);
 
   useEffect(() => {
+    setGettingNewProducts(true);
     if (categories.length > 1 && categoryslug) {
       const mainCategory = categories.filter((category) => category.slug === categoryslug);
       if (mainCategory.length > 0) {
@@ -211,25 +235,58 @@ export default function Catalog({
     if (subcategoryslug && categoryslug) {
       getCategories(`slug(en = "${subcategoryslug}")`).then((data) => {
         setCurrentCategory([{ name: categoryslug }, { name: subcategoryslug, key: data.results[0].id }]);
-        getProductsByCategory(`categories.id: subtree("${data.results[0].id}")`, sort).then((result) => {
-          setSavedBrands(result.results);
-          setProducts(result.results);
-        });
+        getProductsByCategory(`categories.id: subtree("${data.results[0].id}")`, sort, undefined, undefined)
+          .then((result) => {
+            setSavedBrands(result.results);
+          })
+          .then(() => {
+            getProductsByCategory(
+              `categories.id: subtree("${data.results[0].id}")`,
+              sort,
+              undefined,
+              undefined,
+              productsPerPage,
+            ).then((result) => {
+              setProducts(result.results);
+              setAmountOfProducts(data.total);
+              setGettingNewProducts(false);
+            });
+          });
       });
     } else if (categoryslug) {
       getCategories(`slug(en = "${categoryslug}")`).then((data) => {
         setCurrentCategory([{ name: categoryslug, key: data.results[0].id }]);
-        getProductsByCategory(`categories.id: subtree("${data.results[0].id}")`, sort).then((result) => {
-          setSavedBrands(result.results);
-          setProducts(result.results);
-        });
+        getProductsByCategory(`categories.id: subtree("${data.results[0].id}")`, sort, undefined, undefined)
+          .then((result) => {
+            setSavedBrands(result.results);
+          })
+          .then(() => {
+            getProductsByCategory(
+              `categories.id: subtree("${data.results[0].id}")`,
+              sort,
+              undefined,
+              undefined,
+              productsPerPage,
+            ).then((result) => {
+              setProducts(result.results);
+              setAmountOfProducts(data.total);
+              setGettingNewProducts(false);
+            });
+          });
       });
     } else {
       setCurrentCategory([]);
-      getProductsByCategory(`variants.prices:exists`, sort).then((data) => {
-        setSavedBrands(data.results);
-        setProducts(data.results);
-      });
+      getProductsByCategory(`variants.prices:exists`, sort, undefined, undefined)
+        .then((data) => {
+          setSavedBrands(data.results);
+        })
+        .then(() => {
+          getProductsByCategory(`variants.prices:exists`, sort, undefined, undefined, productsPerPage).then((data) => {
+            setProducts(data.results);
+            setAmountOfProducts(data.total);
+            setGettingNewProducts(false);
+          });
+        });
     }
   }, [categories, sort, categoryslug, subcategoryslug, subcategoryslug2, navigate]);
 
@@ -290,18 +347,36 @@ export default function Catalog({
           <PriceRangeSlider min={minPrice} max={maxPrice} onChange={handlePriceChange} />
           <BrandFilter products={savedBrands} onChange={handleBrandChange} clearBrand={clearBrand} />
         </div>
-        <div className="product-list">
-          {products.map((product) => (
-            <CatalogProductCard
-              key={product.name.en}
-              product={product}
-              cartList={cartList}
-              addToCart={handleAddToCart}
-              removeFromCart={handleRemoveFromCart}
-            />
-          ))}
-        </div>
+        {gettingNewProducts ? (
+          <div className="centered-loader">
+            <ClipLoader size={160} />
+          </div>
+        ) : (
+          <div className="product-list">
+            {products.map((product) => (
+              <CatalogProductCard
+                key={product.name.en}
+                product={product}
+                cartList={cartList}
+                addToCart={handleAddToCart}
+                removeFromCart={handleRemoveFromCart}
+              />
+            ))}
+          </div>
+        )}
       </div>
+
+      <ReactPaginate
+        pageCount={Math.ceil(amountOfProducts / productsPerPage)}
+        pageRangeDisplayed={2}
+        marginPagesDisplayed={2}
+        onPageChange={handlePageChange}
+        containerClassName="catalog-pagination"
+        activeClassName="pagination-active"
+        previousLabel="<"
+        nextLabel=">"
+        forcePage={currentOffset / productsPerPage}
+      />
     </div>
   );
 }
