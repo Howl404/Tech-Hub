@@ -60,7 +60,7 @@ export default function AboutPage(): JSX.Element {
       </div>
 
       <div className="about__rs-school">
-        <Link className="rs-school_link" to="https://rs.school">
+        <Link className="rs-school_link" to="https://rs.school" target="_blank">
           <img className="rs-school_logo" src="https://rs.school/images/rs_school_js.svg" alt="RS School" />
         </Link>
       </div>

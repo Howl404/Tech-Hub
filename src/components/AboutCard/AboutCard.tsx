@@ -30,7 +30,7 @@ export default function AboutCard({
         ) : (
           <div className="content__role-github">
             <p className="role-github__role">{member.role}</p>
-            <Link className="role-github__github" to={`https://github.com/${member.github}`}>
+            <Link className="role-github__github" to={`https://github.com/${member.github}`} target="_blank">
               @{member.github}
             </Link>
           </div>
