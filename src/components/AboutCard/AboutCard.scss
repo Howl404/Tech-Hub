@@ -1,13 +1,13 @@
 .about-card,
 .about-card-inverted {
   display: flex;
-  gap: 59px;
+  gap: 60px;
 
   img {
     // width: 150px;
     // height: 225px;
-    max-width: 240px;
-    max-height: 250px;
+    max-width: 200px;
+    max-height: 210px;
     width: 100%;
     height: 100%;
   }
@@ -68,7 +68,7 @@
 
   .content__contributions-container {
     justify-content: center;
-    margin-top: 40px;
+    margin-top: 10px;
     display: flex;
     gap: 10px;
     .contributions-container__item {
