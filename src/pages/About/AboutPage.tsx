@@ -2,14 +2,14 @@ import AboutCard from '@src/components/AboutCard/AboutCard';
 import React from 'react';
 import './AboutPage.scss';
 
-import howlSvg from '@assets/howl.svg';
+import howlPng from '@assets/howl.png';
 import academegPng from '@assets/academeg.png';
 import { Link } from 'react-router-dom';
 
 export default function AboutPage(): JSX.Element {
   const info = [
     {
-      image: howlSvg,
+      image: howlPng,
       name: 'Arthur',
       role: 'Team Lead',
       github: 'howl404',
@@ -18,7 +18,7 @@ export default function AboutPage(): JSX.Element {
       inverted: false,
     },
     {
-      image: howlSvg,
+      image: howlPng,
       name: 'Arthur',
       role: 'Team Lead',
       github: 'howl404',
