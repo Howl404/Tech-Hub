@@ -86,7 +86,7 @@ function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAct
       const cartId = Cookies.get('cart-id') as string;
       const btnNode = event.currentTarget as HTMLElement;
       const inputNode = btnNode.previousElementSibling as HTMLInputElement;
-      const code = inputNode.value;
+      const code = inputNode.value.trim();
       const cartDiscount = await addDiscountCode(accToken, cartId, cart.version, code);
       if (cartDiscount) {
         setCart(cartDiscount);
@@ -155,6 +155,7 @@ function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAct
     currencyCode: 'EUR',
     fractionDigits: 2,
   });
+
   useEffect(() => {
     const authType = Cookies.get('auth-type');
     const accessToken = Cookies.get('access-token');
