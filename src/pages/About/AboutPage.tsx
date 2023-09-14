@@ -3,6 +3,7 @@ import React from 'react';
 import './AboutPage.scss';
 
 import howlSvg from '@assets/howl.svg';
+import academegPng from '@assets/academeg.png';
 import { Link } from 'react-router-dom';
 
 export default function AboutPage(): JSX.Element {
@@ -26,11 +27,11 @@ export default function AboutPage(): JSX.Element {
       inverted: true,
     },
     {
-      image: howlSvg,
+      image: academegPng,
       name: 'Mikhail',
       role: 'designer & developer',
       github: 'academeg1',
-      bio: '',
+      bio: 'I am a junior web developer. I have experience in web development and I want to develop in this area. I am passionate about new technologies and am ready to learn anything that can make my experience more valuable and increase my productivity.',
       contributions: ['Account page', 'Cart', 'Jira'],
       inverted: false,
     },
