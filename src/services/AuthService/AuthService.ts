@@ -9,14 +9,11 @@ import { Cart } from '@src/interfaces/Cart';
 const authHost = 'https://auth.europe-west1.gcp.commercetools.com';
 const apiUrl = 'https://api.europe-west1.gcp.commercetools.com';
 
-const anonId = 'Cshtoo22G2afdntJDUBkDtc0';
-const anonSecret = '0xZeWTiFELWzFjDBT_vfD48YDRdlfALK';
-const anonScope =
+const apiId = 'Cshtoo22G2afdntJDUBkDtc0';
+const apiSecret = '0xZeWTiFELWzFjDBT_vfD48YDRdlfALK';
+const apiScope =
   'manage_my_shopping_lists:rs-alchemists-ecommerce manage_my_payments:rs-alchemists-ecommerce view_standalone_prices:rs-alchemists-ecommerce view_cart_discounts:rs-alchemists-ecommerce view_discount_codes:rs-alchemists-ecommerce view_orders:rs-alchemists-ecommerce view_messages:rs-alchemists-ecommerce view_shopping_lists:rs-alchemists-ecommerce create_anonymous_token:rs-alchemists-ecommerce view_shipping_methods:rs-alchemists-ecommerce manage_my_profile:rs-alchemists-ecommerce view_types:rs-alchemists-ecommerce view_categories:rs-alchemists-ecommerce view_order_edits:rs-alchemists-ecommerce manage_my_business_units:rs-alchemists-ecommerce view_products:rs-alchemists-ecommerce manage_my_orders:rs-alchemists-ecommerce';
 const projectKey = 'rs-alchemists-ecommerce';
-
-const authorizedClientId = 'f6HOfnyPjgKXKDeXHCHCOvhp';
-const authorizedClientSecret = 'Ljc0KCIYY5hVKWy8Nh9cPSJX7G8QZbXD';
 
 const registerUser = async (userData: CustomerDraft, token: string): Promise<CustomerData | boolean> => {
   let errorText = '';
@@ -68,8 +65,8 @@ const registerUser = async (userData: CustomerDraft, token: string): Promise<Cus
 const getClientAccessToken = async (): Promise<{
   accessToken: string;
 }> => {
-  const authHeader = `Basic ${btoa(`${anonId}:${anonSecret}`)}`;
-  const response = await axios.post(`${authHost}/oauth/token`, `grant_type=client_credentials&scope=${anonScope}`, {
+  const authHeader = `Basic ${btoa(`${apiId}:${apiSecret}`)}`;
+  const response = await axios.post(`${authHost}/oauth/token`, `grant_type=client_credentials&scope=${apiScope}`, {
     headers: {
       Authorization: authHeader,
       'Content-Type': 'application/x-www-form-urlencoded',
@@ -85,7 +82,7 @@ const getAnonymousToken = async (): Promise<{
   refreshToken: string;
 }> => {
   const scope = `create_anonymous_token:${projectKey} manage_my_orders:${projectKey} manage_my_profile:${projectKey}`;
-  const authHeader = `Basic ${btoa(`${anonId}:${anonSecret}`)}`;
+  const authHeader = `Basic ${btoa(`${apiId}:${apiSecret}`)}`;
   const response = await axios.post(
     `${authHost}/oauth/${projectKey}/anonymous/token`,
     `grant_type=client_credentials&scope=${scope}`,
@@ -168,10 +165,8 @@ const logInUser = async (
 > => {
   let errorText;
   try {
-    const scope =
-      'manage_my_shopping_lists:rs-alchemists-ecommerce view_published_products:rs-alchemists-ecommerce view_categories:rs-alchemists-ecommerce manage_my_business_units:rs-alchemists-ecommerce manage_my_profile:rs-alchemists-ecommerce manage_my_quotes:rs-alchemists-ecommerce manage_my_payments:rs-alchemists-ecommerce create_anonymous_token:rs-alchemists-ecommerce manage_my_quote_requests:rs-alchemists-ecommerce view_products:rs-alchemists-ecommerce manage_my_orders:rs-alchemists-ecommerce';
-    const authHeader = `Basic ${btoa(`${authorizedClientId}:${authorizedClientSecret}`)}`;
-    const requestBody = `grant_type=password&username=${email}&password=${password}&scope=${scope}`;
+    const authHeader = `Basic ${btoa(`${apiId}:${apiSecret}`)}`;
+    const requestBody = `grant_type=password&username=${email}&password=${password}&scope=${apiScope}`;
 
     const response = await axios.post(`${authHost}/oauth/${projectKey}/customers/token`, requestBody, {
       headers: {
@@ -228,7 +223,7 @@ const getNewToken = async (
 ): Promise<{
   accessToken: string;
 }> => {
-  const authHeader = `Basic ${btoa(`${anonId}:${anonSecret}`)}`;
+  const authHeader = `Basic ${btoa(`${apiId}:${apiSecret}`)}`;
   const response = await axios.post(
     `${authHost}/oauth/token`,
     `grant_type=refresh_token&refresh_token=${refreshToken}`,
