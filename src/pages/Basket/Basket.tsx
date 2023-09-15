@@ -59,12 +59,18 @@ function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAct
 
   const applyPromoCode = (event: React.MouseEvent<HTMLElement>): void => {
     async function fetchData(): Promise<void> {
-      const accToken = Cookies.get('anon-token') as string;
+      const authType = Cookies.get('auth-type');
+      const accToken = Cookies.get('access-token');
+      const anonToken = Cookies.get('anon-token');
+      const anonRefreshToken = Cookies.get('anon-refresh-token');
+      const token = authType === 'password' && accToken ? accToken : anonToken ?? anonRefreshToken;
+      if (!token) return;
+
       const cartId = Cookies.get('cart-id') as string;
       const btnNode = event.currentTarget as HTMLElement;
       const inputNode = btnNode.previousElementSibling as HTMLInputElement;
       const code = inputNode.value.trim();
-      const cartDiscount = await addDiscountCode(accToken, cartId, cart.version, code);
+      const cartDiscount = await addDiscountCode(token, cartId, cart.version, code);
       if (cartDiscount) {
         setCart(cartDiscount);
       }
@@ -74,14 +80,16 @@ function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAct
 
   const deletePromoCode = (): void => {
     async function fetchData(): Promise<void> {
-      const accToken = Cookies.get('anon-token') as string;
+      const authType = Cookies.get('auth-type');
+      const accToken = Cookies.get('access-token');
+      const anonToken = Cookies.get('anon-token');
+      const anonRefreshToken = Cookies.get('anon-refresh-token');
+      const token = authType === 'password' && accToken ? accToken : anonToken ?? anonRefreshToken;
+
+      if (!token) return;
+
       const cartId = Cookies.get('cart-id') as string;
-      const cartDiscount = await removeDiscountCode(
-        accToken,
-        cartId,
-        cart.version,
-        cart.discountCodes[0].discountCode.id,
-      );
+      const cartDiscount = await removeDiscountCode(token, cartId, cart.version, cart.discountCodes[0].discountCode.id);
       if (cartDiscount) {
         setCart(cartDiscount);
       }
