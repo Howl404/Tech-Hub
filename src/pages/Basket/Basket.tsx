@@ -16,6 +16,7 @@ import { Link } from 'react-router-dom';
 import { getDiscountCodeById } from '@src/services/DiscountService/DiscountService';
 import { getNewToken } from '@src/services/AuthService/AuthService';
 import { ClipLoader } from 'react-spinners';
+import returnCartPrice from '@src/utilities/returnCartPrice';
 
 function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAction<number>> }): JSX.Element {
   const [cart, setCart] = useState<Cart>({
@@ -52,30 +53,6 @@ function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAct
 
   const onLoaded = (): void => {
     setLoading(false);
-  };
-
-  const checkCartUpdateHeader = (): void => {
-    const authType = Cookies.get('auth-type');
-    const accessToken = Cookies.get('access-token');
-    const anonToken = Cookies.get('anon-token');
-    const anonRefreshToken = Cookies.get('anon-refresh-token');
-    const cartId = Cookies.get('cart-id');
-    if (cartId) {
-      if (authType === 'password' && accessToken) {
-        getCartById(accessToken, cartId).then((item) => {
-          setTotalSumInCart(item.totalPrice.centAmount);
-        });
-      } else if (anonToken) {
-        getCartById(anonToken, cartId).then((item) => {
-          setTotalSumInCart(item.totalPrice.centAmount);
-        });
-      } else if (anonRefreshToken) {
-        getNewToken(anonRefreshToken).then((item) => {
-          Cookies.set('anon-token', item.accessToken, { expires: 2 });
-          getCartById(item.accessToken, cartId).then((items) => setTotalSumInCart(items.totalPrice.centAmount));
-        });
-      }
-    }
   };
 
   const [currentDiscountCode, setCurrentDiscountCode] = useState('');
@@ -227,7 +204,11 @@ function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAct
     });
     setCartItems(carts);
 
-    checkCartUpdateHeader();
+    returnCartPrice().then((cartPrice) => {
+      if (cartPrice !== false) {
+        setTotalSumInCart(cartPrice);
+      }
+    });
 
     async function fetchData(): Promise<void> {
       if (cart.discountCodes.length) {

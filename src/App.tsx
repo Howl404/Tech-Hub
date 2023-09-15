@@ -14,6 +14,7 @@ import Home from '@pages/Home/Home';
 import Basket from '@pages/Basket/Basket';
 import ClipLoader from 'react-spinners/ClipLoader';
 import AppContext from './AppContext';
+import returnCartPrice from './utilities/returnCartPrice';
 
 function App(): JSX.Element {
   const [isLoading, setIsLoading] = useState(true);
@@ -52,6 +53,11 @@ function App(): JSX.Element {
         Cookies.set('access-token', result.accessToken, { expires: 2 });
         Cookies.set('auth-type', 'anon', { expires: 2 });
       }
+      const cartPrice = await returnCartPrice();
+      if (cartPrice !== false) {
+        setTotalSumInCart(cartPrice);
+      }
+
       setIsLoading(false);
     }
     fetchData();

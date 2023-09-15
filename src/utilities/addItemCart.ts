@@ -32,7 +32,7 @@ const addItemCart = async (product: string, quantity = 1): Promise<{ productId: 
     Cookies.set('anon-refresh-token', response.refreshToken, { expires: 200 });
 
     const cart = await createCart(response.accessToken);
-    Cookies.set('cart-id', cart.id, { expires: 999 });
+    Cookies.set('cart-id', cart.id, { expires: 200 });
 
     resultCart = await addToCart(response.accessToken, cart.id, product, cart.version, quantity);
   }
