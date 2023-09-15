@@ -9,11 +9,12 @@ import CatalogPage from '@pages/Catalog/CatalogPage';
 import Header from '@components/Header/Header';
 import ProductPage from '@pages/Product/ProductPage';
 import AccountDashboard from '@pages/AccountDashboard/AccountDashboard';
-import { getClientAccessToken } from '@services/AuthService/AuthService';
+import { getClientAccessToken, getCustomerId } from '@services/AuthService/AuthService';
 import Home from '@pages/Home/Home';
 import Basket from '@pages/Basket/Basket';
 import ClipLoader from 'react-spinners/ClipLoader';
 import returnCartPrice from './utilities/returnCartPrice';
+import { getCartByCustomerId } from './services/CartService/CartService';
 
 function App(): JSX.Element {
   const [isLoading, setIsLoading] = useState(true);
@@ -36,8 +37,28 @@ function App(): JSX.Element {
     setIsAuth(false);
   };
 
-  const checkLogIn = (): void => {
+  const checkLogIn = async (): Promise<void> => {
+    setIsLoading(true);
     if (Cookies.get('auth-type') !== undefined || Cookies.get('auth-type') !== 'anon') setIsAuth(true);
+
+    getCustomerId().then(async (item) => {
+      const token = Cookies.get('access-token');
+      if (token) {
+        try {
+          const result = await getCartByCustomerId(token, item.id);
+          Cookies.set('cart-id', result.id, { expires: 2 });
+
+          const cartPrice = await returnCartPrice();
+          if (cartPrice !== false) {
+            setTotalSumInCart(cartPrice);
+          }
+        } catch (error) {
+          // no cart found
+        }
+      }
+    });
+
+    setIsLoading(false);
   };
 
   useEffect(() => {
