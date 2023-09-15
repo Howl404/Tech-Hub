@@ -13,7 +13,6 @@ import { getClientAccessToken } from '@services/AuthService/AuthService';
 import Home from '@pages/Home/Home';
 import Basket from '@pages/Basket/Basket';
 import ClipLoader from 'react-spinners/ClipLoader';
-import AppContext from './AppContext';
 import returnCartPrice from './utilities/returnCartPrice';
 
 function App(): JSX.Element {
@@ -69,9 +68,7 @@ function App(): JSX.Element {
     </div>
   ) : (
     <>
-      <AppContext.Provider value={totalSumInCart}>
-        <Header authh={auth} logOut={onLogOut} />
-      </AppContext.Provider>
+      <Header authh={auth} logOut={onLogOut} totalSumInCart={totalSumInCart} />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/register" element={<RegistrationPage checkLogIn={checkLogIn} />} />
