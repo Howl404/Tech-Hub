@@ -12,8 +12,8 @@ import AccountDashboard from '@pages/AccountDashboard/AccountDashboard';
 import { getClientAccessToken } from '@services/AuthService/AuthService';
 import Home from '@pages/Home/Home';
 import Basket from '@pages/Basket/Basket';
-import AppContext from './AppContext';
 import ClipLoader from 'react-spinners/ClipLoader';
+import AppContext from './AppContext';
 
 function App(): JSX.Element {
   const [isLoading, setIsLoading] = useState(true);
@@ -22,12 +22,14 @@ function App(): JSX.Element {
   const [totalSumInCart, setTotalSumInCart] = useState(0);
 
   const onLogOut = (): void => {
+    setIsLoading(true);
     Object.keys(Cookies.get()).forEach((item) => {
       Cookies.remove(item);
     });
     getClientAccessToken().then((result) => {
       Cookies.set('access-token', result.accessToken, { expires: 2 });
       Cookies.set('auth-type', 'anon', { expires: 2 });
+      setIsLoading(false);
     });
     setTotalSumInCart(0);
     navigate('/');
