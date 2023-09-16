@@ -88,6 +88,8 @@ function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAct
     fetchData();
   };
 
+  const [isModalOpen, setModalOpen] = useState(false);
+
   const handleClearCart = (): void => {
     let i = cart.lineItems.length;
     const anonFunc = (version: number): void => {
@@ -104,6 +106,19 @@ function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAct
       });
     };
     anonFunc(cart.version);
+  };
+
+  const openModal = (): void => {
+    setModalOpen(true);
+  };
+
+  const closeModal = (): void => {
+    setModalOpen(false);
+  };
+
+  const confirmAndClearCart = (): void => {
+    handleClearCart();
+    closeModal();
   };
 
   const [cartItems, setCartItems] = useState<JSX.Element[]>([]);
@@ -248,6 +263,19 @@ function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAct
     <>
       <Breadcrumbs />
       <h2>Shopping Cart</h2>
+      {isModalOpen && (
+        <div className="clear-modal">
+          <p>Are you sure you want to clear your cart?</p>
+          <div>
+            <button type="button" onClick={confirmAndClearCart}>
+              Yes
+            </button>
+            <button type="button" onClick={closeModal}>
+              No
+            </button>
+          </div>
+        </div>
+      )}
       <div className="cart">
         <div className="main-list-cart">
           <div className="cart-main">
@@ -266,7 +294,7 @@ function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAct
             </table>
           </div>
           {cart.lineItems.length !== 0 && (
-            <button type="button" className="clear-cart" onClick={handleClearCart}>
+            <button type="button" className="clear-cart" onClick={openModal}>
               clear cart
             </button>
           )}
