@@ -1,28 +1,18 @@
-import { getNewToken, getAnonymousToken } from '@src/services/AuthService/AuthService';
+import { getAnonymousToken } from '@src/services/AuthService/AuthService';
 import { getCartById, addToCart, createCart } from '@src/services/CartService/CartService';
 import Cookies from 'js-cookie';
 import Toastify from 'toastify-js';
+import getCookieToken from './getCookieToken';
 
 const addItemCart = async (product: string, quantity = 1): Promise<{ productId: string; id: string }[] | false> => {
   const cartId = Cookies.get('cart-id');
-  const anonToken = Cookies.get('anon-token');
-  const authType = Cookies.get('auth-type');
-  const accessToken = Cookies.get('access-token');
-  const anonRefreshToken = Cookies.get('anon-refresh-token');
   let resultCart;
 
   if (cartId) {
-    if (authType === 'password' && accessToken) {
-      const cart = await getCartById(accessToken, cartId);
-      resultCart = await addToCart(accessToken, cart.id, product, cart.version, quantity);
-    } else if (anonToken) {
-      const cart = await getCartById(anonToken, cartId);
-      resultCart = await addToCart(anonToken, cart.id, product, cart.version, quantity);
-    } else if (anonRefreshToken) {
-      const response = await getNewToken(anonRefreshToken);
-      Cookies.set('anon-token', response.accessToken, { expires: 2 });
-      const cart = await getCartById(response.accessToken, cartId);
-      resultCart = await addToCart(response.accessToken, cart.id, product, cart.version, quantity);
+    const token = await getCookieToken();
+    if (token) {
+      const cart = await getCartById(token, cartId);
+      resultCart = await addToCart(token, cart.id, product, cart.version, quantity);
     }
   } else {
     const response = await getAnonymousToken();
