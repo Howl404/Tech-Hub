@@ -228,7 +228,7 @@ function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAct
         <>
           <tr>
             <td className="title-for-empty" colSpan={6}>
-              Sorry, you cart empty... try to find and add new purchases :)
+              Your cart is empty... try to find and add new products :)
             </td>
           </tr>
           <tr>
