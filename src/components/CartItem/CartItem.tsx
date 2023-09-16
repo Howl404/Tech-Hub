@@ -5,7 +5,7 @@ import { AiOutlinePlus, AiOutlineMinus } from 'react-icons/ai';
 import { addToCart, getCartById, removeFromCart } from '@src/services/CartService/CartService';
 import Cookies from 'js-cookie';
 import { Cart, LinePrice } from '@src/interfaces/Cart';
-import { getNewToken } from '@src/services/AuthService/AuthService';
+import getCookieToken from '@src/utilities/getCookieToken';
 
 function CartItem({
   id,
@@ -30,27 +30,16 @@ function CartItem({
   discountedPrice: LinePrice | undefined;
 }): JSX.Element {
   const handlerRemove = (event: MouseEvent<HTMLButtonElement>): void => {
-    const authType = Cookies.get('auth-type');
-    const accessToken = Cookies.get('access-token');
-    const anonToken = Cookies.get('anon-token');
-    const anonRefreshToken = Cookies.get('anon-refresh-token');
     const cartId = Cookies.get('cart-id');
     const idTarget = event.currentTarget.id;
     if (cartId) {
-      if (authType === 'password' && accessToken) {
-        getCartById(accessToken, cartId).then((item) => {
-          removeFromCart(accessToken, cartId, idTarget, item.version).then((requestNewCart) => setCart(requestNewCart));
-        });
-      } else if (anonToken) {
-        getCartById(anonToken, cartId).then((item) => {
-          removeFromCart(anonToken, cartId, idTarget, item.version).then((requestNewCart) => setCart(requestNewCart));
-        });
-      } else if (anonRefreshToken) {
-        getNewToken(anonRefreshToken).then((item) => {
-          Cookies.set('anon-token', item.accessToken, { expires: 2 });
-          getCartById(item.accessToken, cartId).then((items) => setCart(items));
-        });
-      }
+      getCookieToken().then((token) => {
+        if (token) {
+          getCartById(token, cartId).then((item) => {
+            removeFromCart(token, cartId, idTarget, item.version).then((requestNewCart) => setCart(requestNewCart));
+          });
+        }
+      });
     }
   };
 
@@ -81,63 +70,37 @@ function CartItem({
 
   const handlerButtonDec = (): void => {
     setDisabledButton(true);
-    const authType = Cookies.get('auth-type');
-    const accessToken = Cookies.get('access-token');
-    const anonToken = Cookies.get('anon-token');
-    const anonRefreshToken = Cookies.get('anon-refresh-token');
     const cartId = Cookies.get('cart-id');
+
     if (cartId) {
-      if (authType === 'password' && accessToken) {
-        getCartById(accessToken, cartId).then((item) => {
-          removeFromCart(accessToken, cartId, id, item.version, 1).then((items) => {
-            setCart(items);
-            setDisabledButton(false);
+      getCookieToken().then((token) => {
+        if (token) {
+          getCartById(token, cartId).then((cart) => {
+            removeFromCart(token, cartId, id, cart.version, 1).then((items) => {
+              setCart(items);
+              setDisabledButton(false);
+            });
           });
-        });
-      } else if (anonToken) {
-        getCartById(anonToken, cartId).then((item) => {
-          removeFromCart(anonToken, cartId, id, item.version, 1).then((items) => {
-            setCart(items);
-            setDisabledButton(false);
-          });
-        });
-      } else if (anonRefreshToken) {
-        getNewToken(anonRefreshToken).then((item) => {
-          Cookies.set('anon-token', item.accessToken, { expires: 2 });
-          getCartById(item.accessToken, cartId).then((items) => setCart(items));
-        });
-      }
+        }
+      });
     }
   };
 
   const handlerButtonInc = (): void => {
     setDisabledButton(true);
-    const authType = Cookies.get('auth-type');
-    const accessToken = Cookies.get('access-token');
-    const anonToken = Cookies.get('anon-token');
-    const anonRefreshToken = Cookies.get('anon-refresh-token');
     const cartId = Cookies.get('cart-id');
+
     if (cartId) {
-      if (authType === 'password' && accessToken) {
-        getCartById(accessToken, cartId).then((item) => {
-          addToCart(accessToken, cartId, name.split(' ').join('-'), item.version, 1).then((items) => {
-            setCart(items);
-            setDisabledButton(false);
+      getCookieToken().then((token) => {
+        if (token) {
+          getCartById(token, cartId).then((item) => {
+            addToCart(token, cartId, name.split(' ').join('-'), item.version, 1).then((items) => {
+              setCart(items);
+              setDisabledButton(false);
+            });
           });
-        });
-      } else if (anonToken) {
-        getCartById(anonToken, cartId).then((item) => {
-          addToCart(anonToken, cartId, name.split(' ').join('-'), item.version, 1).then((items) => {
-            setCart(items);
-            setDisabledButton(false);
-          });
-        });
-      } else if (anonRefreshToken) {
-        getNewToken(anonRefreshToken).then((item) => {
-          Cookies.set('anon-token', item.accessToken, { expires: 2 });
-          getCartById(item.accessToken, cartId).then((items) => setCart(items));
-        });
-      }
+        }
+      });
     }
   };
 

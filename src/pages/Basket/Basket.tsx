@@ -6,17 +6,15 @@ import Cookies from 'js-cookie';
 import { Cart } from '@src/interfaces/Cart';
 import {
   addDiscountCode,
-  getCartByAnonId,
-  getCartByCustomerId,
   getCartById,
   removeDiscountCode,
   removeFromCart,
 } from '@src/services/CartService/CartService';
 import { Link } from 'react-router-dom';
 import { getDiscountCodeById } from '@src/services/DiscountService/DiscountService';
-import { getNewToken } from '@src/services/AuthService/AuthService';
 import { ClipLoader } from 'react-spinners';
 import returnCartPrice from '@src/utilities/returnCartPrice';
+import getCookieToken from '@src/utilities/getCookieToken';
 
 function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAction<number>> }): JSX.Element {
   const [cart, setCart] = useState<Cart>({
@@ -59,15 +57,12 @@ function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAct
 
   const applyPromoCode = (event: React.MouseEvent<HTMLElement>): void => {
     async function fetchData(): Promise<void> {
-      const authType = Cookies.get('auth-type');
-      const accToken = Cookies.get('access-token');
-      const anonToken = Cookies.get('anon-token');
-      const anonRefreshToken = Cookies.get('anon-refresh-token');
-      const token = authType === 'password' && accToken ? accToken : anonToken ?? anonRefreshToken;
+      const token = await getCookieToken();
+
       if (!token) return;
 
       const cartId = Cookies.get('cart-id') as string;
-      const btnNode = event.currentTarget as HTMLElement;
+      const btnNode = event.target as HTMLElement;
       const inputNode = btnNode.previousElementSibling as HTMLInputElement;
       const code = inputNode.value.trim();
       const cartDiscount = await addDiscountCode(token, cartId, cart.version, code);
@@ -80,11 +75,7 @@ function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAct
 
   const deletePromoCode = (): void => {
     async function fetchData(): Promise<void> {
-      const authType = Cookies.get('auth-type');
-      const accToken = Cookies.get('access-token');
-      const anonToken = Cookies.get('anon-token');
-      const anonRefreshToken = Cookies.get('anon-refresh-token');
-      const token = authType === 'password' && accToken ? accToken : anonToken ?? anonRefreshToken;
+      const token = await getCookieToken();
 
       if (!token) return;
 
@@ -100,26 +91,17 @@ function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAct
   const handleClearCart = (): void => {
     let i = cart.lineItems.length;
     const anonFunc = (version: number): void => {
-      const authType = Cookies.get('auth-type');
-      const accessToken = Cookies.get('access-token');
-      const anonToken = Cookies.get('anon-token');
       i -= 1;
       if (i === -1) return;
-      if (authType === 'password' && accessToken) {
-        if (i !== -1) {
-          removeFromCart(accessToken, cart.id, cart.lineItems[i].id, version).then((item) => {
+
+      getCookieToken().then((token) => {
+        if (token) {
+          removeFromCart(token, cart.id, cart.lineItems[i].id, version).then((item) => {
             if (i === 0) setCart(item);
             anonFunc(item.version);
           });
         }
-      } else if (anonToken) {
-        if (i !== -1) {
-          removeFromCart(anonToken, cart.id, cart.lineItems[i].id, version).then((item) => {
-            if (i === 0) setCart(item);
-            anonFunc(item.version);
-          });
-        }
-      }
+      });
     };
     anonFunc(cart.version);
   };
@@ -142,33 +124,16 @@ function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAct
   });
 
   useEffect(() => {
-    const authType = Cookies.get('auth-type');
-    const accessToken = Cookies.get('access-token');
-    const anonToken = Cookies.get('anon-token');
-    const anonRefreshToken = Cookies.get('anon-refresh-token');
     const cartId = Cookies.get('cart-id');
     if (cartId) {
-      if (authType === 'password' && accessToken) {
-        getCartById(accessToken, cartId).then((item) => {
-          getCartByCustomerId(accessToken, item.customerId).then((carta: Cart) => {
+      getCookieToken().then((token) => {
+        if (token) {
+          getCartById(token, cartId).then((carta) => {
             setCart(carta);
             onLoaded();
           });
-        });
-      } else if (anonToken) {
-        getCartById(anonToken, cartId).then((item) => {
-          getCartByAnonId(anonToken, item.anonymousId).then((carta: Cart) => {
-            setCart(carta);
-            onLoaded();
-          });
-        });
-      } else if (anonRefreshToken) {
-        getNewToken(anonRefreshToken).then((item) => {
-          Cookies.set('anon-token', item.accessToken, { expires: 2 });
-          getCartById(item.accessToken, cartId).then((items) => setCart(items));
-          onLoaded();
-        });
-      }
+        }
+      });
     } else {
       onLoaded();
     }
