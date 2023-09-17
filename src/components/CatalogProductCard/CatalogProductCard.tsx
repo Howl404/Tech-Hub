@@ -67,6 +67,7 @@ function CatalogProductCard({
       {price}
       <div className="buttons-container">
         <button
+          draggable="false"
           type="button"
           className="add-to-cart btn-enabled"
           onClick={(): void => {
@@ -77,9 +78,14 @@ function CatalogProductCard({
           }}
           disabled={CartProduct.id !== '0'}
         >
-          {addItemLoading ? <ClipLoader /> : <img src={cartAdd} className="cart-add-img" alt="Add to cart" />}
+          {addItemLoading ? (
+            <ClipLoader />
+          ) : (
+            <img src={cartAdd} className="cart-add-img" alt="Add to cart" draggable="false" />
+          )}
         </button>
         <button
+          draggable="false"
           type="button"
           className="remove-from-cart btn-enabled"
           onClick={(): void => {
@@ -93,7 +99,7 @@ function CatalogProductCard({
           {removeItemLoading ? (
             <ClipLoader />
           ) : (
-            <img src={cartRemove} className="cart-remove-img" alt="Remove from cart" />
+            <img src={cartRemove} className="cart-remove-img" alt="Remove from cart" draggable="false" />
           )}
         </button>
         <Link to={`/products/${sku}`}>

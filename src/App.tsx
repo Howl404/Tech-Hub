@@ -13,8 +13,9 @@ import { getClientAccessToken, getCustomerId } from '@services/AuthService/AuthS
 import Home from '@pages/Home/Home';
 import Basket from '@pages/Basket/Basket';
 import ClipLoader from 'react-spinners/ClipLoader';
-import returnCartPrice from './utilities/returnCartPrice';
-import { getCartByCustomerId } from './services/CartService/CartService';
+import AboutPage from '@pages/About/AboutPage';
+import { getCartByCustomerId } from '@services/CartService/CartService';
+import returnCartPrice from '@src/utilities/returnCartPrice';
 
 function App(): JSX.Element {
   const [isLoading, setIsLoading] = useState(true);

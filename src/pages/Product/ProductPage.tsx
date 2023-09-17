@@ -265,8 +265,13 @@ function ProductPage({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetSta
                     });
                   }}
                   disabled={CartProduct.id !== '0'}
+                  draggable="false"
                 >
-                  {addItemLoading ? <ClipLoader /> : <img src={cartAdd} className="cart-add-img" alt="Add to cart" />}
+                  {addItemLoading ? (
+                    <ClipLoader />
+                  ) : (
+                    <img src={cartAdd} className="cart-add-img" alt="Add to cart" draggable="false" />
+                  )}
                 </button>
                 <button
                   type="button"
@@ -278,11 +283,12 @@ function ProductPage({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetSta
                     });
                   }}
                   disabled={CartProduct.id === '0'}
+                  draggable="false"
                 >
                   {removeItemLoading ? (
                     <ClipLoader />
                   ) : (
-                    <img src={cartRemove} className="cart-remove-img" alt="Remove from cart" />
+                    <img src={cartRemove} className="cart-remove-img" alt="Remove from cart" draggable="false" />
                   )}
                 </button>
               </div>
