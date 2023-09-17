@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './BillingAddresss.module.scss';
+import './BillingAddresss.module.scss';
 
 function BillingAddress({
   city,
@@ -16,11 +16,11 @@ function BillingAddress({
 }): JSX.Element {
   return (
     <div className="container__address">
-      <div className={styles.name}>{name}</div>
-      <div className={styles.adress}>{`${streetName}`}</div>
-      <div className={styles.city}>{`${city}`}</div>
-      <div className={styles.postIndex}>{`${postalCode}`}</div>
-      <div className={styles.country}>{`${country}`}</div>
+      <div className="name">{name}</div>
+      <div className="adress">{`${streetName}`}</div>
+      <div className="city">{`${city}`}</div>
+      <div className="postIndex">{`${postalCode}`}</div>
+      <div className="country">{`${country}`}</div>
     </div>
   );
 }

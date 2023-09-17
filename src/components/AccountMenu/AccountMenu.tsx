@@ -1,7 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import styles from './AccountMenu.module.scss';
-import './style.scss';
+import './AccountMenu.module.scss';
 
 function AccountMenu(): JSX.Element {
   const buttonsData = [
@@ -12,13 +11,13 @@ function AccountMenu(): JSX.Element {
   ];
   //   ${name === 'Account Dashboard' ? styles.active_btn : ''}
   const buttons = buttonsData.map(({ name, label, path }) => (
-    <NavLink key={name} className={styles.link} to={path}>
-      <button className={`${styles.btn__dashboard}`} type="button" key={name}>
+    <NavLink key={name} className="link" to={path}>
+      <button className="btn__dashboard" type="button" key={name}>
         {label}
       </button>
     </NavLink>
   ));
-  return <div className={styles.dashboard__menu}>{buttons}</div>;
+  return <div className="dashboard__menu">{buttons}</div>;
 }
 
 export default AccountMenu;
