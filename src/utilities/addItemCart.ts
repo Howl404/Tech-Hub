@@ -19,6 +19,9 @@ const addItemCart = async (product: string, quantity = 1): Promise<{ productId: 
     const threeHours = 180 / (24 * 60);
 
     Cookies.set('anon-token', response.accessToken, { expires: threeHours });
+    const currentDate = new Date();
+    currentDate.setHours(currentDate.getHours() + 3);
+    Cookies.set('anon-token-expires', currentDate.toISOString(), { expires: threeHours });
     Cookies.set('anon-refresh-token', response.refreshToken, { expires: 200 });
 
     const cart = await createCart(response.accessToken);

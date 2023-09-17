@@ -145,9 +145,25 @@ function RegistrationPage({ checkLogIn }: { checkLogIn: () => void }): JSX.Eleme
     }
 
     const accessToken = Cookies.get('access-token');
-    const anonToken = Cookies.get('anon-token');
+    let anonToken = Cookies.get('anon-token');
     const anonRefreshToken = Cookies.get('anon-refresh-token');
     const cartId = Cookies.get('cart-id');
+
+    const threeHours = 180 / (24 * 60);
+    const currentDate = new Date();
+    const currentPlusFiveMinutes = currentDate.getTime() + 250000;
+
+    const anonTokenExpires = Cookies.get('anon-token-expires');
+
+    if (anonTokenExpires) {
+      const anonExpiryDate = new Date(anonTokenExpires);
+
+      if (currentPlusFiveMinutes >= anonExpiryDate.getTime()) {
+        anonToken = '';
+        Cookies.remove('anon-token');
+        Cookies.remove('anon-token-expires');
+      }
+    }
 
     if (accessToken) {
       if (cartId) {
@@ -179,10 +195,12 @@ function RegistrationPage({ checkLogIn }: { checkLogIn: () => void }): JSX.Eleme
           });
         } else if (anonRefreshToken) {
           const token = await getNewToken(anonRefreshToken);
-          const newAnonToken = token.accessToken;
-          Cookies.set('anon-token', newAnonToken);
+          Cookies.set('anon-token', token.accessToken, { expires: threeHours });
+          currentDate.setHours(currentDate.getHours() + 3);
+          Cookies.set('anon-token-expires', currentDate.toISOString(), { expires: threeHours });
+          Cookies.set('anon-refresh-token', anonRefreshToken, { expires: 200 });
 
-          registerUser(registerData, newAnonToken).then((result) => {
+          registerUser(registerData, token.accessToken).then((result) => {
             if (result !== false) {
               logInUser(email, password).then((results) => {
                 if (results) {
