@@ -14,6 +14,7 @@ import Home from '@pages/Home/Home';
 import Basket from '@pages/Basket/Basket';
 import AppContext from './AppContext';
 import ClipLoader from 'react-spinners/ClipLoader';
+import AboutPage from '@pages/About/AboutPage';
 
 function App(): JSX.Element {
   const [isLoading, setIsLoading] = useState(true);
@@ -70,6 +71,7 @@ function App(): JSX.Element {
         <Route path="/login" element={<LoginPage checkLogIn={checkLogIn} />} />
         <Route path="/products/:key?" element={<ProductPage setTotalSumInCart={setTotalSumInCart} />} />
         <Route path="/MyAccount/*" element={<AccountDashboard onLogOut={onLogOut} />} />
+        <Route path="/about" element={<AboutPage />} />
         <Route
           path="/catalog/:categoryslug?/:subcategoryslug?"
           element={<CatalogPage setTotalSumInCart={setTotalSumInCart} />}
