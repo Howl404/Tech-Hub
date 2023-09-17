@@ -1,5 +1,5 @@
 import React from 'react';
-import './BillingAddresss.module.scss';
+import './BillingAddresss.scss';
 
 function BillingAddress({
   city,

@@ -1,6 +1,7 @@
 import React from 'react';
+import '@testing-library/jest-dom';
 import { Link, useLocation } from 'react-router-dom';
-import styles from './Breadcrumbs.module.scss';
+import './Breadcrumbs.scss';
 
 function Breadcrumbs(): JSX.Element {
   const location = useLocation();
@@ -20,8 +21,8 @@ function Breadcrumbs(): JSX.Element {
   }
 
   return (
-    <div className={styles.crumbs}>
-      <Link className={styles.link} to="/">
+    <div className="crumbs">
+      <Link className="link" to="/">
         Home
       </Link>
       {/* <span>&nbsp;/&nbsp;</span> */}

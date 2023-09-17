@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import './AccountMenu.module.scss';
+import './AccountMenu.scss';
 
 function AccountMenu(): JSX.Element {
   const buttonsData = [
