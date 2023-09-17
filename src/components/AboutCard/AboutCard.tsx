@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import './AboutCard.scss';
 
-export default function AboutCard({
+function AboutCard({
   member,
 }: {
   member: {
@@ -22,15 +22,26 @@ export default function AboutCard({
         <h3 className="content__name">{member.name}</h3>
         {member.inverted ? (
           <div className="content__role-github">
-            <Link className="role-github__github" to={`https://github.com/${member.github}`}>
+            <Link
+              data-testid="role-github-element"
+              className="role-github__github"
+              to={`https://github.com/${member.github}`}
+            >
               @{member.github}
             </Link>
             <p className="role-github__role">{member.role}</p>
           </div>
         ) : (
           <div className="content__role-github">
-            <p className="role-github__role">{member.role}</p>
-            <Link className="role-github__github" to={`https://github.com/${member.github}`} target="_blank">
+            <p data-testid="role-github-element" className="role-github__role">
+              {member.role}
+            </p>
+            <Link
+              data-testid="role-github-element"
+              className="role-github__github"
+              to={`https://github.com/${member.github}`}
+              target="_blank"
+            >
               @{member.github}
             </Link>
           </div>
@@ -49,3 +60,5 @@ export default function AboutCard({
     </div>
   );
 }
+
+export default AboutCard;

@@ -8,7 +8,7 @@ describe('Header component', () => {
   it('renders logo and navigation buttons', () => {
     render(
       <BrowserRouter>
-        <Header authh={false} logOut={(): void => {}} />
+        <Header authh={false} logOut={(): void => {}} totalSumInCart={0} />
       </BrowserRouter>,
     );
 
@@ -26,7 +26,7 @@ describe('Header component', () => {
   it('toggles the menu when burger button is clicked', () => {
     render(
       <BrowserRouter>
-        <Header authh={false} logOut={(): void => {}} />
+        <Header authh={false} logOut={(): void => {}} totalSumInCart={0} />
       </BrowserRouter>,
     );
 
