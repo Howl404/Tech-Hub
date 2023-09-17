@@ -72,6 +72,7 @@ function App(): JSX.Element {
         <Route path="/login" element={<LoginPage checkLogIn={checkLogIn} />} />
         <Route path="/products/:key?" element={<ProductPage setTotalSumInCart={setTotalSumInCart} />} />
         <Route path="/MyAccount/*" element={<AccountDashboard onLogOut={onLogOut} />} />
+        <Route path="/about" element={<AboutPage />} />
         <Route
           path="/catalog/:categoryslug?/:subcategoryslug?"
           element={<CatalogPage setTotalSumInCart={setTotalSumInCart} />}
