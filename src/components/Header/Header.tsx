@@ -1,10 +1,9 @@
-import React, { useState, MouseEvent, useContext } from 'react';
+import React, { useState, MouseEvent } from 'react';
 import './Header.scss';
 import { Link } from 'react-router-dom';
 import logoIcon from '@assets/logo.svg';
 import cartIcon from '@assets/cart.svg';
 // import searchIcon from '@assets/search.svg';
-import AppContext from '@src/AppContext';
 import ButtonsAccount from '../ButtonsAccount/ButtonsAccount';
 import NameAccount from '../NameAccount/NameAccount';
 
@@ -14,11 +13,19 @@ const buttonsData = [
   { name: 'about us', label: 'about us', path: '/about' },
 ];
 
-function Header({ authh, logOut }: { authh: boolean; logOut: () => void }): JSX.Element {
+function Header({
+  authh,
+  logOut,
+  totalSumInCart,
+}: {
+  authh: boolean;
+  logOut: () => void;
+  totalSumInCart: number;
+}): JSX.Element {
   const [isOpen, setIsOpen] = useState(false);
-  const totalSumCart = useContext(AppContext);
+  // const totalSumCart = useContext(AppContext);
   const refactorSum =
-    totalSumCart !== 0 ? `${String(totalSumCart).slice(0, -2)}.${String(totalSumCart).slice(-2)}` : '0';
+    totalSumInCart !== 0 ? `${String(totalSumInCart).slice(0, -2)}.${String(totalSumInCart).slice(-2)}` : '0';
   const toggleMenu = (event: MouseEvent<HTMLElement>): void => {
     const eventTarget = event.target as HTMLElement;
     if (!eventTarget.className.includes('header__search') && !eventTarget.className.includes('search-box'))

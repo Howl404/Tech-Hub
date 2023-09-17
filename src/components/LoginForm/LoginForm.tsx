@@ -4,10 +4,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import './LoginForm.scss';
 import '@components/Button/Button.scss';
 import '@components/Heading/Heading.scss';
-import { getCustomerId, logInUser, logInUserWithCart } from '@services/AuthService/AuthService';
+import { logInUser, logInUserWithCart } from '@services/AuthService/AuthService';
 import FormInput from '@components/FormInput/FormInput';
 import Toastify from 'toastify-js';
-import { getCartByCustomerId } from '@src/services/CartService/CartService';
 
 function isValidEmail(email: string): string {
   const atIndex = email.indexOf('@');
@@ -168,7 +167,7 @@ function SignInForm({ checkLogIn }: { checkLogIn: () => void }): JSX.Element {
       logInUserWithCart(email, password).then((res) => {
         if (res) {
           if (res.cart) {
-            Cookies.set('cart-id', res.cart.id, { expires: 999 });
+            Cookies.set('cart-id', res.cart.id, { expires: 2 });
           }
           logInUser(email, password).then((response) => {
             if (response) {
@@ -176,9 +175,6 @@ function SignInForm({ checkLogIn }: { checkLogIn: () => void }): JSX.Element {
               Cookies.set('refresh-token', response.refreshToken, { expires: 200 });
               Cookies.set('auth-type', 'password', { expires: 2 });
               checkLogIn();
-              getCustomerId().then((customer) => {
-                getCartByCustomerId(response.accessToken, customer.id);
-              });
               navigate('/');
             }
           });

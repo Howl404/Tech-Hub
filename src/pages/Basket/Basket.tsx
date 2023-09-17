@@ -6,16 +6,15 @@ import Cookies from 'js-cookie';
 import { Cart } from '@src/interfaces/Cart';
 import {
   addDiscountCode,
-  getCartByAnonId,
-  getCartByCustomerId,
   getCartById,
   removeDiscountCode,
   removeFromCart,
 } from '@src/services/CartService/CartService';
 import { Link } from 'react-router-dom';
 import { getDiscountCodeById } from '@src/services/DiscountService/DiscountService';
-import { getNewToken } from '@src/services/AuthService/AuthService';
 import { ClipLoader } from 'react-spinners';
+import returnCartPrice from '@src/utilities/returnCartPrice';
+import getCookieToken from '@src/utilities/getCookieToken';
 
 function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAction<number>> }): JSX.Element {
   const [cart, setCart] = useState<Cart>({
@@ -54,40 +53,19 @@ function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAct
     setLoading(false);
   };
 
-  const checkCartUpdateHeader = (): void => {
-    const authType = Cookies.get('auth-type');
-    const accessToken = Cookies.get('access-token');
-    const anonToken = Cookies.get('anon-token');
-    const anonRefreshToken = Cookies.get('anon-refresh-token');
-    const cartId = Cookies.get('cart-id');
-    if (cartId) {
-      if (authType === 'password' && accessToken) {
-        getCartById(accessToken, cartId).then((item) => {
-          setTotalSumInCart(item.totalPrice.centAmount);
-        });
-      } else if (anonToken) {
-        getCartById(anonToken, cartId).then((item) => {
-          setTotalSumInCart(item.totalPrice.centAmount);
-        });
-      } else if (anonRefreshToken) {
-        getNewToken(anonRefreshToken).then((item) => {
-          Cookies.set('anon-token', item.accessToken, { expires: 2 });
-          getCartById(item.accessToken, cartId).then((items) => setTotalSumInCart(items.totalPrice.centAmount));
-        });
-      }
-    }
-  };
-
   const [currentDiscountCode, setCurrentDiscountCode] = useState('');
 
   const applyPromoCode = (event: React.MouseEvent<HTMLElement>): void => {
     async function fetchData(): Promise<void> {
-      const accToken = Cookies.get('anon-token') as string;
+      const token = await getCookieToken();
+
+      if (!token) return;
+
       const cartId = Cookies.get('cart-id') as string;
-      const btnNode = event.currentTarget as HTMLElement;
+      const btnNode = event.target as HTMLElement;
       const inputNode = btnNode.previousElementSibling as HTMLInputElement;
       const code = inputNode.value.trim();
-      const cartDiscount = await addDiscountCode(accToken, cartId, cart.version, code);
+      const cartDiscount = await addDiscountCode(token, cartId, cart.version, code);
       if (cartDiscount) {
         setCart(cartDiscount);
       }
@@ -97,14 +75,12 @@ function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAct
 
   const deletePromoCode = (): void => {
     async function fetchData(): Promise<void> {
-      const accToken = Cookies.get('anon-token') as string;
+      const token = await getCookieToken();
+
+      if (!token) return;
+
       const cartId = Cookies.get('cart-id') as string;
-      const cartDiscount = await removeDiscountCode(
-        accToken,
-        cartId,
-        cart.version,
-        cart.discountCodes[0].discountCode.id,
-      );
+      const cartDiscount = await removeDiscountCode(token, cartId, cart.version, cart.discountCodes[0].discountCode.id);
       if (cartDiscount) {
         setCart(cartDiscount);
       }
@@ -112,31 +88,37 @@ function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAct
     fetchData();
   };
 
+  const [isModalOpen, setModalOpen] = useState(false);
+
   const handleClearCart = (): void => {
     let i = cart.lineItems.length;
     const anonFunc = (version: number): void => {
-      const authType = Cookies.get('auth-type');
-      const accessToken = Cookies.get('access-token');
-      const anonToken = Cookies.get('anon-token');
       i -= 1;
       if (i === -1) return;
-      if (authType === 'password' && accessToken) {
-        if (i !== -1) {
-          removeFromCart(accessToken, cart.id, cart.lineItems[i].id, version).then((item) => {
+
+      getCookieToken().then((token) => {
+        if (token) {
+          removeFromCart(token, cart.id, cart.lineItems[i].id, version).then((item) => {
             if (i === 0) setCart(item);
             anonFunc(item.version);
           });
         }
-      } else if (anonToken) {
-        if (i !== -1) {
-          removeFromCart(anonToken, cart.id, cart.lineItems[i].id, version).then((item) => {
-            if (i === 0) setCart(item);
-            anonFunc(item.version);
-          });
-        }
-      }
+      });
     };
     anonFunc(cart.version);
+  };
+
+  const openModal = (): void => {
+    setModalOpen(true);
+  };
+
+  const closeModal = (): void => {
+    setModalOpen(false);
+  };
+
+  const confirmAndClearCart = (): void => {
+    handleClearCart();
+    closeModal();
   };
 
   const [cartItems, setCartItems] = useState<JSX.Element[]>([]);
@@ -157,33 +139,16 @@ function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAct
   });
 
   useEffect(() => {
-    const authType = Cookies.get('auth-type');
-    const accessToken = Cookies.get('access-token');
-    const anonToken = Cookies.get('anon-token');
-    const anonRefreshToken = Cookies.get('anon-refresh-token');
     const cartId = Cookies.get('cart-id');
     if (cartId) {
-      if (authType === 'password' && accessToken) {
-        getCartById(accessToken, cartId).then((item) => {
-          getCartByCustomerId(accessToken, item.customerId).then((carta: Cart) => {
+      getCookieToken().then((token) => {
+        if (token) {
+          getCartById(token, cartId).then((carta) => {
             setCart(carta);
             onLoaded();
           });
-        });
-      } else if (anonToken) {
-        getCartById(anonToken, cartId).then((item) => {
-          getCartByAnonId(anonToken, item.anonymousId).then((carta: Cart) => {
-            setCart(carta);
-            onLoaded();
-          });
-        });
-      } else if (anonRefreshToken) {
-        getNewToken(anonRefreshToken).then((item) => {
-          Cookies.set('anon-token', item.accessToken, { expires: 2 });
-          getCartById(item.accessToken, cartId).then((items) => setCart(items));
-          onLoaded();
-        });
-      }
+        }
+      });
     } else {
       onLoaded();
     }
@@ -227,7 +192,11 @@ function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAct
     });
     setCartItems(carts);
 
-    checkCartUpdateHeader();
+    returnCartPrice().then((cartPrice) => {
+      if (cartPrice !== false) {
+        setTotalSumInCart(cartPrice);
+      }
+    });
 
     async function fetchData(): Promise<void> {
       if (cart.discountCodes.length) {
@@ -274,7 +243,7 @@ function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAct
         <>
           <tr>
             <td className="title-for-empty" colSpan={6}>
-              Sorry, you cart empty... try to find and add new purchases :)
+              Your cart is empty... try to find and add new products :)
             </td>
           </tr>
           <tr>
@@ -294,6 +263,19 @@ function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAct
     <>
       <Breadcrumbs />
       <h2>Shopping Cart</h2>
+      {isModalOpen && (
+        <div className="clear-modal">
+          <p>Are you sure you want to clear your cart?</p>
+          <div>
+            <button type="button" onClick={confirmAndClearCart}>
+              Yes
+            </button>
+            <button type="button" onClick={closeModal}>
+              No
+            </button>
+          </div>
+        </div>
+      )}
       <div className="cart">
         <div className="main-list-cart">
           <div className="cart-main">
@@ -312,7 +294,7 @@ function Basket({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAct
             </table>
           </div>
           {cart.lineItems.length !== 0 && (
-            <button type="button" className="clear-cart" onClick={handleClearCart}>
+            <button type="button" className="clear-cart" onClick={openModal}>
               clear cart
             </button>
           )}
