@@ -8,7 +8,7 @@ import { CustomersId } from '@src/interfaces/Customer';
 import Toastify from 'toastify-js';
 import FormInput from '../FormInput/FormInput';
 
-interface ModalType {
+export interface ModalType {
   active: boolean;
   userId: string;
   setActive: (logic: boolean) => void;

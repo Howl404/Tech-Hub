@@ -1,6 +1,6 @@
 import React from 'react';
 import { RenderResult, render, screen } from '@testing-library/react';
-import { BrowserRouter as Router, MemoryRouter } from 'react-router-dom';
+import { MemoryRouter } from 'react-router-dom';
 import Breadcrumbs from '../Breadcrumbs';
 
 function renderBreadcrumbs(initialPathname: string): RenderResult {
