@@ -112,7 +112,7 @@ function Modal({
         <div className="form-input">
           <label htmlFor="country">
             Country
-            <select id="country" name="country" value={country} onChange={handleCountryChange}>
+            <select id="country" name="country" value={country} onChange={handleCountryChange} data-testid="country">
               <option value="" label="Select a country ... ">
                 Select a country ...
               </option>
@@ -153,6 +153,7 @@ function Modal({
           pattern={postalCodePattern[country] || '.*'}
           title="Must be a valid postal code of a selected country"
           value={postalCode}
+          data-testid="postalCode"
         />
         <FormInput
           label="Street name"

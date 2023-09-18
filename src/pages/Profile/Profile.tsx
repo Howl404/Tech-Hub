@@ -3,7 +3,7 @@ import { CustomersId } from '@src/interfaces/Customer';
 import BillingAddress from '@src/components/BillingAddress/BillingAddress';
 import ShippingAddress from '@src/components/ShippingAddress/ShippingAddress';
 import { getCustomerId } from '@src/services/AuthService/AuthService';
-import styles from './Profile.module.scss';
+import './Profile.scss';
 
 function Profile(): JSX.Element {
   // { user }: { user: CustomersId }
@@ -37,18 +37,18 @@ function Profile(): JSX.Element {
   const resultDateBirth = `${dateBirth[2]}.${dateBirth[1]}.${dateBirth[0]}`;
 
   return (
-    <div className={styles.dashboard__description}>
-      <h3 className={styles.account__information_title}>Account Information</h3>
-      <div className={styles.account__information_block}>
-        <div className={styles.account__information_blockTitle}>Contact Information</div>
-        <div className={styles.account__information_name}>{`${user.firstName} ${user.lastName}`}</div>
-        <div className={styles.account__information_email}>{resultDateBirth}</div>
-        <div className={styles.account__information_email}>{user.email}</div>
+    <div className="dashboard__description">
+      <h3 className="account__information_title">Account Information</h3>
+      <div className="account__information_block">
+        <div className="account__information_blockTitle">Contact Information</div>
+        <div className="account__information_name">{`${user.firstName} ${user.lastName}`}</div>
+        <div className="account__information_email">{resultDateBirth}</div>
+        <div className="account__information_email">{user.email}</div>
       </div>
-      <h3 className={styles.account__information_title}>Address Book</h3>
-      <div className={styles.account__information_blockAdress}>
-        <div className={styles.account__information_billing}>Default Billing Address</div>
-        <div className={styles.account__information_adress}>
+      <h3 className="account__information_title">Address Book</h3>
+      <div className="account__information_blockAdress">
+        <div className="account__information_billing">Default Billing Address</div>
+        <div className="account__information_adress">
           {defaultBillingAddress ? (
             <BillingAddress
               city={defaultBillingAddress.city}
@@ -62,9 +62,9 @@ function Profile(): JSX.Element {
           )}
         </div>
       </div>
-      <div className={styles.account__information_blockAdress}>
-        <div className={styles.account__information_billing}>Default Shipping Address</div>
-        <div className={styles.account__information_adress}>
+      <div className="account__information_blockAdress">
+        <div className="account__information_billing">Default Shipping Address</div>
+        <div className="account__information_adress">
           {defaultShippingAddress ? (
             <ShippingAddress
               city={defaultShippingAddress.city}
