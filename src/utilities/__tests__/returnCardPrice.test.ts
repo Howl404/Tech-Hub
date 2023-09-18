@@ -1,6 +1,4 @@
-// import { getCartById } from '@src/services/CartService/CartService';
 import Cookies from 'js-cookie';
-// import getCookieToken from '../getCookieToken';
 import returnCartPrice from '../returnCartPrice';
 
 jest.mock('@src/services/CartService/CartService');

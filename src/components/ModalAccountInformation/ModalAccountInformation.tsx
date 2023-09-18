@@ -14,8 +14,13 @@ function ModalAccountInformation({
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
 }): JSX.Element {
   return (
-    <div className={active ? 'modal active__modal' : 'modal'} onClick={(): void => setActive(false)}>
+    <div
+      data-testid="modal"
+      className={active ? 'modal active__modal' : 'modal'}
+      onClick={(): void => setActive(false)}
+    >
       <form
+        data-testid="modal__form"
         className={active ? 'modal__content active__modal' : 'modal__content'}
         onClick={(e): void => e.stopPropagation()}
         onSubmit={onSubmit}
