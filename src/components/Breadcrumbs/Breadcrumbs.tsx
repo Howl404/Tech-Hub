@@ -1,5 +1,4 @@
 import React from 'react';
-import '@testing-library/jest-dom';
 import { Link, useLocation } from 'react-router-dom';
 import './Breadcrumbs.scss';
 
