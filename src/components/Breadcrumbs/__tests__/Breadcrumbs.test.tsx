@@ -1,6 +1,7 @@
 import React from 'react';
 import { RenderResult, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
+import '@testing-library/jest-dom';
 import Breadcrumbs from '../Breadcrumbs';
 
 function renderBreadcrumbs(initialPathname: string): RenderResult {
