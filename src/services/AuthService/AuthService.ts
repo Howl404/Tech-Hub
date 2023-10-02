@@ -9,10 +9,11 @@ import { Cart } from '@src/interfaces/Cart';
 const authHost = 'https://auth.europe-west1.gcp.commercetools.com';
 const apiUrl = 'https://api.europe-west1.gcp.commercetools.com';
 
-const apiId = "tSqpnzsWeYPl3uKgnJSrsK1l";
-const apiSecret = "YGsSDp40CizMeLQPOgfxJRQ8g9DgfwxV"
-const projectKey = 'ecomapp2'
-const apiScope = "view_categories:ecomapp2 manage_my_shopping_lists:ecomapp2 view_order_edits:ecomapp2 view_published_products:ecomapp2 view_orders:ecomapp2 manage_my_profile:ecomapp2 view_types:ecomapp2 create_anonymous_token:ecomapp2 view_products:ecomapp2 view_messages:ecomapp2 view_shipping_methods:ecomapp2 view_cart_discounts:ecomapp2 view_shopping_lists:ecomapp2 manage_my_payments:ecomapp2 manage_my_orders:ecomapp2 manage_my_business_units:ecomapp2 view_standalone_prices:ecomapp2 view_discount_codes:ecomapp2"
+const apiId = 'tSqpnzsWeYPl3uKgnJSrsK1l';
+const apiSecret = 'YGsSDp40CizMeLQPOgfxJRQ8g9DgfwxV';
+const projectKey = 'ecomapp2';
+const apiScope =
+  'view_categories:ecomapp2 manage_my_shopping_lists:ecomapp2 view_order_edits:ecomapp2 view_published_products:ecomapp2 view_orders:ecomapp2 manage_my_profile:ecomapp2 view_types:ecomapp2 create_anonymous_token:ecomapp2 view_products:ecomapp2 view_messages:ecomapp2 view_shipping_methods:ecomapp2 view_cart_discounts:ecomapp2 view_shopping_lists:ecomapp2 manage_my_payments:ecomapp2 manage_my_orders:ecomapp2 manage_my_business_units:ecomapp2 view_standalone_prices:ecomapp2 view_discount_codes:ecomapp2';
 
 const registerUser = async (userData: CustomerDraft, token: string): Promise<CustomerData | boolean> => {
   let errorText = '';

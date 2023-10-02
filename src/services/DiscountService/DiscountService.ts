@@ -7,7 +7,7 @@ import { DiscountCode } from '@src/interfaces/Discount';
 import { CartDiscount } from '@src/interfaces/Cart';
 
 const apiUrl = 'https://api.europe-west1.gcp.commercetools.com';
-const projectKey = 'ecomapp2'
+const projectKey = 'ecomapp2';
 
 const getDiscountCodes = async (): Promise<DiscountCode[] | undefined> => {
   const token = Cookies.get('access-token');

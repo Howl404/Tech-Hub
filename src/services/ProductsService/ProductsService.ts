@@ -7,7 +7,7 @@ import Cookies from 'js-cookie';
 import 'toastify-js/src/toastify.css';
 
 const apiUrl = 'https://api.europe-west1.gcp.commercetools.com';
-const projectKey = 'ecomapp2'
+const projectKey = 'ecomapp2';
 
 const getProductById = async (id: string): Promise<ProductDetailedPage | undefined> => {
   const token = Cookies.get('access-token');
