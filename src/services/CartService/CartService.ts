@@ -3,7 +3,7 @@ import Toastify from 'toastify-js';
 import { Cart } from '@interfaces/Cart';
 import { ResponseErrorItem } from '@src/interfaces/Errors';
 
-const projectKey = 'rs-alchemists-ecommerce';
+const projectKey = 'ecomapp2'
 const apiUrl = 'https://api.europe-west1.gcp.commercetools.com';
 
 const createCart = async (token: string): Promise<Cart> => {

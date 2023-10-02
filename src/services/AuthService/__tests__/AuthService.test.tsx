@@ -5,7 +5,7 @@ import { getClientAccessToken, logInUser } from '../AuthService';
 describe('Get client access token', () => {
   const email = 'qwertyyu@gmail.com';
   const password = '123456qQ';
-  const projectKey = 'rs-alchemists-ecommerce';
+  const projectKey = 'ecomapp2'
   const authHost = 'https://auth.europe-west1.gcp.commercetools.com';
 
   test('should return client access token', async () => {
