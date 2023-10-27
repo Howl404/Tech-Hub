@@ -27,7 +27,7 @@ function NameAccount({ logOut }: { logOut: () => void }): JSX.Element {
   });
 
   useEffect(() => {
-    getCustomerId().then((item) => {
+    getCustomerId().then(async (item) => {
       setData(item);
     });
   }, []);

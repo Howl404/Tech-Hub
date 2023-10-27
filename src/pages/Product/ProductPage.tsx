@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { Dispatch, SetStateAction, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import './ProductPage.scss';
 
@@ -12,20 +12,82 @@ import 'swiper/css/free-mode';
 import 'swiper/css/navigation';
 import 'swiper/css/thumbs';
 import { Navigation, Controller } from 'swiper/modules';
+import ClipLoader from 'react-spinners/ClipLoader';
 
-function ProductPage(): JSX.Element {
+import cartAdd from '@assets/cart-plus-solid.svg';
+import cartRemove from '@assets/cart-shopping-solid.svg';
+import addItemCart from '@src/utilities/addItemCart';
+import removeItemCart from '@src/utilities/removeItemCart';
+import getFormattedCart from '@src/utilities/getFormattedCart';
+import returnCartPrice from '@src/utilities/returnCartPrice';
+
+function ProductPage({ setTotalSumInCart }: { setTotalSumInCart: Dispatch<SetStateAction<number>> }): JSX.Element {
   const { key = '' } = useParams<{
     key: string;
   }>();
 
   const [formData, setFormData] = useState({ key, count: 1, inBag: false, inFavorites: false });
   const [product, setProducts] = useState<ProductDetailedPage>();
+  const [cartList, setCartList] = useState<{ id: string; productId: string }[]>([]);
+
+  let CartProduct: {
+    productId: string;
+    id: string;
+  } = {
+    productId: '0',
+    id: '0',
+  };
+  if (cartList.length > 0) {
+    const foundProduct = cartList.find((item) => item.productId === product?.id);
+    if (foundProduct) {
+      CartProduct = foundProduct;
+    }
+  }
+
+  const [addItemLoading, setAddItemLoading] = useState(false);
+  const [removeItemLoading, setRemoveItemLoading] = useState(false);
 
   useEffect(() => {
     getProductByKey(formData.key).then((data) => {
       setProducts(data);
     });
   }, [formData.key]);
+
+  const handleAddToCart = async (productSku: string): Promise<void> => {
+    const result = await addItemCart(productSku, formData.count);
+    if (result) {
+      setCartList(result);
+
+      const cartPrice = await returnCartPrice();
+      if (cartPrice !== false) {
+        setTotalSumInCart(cartPrice);
+      }
+    }
+    return Promise.resolve();
+  };
+
+  const handleRemoveFromCart = async (productSku: string): Promise<void> => {
+    const result = await removeItemCart(productSku);
+    if (result) {
+      setCartList(result);
+
+      const cartPrice = await returnCartPrice();
+      if (cartPrice !== false) {
+        setTotalSumInCart(cartPrice);
+      }
+    }
+    return Promise.resolve();
+  };
+
+  useEffect(() => {
+    async function fetchData(): Promise<void> {
+      const cart = await getFormattedCart();
+      if (cart) {
+        setCartList(cart);
+      }
+    }
+    fetchData();
+  }, []);
 
   const current = product?.masterData.current;
 
@@ -153,11 +215,21 @@ function ProductPage(): JSX.Element {
                 <div className="product__quantity">
                   <div className="product__attr-title">quantity</div>
                   <div className="product__quantity-input">
-                    <button type="button" className="product__quantity-btn" onClick={(): void => clickDownCount()}>
+                    <button
+                      type="button"
+                      className="product__quantity-btn"
+                      onClick={(): void => clickDownCount()}
+                      disabled={CartProduct.id !== '0'}
+                    >
                       -
                     </button>
                     <span className="product__quantity-display">{formData.count}</span>
-                    <button type="button" className="product__quantity-btn" onClick={(): void => clickUpCount()}>
+                    <button
+                      type="button"
+                      className="product__quantity-btn"
+                      onClick={(): void => clickUpCount()}
+                      disabled={CartProduct.id !== '0'}
+                    >
                       +
                     </button>
                   </div>
@@ -182,7 +254,46 @@ function ProductPage(): JSX.Element {
                 </div>
               </div>
 
-              <div className="product__controls">
+              <div className="buttons-container">
+                <button
+                  type="button"
+                  className="add-to-cart btn-enabled"
+                  onClick={(): void => {
+                    setAddItemLoading(true);
+                    handleAddToCart(formData.key).then(() => {
+                      setAddItemLoading(false);
+                    });
+                  }}
+                  disabled={CartProduct.id !== '0'}
+                  draggable="false"
+                >
+                  {addItemLoading ? (
+                    <ClipLoader />
+                  ) : (
+                    <img src={cartAdd} className="cart-add-img" alt="Add to cart" draggable="false" />
+                  )}
+                </button>
+                <button
+                  type="button"
+                  className="remove-from-cart btn-enabled"
+                  onClick={(): void => {
+                    setRemoveItemLoading(true);
+                    handleRemoveFromCart(CartProduct.id).then(() => {
+                      setRemoveItemLoading(false);
+                    });
+                  }}
+                  disabled={CartProduct.id === '0'}
+                  draggable="false"
+                >
+                  {removeItemLoading ? (
+                    <ClipLoader />
+                  ) : (
+                    <img src={cartRemove} className="cart-remove-img" alt="Remove from cart" draggable="false" />
+                  )}
+                </button>
+              </div>
+
+              {/* <div className="product__controls">
                 <button
                   type="button"
                   className="product__btn btn-black btn-bag"
@@ -197,7 +308,7 @@ function ProductPage(): JSX.Element {
                 >
                   {formData.inFavorites ? 'delete from save' : 'save'}
                 </button>
-              </div>
+              </div> */}
             </div>
           </div>
           <div className="product__line">

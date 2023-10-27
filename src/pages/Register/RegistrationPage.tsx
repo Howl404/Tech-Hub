@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import FormInput from '@components/FormInput/FormInput';
 import { RegistrationFormData } from '@interfaces/Register';
-import { logInUser, registerUser } from '@services/AuthService/AuthService';
+import { getNewToken, logInUser, registerUser } from '@services/AuthService/AuthService';
 import FormAddress from '@components/FormAddress/FormAddress';
 import './RegistrationPage.scss';
 import '@components/Heading/Heading.scss';
@@ -145,33 +145,114 @@ function RegistrationPage({ checkLogIn }: { checkLogIn: () => void }): JSX.Eleme
     }
 
     const accessToken = Cookies.get('access-token');
+    let anonToken = Cookies.get('anon-token');
+    const anonRefreshToken = Cookies.get('anon-refresh-token');
+    const cartId = Cookies.get('cart-id');
+
+    const threeHours = 180 / (24 * 60);
+    const currentDate = new Date();
+    const currentPlusFiveMinutes = currentDate.getTime() + 250000;
+
+    const anonTokenExpires = Cookies.get('anon-token-expires');
+
+    if (anonTokenExpires) {
+      const anonExpiryDate = new Date(anonTokenExpires);
+
+      if (currentPlusFiveMinutes >= anonExpiryDate.getTime()) {
+        anonToken = '';
+        Cookies.remove('anon-token');
+        Cookies.remove('anon-token-expires');
+      }
+    }
 
     if (accessToken) {
-      registerUser(registerData, accessToken).then((result) => {
-        if (result !== false) {
-          logInUser(email, password).then((results) => {
-            if (results) {
-              Cookies.set('access-token', results.accessToken, { expires: 2 });
-              Cookies.set('refresh-token', results.refreshToken, { expires: 200 });
-              Cookies.set('auth-type', 'password', { expires: 2 });
-              checkLogIn();
-              navigate('/');
-              Toastify({
-                text: 'Account is successfully created!',
-                duration: 3000,
-                newWindow: true,
-                close: true,
-                gravity: 'top',
-                position: 'right',
-                stopOnFocus: true,
-                style: {
-                  background: 'linear-gradient(315deg, #7ee8fa 0%, #80ff72 74%)',
-                },
-              }).showToast();
+      if (cartId) {
+        if (anonToken) {
+          registerUser(registerData, anonToken).then((result) => {
+            if (result !== false) {
+              logInUser(email, password).then((results) => {
+                if (results) {
+                  Cookies.set('access-token', results.accessToken, { expires: 2 });
+                  Cookies.set('refresh-token', results.refreshToken, { expires: 200 });
+                  Cookies.set('auth-type', 'password', { expires: 2 });
+                  checkLogIn();
+                  navigate('/');
+                  Toastify({
+                    text: 'Account is successfully created!',
+                    duration: 3000,
+                    newWindow: true,
+                    close: true,
+                    gravity: 'top',
+                    position: 'right',
+                    stopOnFocus: true,
+                    style: {
+                      background: 'linear-gradient(315deg, #7ee8fa 0%, #80ff72 74%)',
+                    },
+                  }).showToast();
+                }
+              });
+            }
+          });
+        } else if (anonRefreshToken) {
+          const token = await getNewToken(anonRefreshToken);
+          Cookies.set('anon-token', token.accessToken, { expires: threeHours });
+          currentDate.setHours(currentDate.getHours() + 3);
+          Cookies.set('anon-token-expires', currentDate.toISOString(), { expires: threeHours });
+          Cookies.set('anon-refresh-token', anonRefreshToken, { expires: 200 });
+
+          registerUser(registerData, token.accessToken).then((result) => {
+            if (result !== false) {
+              logInUser(email, password).then((results) => {
+                if (results) {
+                  Cookies.set('access-token', results.accessToken, { expires: 2 });
+                  Cookies.set('refresh-token', results.refreshToken, { expires: 200 });
+                  Cookies.set('auth-type', 'password', { expires: 2 });
+                  checkLogIn();
+                  navigate('/');
+                  Toastify({
+                    text: 'Account is successfully created!',
+                    duration: 3000,
+                    newWindow: true,
+                    close: true,
+                    gravity: 'top',
+                    position: 'right',
+                    stopOnFocus: true,
+                    style: {
+                      background: 'linear-gradient(315deg, #7ee8fa 0%, #80ff72 74%)',
+                    },
+                  }).showToast();
+                }
+              });
             }
           });
         }
-      });
+      } else {
+        registerUser(registerData, accessToken).then((result) => {
+          if (result !== false) {
+            logInUser(email, password).then((results) => {
+              if (results) {
+                Cookies.set('access-token', results.accessToken, { expires: 2 });
+                Cookies.set('refresh-token', results.refreshToken, { expires: 200 });
+                Cookies.set('auth-type', 'password', { expires: 2 });
+                checkLogIn();
+                navigate('/');
+                Toastify({
+                  text: 'Account is successfully created!',
+                  duration: 3000,
+                  newWindow: true,
+                  close: true,
+                  gravity: 'top',
+                  position: 'right',
+                  stopOnFocus: true,
+                  style: {
+                    background: 'linear-gradient(315deg, #7ee8fa 0%, #80ff72 74%)',
+                  },
+                }).showToast();
+              }
+            });
+          }
+        });
+      }
     }
   };
 

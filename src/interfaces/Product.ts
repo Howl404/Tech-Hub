@@ -1,4 +1,5 @@
 export interface ProductCatalog {
+  id: string;
   description: {
     en: string;
   };
@@ -42,6 +43,7 @@ export interface ProductCatalog {
       id: string;
     },
   ];
+  inCart?: boolean;
 }
 
 export interface ProductDetailedPage {
@@ -51,20 +53,8 @@ export interface ProductDetailedPage {
   lastMessageSequenceNumber: number;
   createdAt: string;
   lastModifiedAt: string;
-  lastModifiedBy: {
-    isPlatformClient: true;
-    user: {
-      typeId: string;
-      id: string;
-    };
-  };
-  createdBy: {
-    isPlatformClient: boolean;
-    user: {
-      typeId: string;
-      id: string;
-    };
-  };
+  lastModifiedBy: AuthorBy;
+  createdBy: AuthorBy;
   productType: {
     typeId: string;
     id: string;
@@ -145,4 +135,12 @@ export interface ProductFormattedData {
   slug: string;
   ancestors: ProductFormattedData[];
   parent?: string;
+}
+
+export interface AuthorBy {
+  isPlatformClient: true;
+  user: {
+    typeId: string;
+    id: string;
+  };
 }

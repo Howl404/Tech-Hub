@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import './LoginForm.scss';
 import '@components/Button/Button.scss';
 import '@components/Heading/Heading.scss';
-import { logInUser } from '@services/AuthService/AuthService';
+import { logInUser, logInUserWithCart } from '@services/AuthService/AuthService';
 import FormInput from '@components/FormInput/FormInput';
 import Toastify from 'toastify-js';
 
@@ -161,15 +161,36 @@ function SignInForm({ checkLogIn }: { checkLogIn: () => void }): JSX.Element {
   const onSignIn = (event: MouseEvent<HTMLButtonElement>): void => {
     event.preventDefault();
 
-    logInUser(email, password).then((response) => {
-      if (response) {
-        Cookies.set('access-token', response.accessToken, { expires: 2 });
-        Cookies.set('refresh-token', response.refreshToken, { expires: 200 });
-        Cookies.set('auth-type', 'password', { expires: 2 });
-        checkLogIn();
-        navigate('/');
-      }
-    });
+    const cart = Cookies.get('cart-id');
+
+    if (cart) {
+      logInUserWithCart(email, password).then((res) => {
+        if (res) {
+          if (res.cart) {
+            Cookies.set('cart-id', res.cart.id, { expires: 2 });
+          }
+          logInUser(email, password).then((response) => {
+            if (response) {
+              Cookies.set('access-token', response.accessToken, { expires: 2 });
+              Cookies.set('refresh-token', response.refreshToken, { expires: 200 });
+              Cookies.set('auth-type', 'password', { expires: 2 });
+              checkLogIn();
+              navigate('/');
+            }
+          });
+        }
+      });
+    } else {
+      logInUser(email, password).then((response) => {
+        if (response) {
+          Cookies.set('access-token', response.accessToken, { expires: 2 });
+          Cookies.set('refresh-token', response.refreshToken, { expires: 200 });
+          Cookies.set('auth-type', 'password', { expires: 2 });
+          checkLogIn();
+          navigate('/');
+        }
+      });
+    }
   };
 
   const showButton = (

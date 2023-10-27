@@ -1,6 +1,6 @@
 import { getCategories, getProductsByCategory } from '@src/services/ProductsService/ProductsService';
 import CatalogProductCard from '@src/components/CatalogProductCard/CatalogProductCard';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { Dispatch, SetStateAction, useCallback, useEffect, useState } from 'react';
 import { ProductCatalog, ProductFormattedData } from '@src/interfaces/Product';
 import CategoryCard from '@src/components/CategoryCard/CategoryCard';
 import './CatalogPage.scss';
@@ -12,8 +12,18 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import Breadcrumb from '@src/components/Breadcrumb/Breadcrumb';
 import sortingOptions from '@src/utilities/sortingOptions';
 import searchIcon from '@assets/search.svg';
+import removeItemCart from '@src/utilities/removeItemCart';
+import addItemCart from '@src/utilities/addItemCart';
+import getFormattedCart from '@src/utilities/getFormattedCart';
+import ReactPaginate from 'react-paginate';
+import { ClipLoader } from 'react-spinners';
+import returnCartPrice from '@src/utilities/returnCartPrice';
 
-export default function Catalog(): JSX.Element {
+export default function Catalog({
+  setTotalSumInCart,
+}: {
+  setTotalSumInCart: Dispatch<SetStateAction<number>>;
+}): JSX.Element {
   const navigate = useNavigate();
 
   const { categoryslug, subcategoryslug, subcategoryslug2 } = useParams<{
@@ -24,9 +34,11 @@ export default function Catalog(): JSX.Element {
 
   const minPrice = 0;
   const maxPrice = 5000;
+
   const [priceRange, setPriceRange] = useState([minPrice, maxPrice]);
   const [search, setSearch] = useState('');
   const [products, setProducts] = useState<ProductCatalog[]>([]);
+  const [amountOfProducts, setAmountOfProducts] = useState(0);
   const [categories, setCategories] = useState<ProductFormattedData[]>([]);
   const [sort, setSort] = useState('name.en asc');
   const [brand, setBrand] = useState('');
@@ -34,18 +46,39 @@ export default function Catalog(): JSX.Element {
   const [currentCategory, setCurrentCategory] = useState<{ name: string; key?: string }[]>([]);
   const [breadcrumb, setBreadcrumb] = useState<{ name: string; slug: string }[]>([]);
 
+  const productsPerPage = 6;
+  const [currentOffset, setCurrentOffset] = useState(0);
+
+  const [gettingNewProducts, setGettingNewProducts] = useState(false);
+
+  const [cartList, setCartList] = useState<{ id: string; productId: string }[]>([]);
+
   const [displayCategories, setDisplayCategories] = useState(false);
 
-  const handleSortingChange = (newOption: string): void => {
-    setSort(newOption);
+  const handleAddToCart = async (productSku: string): Promise<void> => {
+    const result = await addItemCart(productSku);
+    if (result) {
+      setCartList(result);
+    }
+
+    const cartPrice = await returnCartPrice();
+    if (cartPrice !== false) {
+      setTotalSumInCart(cartPrice);
+    }
+    return Promise.resolve();
   };
 
-  const handlePriceChange = (newRange: number[]): void => {
-    setPriceRange(newRange);
-  };
+  const handleRemoveFromCart = async (productSku: string): Promise<void> => {
+    const result = await removeItemCart(productSku);
+    if (result) {
+      setCartList(result);
+    }
 
-  const handleBrandChange = (newBrand: string): void => {
-    setBrand(newBrand);
+    const cartPrice = await returnCartPrice();
+    if (cartPrice !== false) {
+      setTotalSumInCart(cartPrice);
+    }
+    return Promise.resolve();
   };
 
   const clearBrand = useCallback(() => {
@@ -53,6 +86,7 @@ export default function Catalog(): JSX.Element {
   }, []);
 
   const getNewProducts = useCallback(() => {
+    setGettingNewProducts(true);
     let formatPriceRange;
     if (priceRange[0] === 0) {
       formatPriceRange = `variants.price.centAmount:range (0 to ${priceRange[1]}00)`;
@@ -66,15 +100,40 @@ export default function Catalog(): JSX.Element {
         sort,
         search,
         brand,
+        productsPerPage,
+        currentOffset,
       ).then((data) => {
         setProducts(data.results);
+        setAmountOfProducts(data.total);
+        setGettingNewProducts(false);
       });
     } else {
-      getProductsByCategory(`${formatPriceRange}`, sort, search, brand).then((data) => {
+      getProductsByCategory(`${formatPriceRange}`, sort, search, brand, productsPerPage, currentOffset).then((data) => {
         setProducts(data.results);
+        setAmountOfProducts(data.total);
+        setGettingNewProducts(false);
       });
     }
-  }, [priceRange, sort, brand, currentCategory, search]);
+  }, [priceRange, sort, brand, currentCategory, search, currentOffset]);
+
+  const handlePageChange = (selectedPage: { selected: number }): void => {
+    setCurrentOffset(selectedPage.selected * productsPerPage);
+  };
+
+  const handleSortingChange = (newOption: string): void => {
+    setSort(newOption);
+    setCurrentOffset(0);
+  };
+
+  const handlePriceChange = (newRange: number[]): void => {
+    setPriceRange(newRange);
+    setCurrentOffset(0);
+  };
+
+  const handleBrandChange = (newBrand: string): void => {
+    setBrand(newBrand);
+    setCurrentOffset(0);
+  };
 
   useEffect(() => {
     const fetchCategory = async (
@@ -90,20 +149,32 @@ export default function Catalog(): JSX.Element {
       };
     };
 
-    const updateBreadcrumb = async (): Promise<void> => {
-      const breadcrumbArray: { name: string; slug: string }[] = [];
+    async function fetchCategoriesInOrder(
+      currentCategories: {
+        name: string;
+        key?: string | undefined;
+      }[],
+    ): Promise<
+      {
+        name: string;
+        slug: string;
+      }[]
+    > {
+      const breadcrumbArray = [];
 
-      for (let i = 0; i < currentCategory.length; i += 1) {
-        fetchCategory(currentCategory[i].name).then((data) => {
-          breadcrumbArray.push(data);
-        });
-      }
+      const fetchPromises = currentCategories.map((category) => fetchCategory(category.name));
 
-      setBreadcrumb(breadcrumbArray);
-    };
+      const results = await Promise.all(fetchPromises);
+
+      breadcrumbArray.push(...results);
+
+      return breadcrumbArray;
+    }
 
     if (currentCategory.length > 0) {
-      updateBreadcrumb();
+      fetchCategoriesInOrder(currentCategory).then((array) => {
+        setBreadcrumb(array);
+      });
     }
   }, [currentCategory]);
 
@@ -114,10 +185,21 @@ export default function Catalog(): JSX.Element {
   }, []);
 
   useEffect(() => {
+    async function fetchData(): Promise<void> {
+      const cart = await getFormattedCart();
+      if (cart) {
+        setCartList(cart);
+      }
+    }
+    fetchData();
+  }, []);
+
+  useEffect(() => {
     getNewProducts();
   }, [sort, priceRange, getNewProducts]);
 
   useEffect(() => {
+    setGettingNewProducts(true);
     if (categories.length > 1 && categoryslug) {
       const mainCategory = categories.filter((category) => category.slug === categoryslug);
       if (mainCategory.length > 0) {
@@ -135,25 +217,58 @@ export default function Catalog(): JSX.Element {
     if (subcategoryslug && categoryslug) {
       getCategories(`slug(en = "${subcategoryslug}")`).then((data) => {
         setCurrentCategory([{ name: categoryslug }, { name: subcategoryslug, key: data.results[0].id }]);
-        getProductsByCategory(`categories.id: subtree("${data.results[0].id}")`, sort).then((result) => {
-          setSavedBrands(result.results);
-          setProducts(result.results);
-        });
+        getProductsByCategory(`categories.id: subtree("${data.results[0].id}")`, sort, undefined, undefined)
+          .then((result) => {
+            setSavedBrands(result.results);
+          })
+          .then(() => {
+            getProductsByCategory(
+              `categories.id: subtree("${data.results[0].id}")`,
+              sort,
+              undefined,
+              undefined,
+              productsPerPage,
+            ).then((result) => {
+              setProducts(result.results);
+              setAmountOfProducts(data.total);
+              setGettingNewProducts(false);
+            });
+          });
       });
     } else if (categoryslug) {
       getCategories(`slug(en = "${categoryslug}")`).then((data) => {
         setCurrentCategory([{ name: categoryslug, key: data.results[0].id }]);
-        getProductsByCategory(`categories.id: subtree("${data.results[0].id}")`, sort).then((result) => {
-          setSavedBrands(result.results);
-          setProducts(result.results);
-        });
+        getProductsByCategory(`categories.id: subtree("${data.results[0].id}")`, sort, undefined, undefined)
+          .then((result) => {
+            setSavedBrands(result.results);
+          })
+          .then(() => {
+            getProductsByCategory(
+              `categories.id: subtree("${data.results[0].id}")`,
+              sort,
+              undefined,
+              undefined,
+              productsPerPage,
+            ).then((result) => {
+              setProducts(result.results);
+              setAmountOfProducts(data.total);
+              setGettingNewProducts(false);
+            });
+          });
       });
     } else {
       setCurrentCategory([]);
-      getProductsByCategory(`variants.prices:exists`, sort).then((data) => {
-        setSavedBrands(data.results);
-        setProducts(data.results);
-      });
+      getProductsByCategory(`variants.prices:exists`, sort, undefined, undefined)
+        .then((data) => {
+          setSavedBrands(data.results);
+        })
+        .then(() => {
+          getProductsByCategory(`variants.prices:exists`, sort, undefined, undefined, productsPerPage).then((data) => {
+            setProducts(data.results);
+            setAmountOfProducts(data.total);
+            setGettingNewProducts(false);
+          });
+        });
     }
   }, [categories, sort, categoryslug, subcategoryslug, subcategoryslug2, navigate]);
 
@@ -214,12 +329,36 @@ export default function Catalog(): JSX.Element {
           <PriceRangeSlider min={minPrice} max={maxPrice} onChange={handlePriceChange} />
           <BrandFilter products={savedBrands} onChange={handleBrandChange} clearBrand={clearBrand} />
         </div>
-        <div className="product-list">
-          {products.map((product) => (
-            <CatalogProductCard key={product.name.en} product={product} />
-          ))}
-        </div>
+        {gettingNewProducts ? (
+          <div className="centered-loader">
+            <ClipLoader size={160} />
+          </div>
+        ) : (
+          <div className="product-list">
+            {products.map((product) => (
+              <CatalogProductCard
+                key={product.name.en}
+                product={product}
+                cartList={cartList}
+                addToCart={handleAddToCart}
+                removeFromCart={handleRemoveFromCart}
+              />
+            ))}
+          </div>
+        )}
       </div>
+
+      <ReactPaginate
+        pageCount={Math.ceil(amountOfProducts / productsPerPage)}
+        pageRangeDisplayed={2}
+        marginPagesDisplayed={2}
+        onPageChange={handlePageChange}
+        containerClassName="catalog-pagination"
+        activeClassName="pagination-active"
+        previousLabel="<"
+        nextLabel=">"
+        forcePage={currentOffset / productsPerPage}
+      />
     </div>
   );
 }
