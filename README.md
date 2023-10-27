@@ -1,21 +1,22 @@
-# Project "Digital Equipment Store"
+# Project "Tech Hub"
 RS School eCommerce project - is a team task in which the team needs to develop an eCommerce application.
 
 ### Project description
-"Digital Equipment Store" is a web application that allows users to browse, select, add to basket and buy various digital appliances. The main goal of the project is to learn how to use frontend technologies and provide a convenient platform for buying equipment.
+It's a web application that allows users to browse, select, add to basket and buy various digital appliances. The main goal of the project is to learn how to use frontend technologies and provide a convenient platform for buying products.
 
 ### Project goals
 #### Main goals of the project are:
-* Create a user-friendly interface for browsing and selecting products
-* Provide a detailed description of every product, including characteristics and users reviews
-* Implement a product comparison mechanism
-* Implement a payment system
-* Ensure a convenient order process and product delivery
+* Register and login systems
+* User-friendly interface for browsing and selecting products
+* Filter product by characteristics and categories
+* Cart and promocodes
+* Detailed page of every product
+
 
 ### Technology stack
 1. Frontend:
    * HTML/CSS/TypeScript
-   * React.js - for user interface creation
+   * React - for user interface creation
    * Axios - for HTTP request to the server
 2. Backend:
    * commercetools
