@@ -1,0 +1,14 @@
+:root {
+  --gray-1: #828282;
+  --divider: #c4c4c4;
+  --light-blue-hover: #f0f2f2;
+  --black-2: #3f3f3f;
+  --light-blue-active: #c2c2c2;
+}
+.active {
+  background: var(--light-blue-hover);
+  color: #000;
+  &:hover {
+    background: var(--light-blue-active);
+  }
+}

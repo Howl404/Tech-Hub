@@ -1,0 +1,59 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Oswald&display=swap');
+
+:root {
+  --gray-1: #828282;
+  --divider: #c4c4c4;
+  --light-blue-hover: #f0f2f2;
+  --black-2: #3f3f3f;
+  --light-blue-active: #c2c2c2;
+}
+
+.link {
+  text-decoration: none;
+}
+
+.dashboard__description {
+  display: block;
+  max-width: 400px;
+  flex: 1;
+}
+
+.account__information_title {
+  color: #000;
+  font-family: 'Oswald', sans-serif;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 400;
+  margin: 0;
+}
+
+.account__information_block {
+  margin-bottom: 30px;
+}
+
+.account__information_blockTitle,
+.account__information_billing {
+  color: var(--black-2);
+  font-family: 'Oswald', sans-serif;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  text-transform: uppercase;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+.account__information_name,
+.account__information_email,
+.account__information_adress {
+  color: var(--gray-1);
+  font-family: 'Roboto', sans-serif;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+}
+
+.account__information_blockAdress {
+}

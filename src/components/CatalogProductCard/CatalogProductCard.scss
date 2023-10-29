@@ -1,0 +1,123 @@
+.product-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  column-gap: 15px;
+  row-gap: 30px;
+  font-family: 'Oswald', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  margin-top: 5px;
+  flex-grow: 2;
+  .product-card {
+    position: relative;
+    color: black;
+    padding: 5px;
+    width: 240px;
+    height: 490px;
+    transition:
+      box-shadow 0.3s ease,
+      border-radius 0.3s ease;
+    border-radius: 8px;
+    text-align: center;
+    img {
+      width: 100%;
+      height: 180px;
+      object-fit: contain;
+    }
+
+    h4 {
+      margin: 0;
+    }
+
+    h3 {
+      height: 80px;
+      font-size: 24px;
+      margin-bottom: 5px;
+    }
+
+    p {
+      color: #3f3f3f;
+    }
+    &:hover {
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      border-radius: 16px;
+    }
+
+    .buttons-container {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      left: 0;
+      display: grid;
+      grid-template-columns: repeat(2, 100px);
+      a {
+        grid-column: span 2;
+      }
+      .details-button,
+      .add-to-cart,
+      .remove-from-cart {
+        margin: 0;
+        width: 100%;
+        font-size: 12px;
+        border-radius: 8px;
+        &:hover {
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.485);
+          border-radius: 16px;
+        }
+
+        &:disabled {
+          background-color: rgba(128, 128, 128, 0.124);
+          cursor: auto;
+          border-radius: 8px;
+          box-shadow: none;
+
+          .cart-add-img {
+            filter: invert(6%) sepia(4%) saturate(1067%) hue-rotate(314deg) brightness(93%) contrast(83%);
+          }
+
+          .cart-remove-img {
+            filter: invert(6%) sepia(4%) saturate(1067%) hue-rotate(314deg) brightness(93%) contrast(83%);
+          }
+        }
+
+        .cart-remove-img,
+        .cart-add-img {
+          height: 50%;
+        }
+
+        .cart-add-img {
+          filter: invert(23%) sepia(99%) saturate(2030%) hue-rotate(96deg) brightness(97%) contrast(106%);
+        }
+
+        .cart-remove-img {
+          filter: invert(10%) sepia(57%) saturate(7500%) hue-rotate(357deg) brightness(104%) contrast(96%);
+        }
+      }
+    }
+  }
+
+  .price-container {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    .discounted-price {
+      scale: 1.1;
+      color: red;
+    }
+    .crossed-price {
+      text-decoration: line-through;
+    }
+  }
+}
+
+@media (max-width: 800px) {
+  .product-list {
+    .product-card {
+      width: 130px;
+      .buttons-container {
+        grid-template-columns: repeat(2, 50px);
+      }
+    }
+  }
+}
