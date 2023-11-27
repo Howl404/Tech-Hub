@@ -1,12 +1,10 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { getClientAccessToken, logInUser } from '../AuthService';
+import { authHost, getClientAccessToken, logInUser, projectKey } from '../AuthService';
 
 describe('Get client access token', () => {
   const email = 'qwertyyu@gmail.com';
   const password = '123456qQ';
-  const projectKey = 'ecomapp2';
-  const authHost = 'https://auth.europe-west1.gcp.commercetools.com';
 
   test('should return client access token', async () => {
     const response = await getClientAccessToken();

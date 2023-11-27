@@ -2,9 +2,7 @@ import axios, { AxiosError } from 'axios';
 import Toastify from 'toastify-js';
 import { Cart } from '@interfaces/Cart';
 import { ResponseErrorItem } from '@src/interfaces/Errors';
-
-const projectKey = 'ecomapp2';
-const apiUrl = 'https://api.europe-west1.gcp.commercetools.com';
+import { apiUrl, projectKey } from '../AuthService/AuthService';
 
 const createCart = async (token: string): Promise<Cart> => {
   const cartEndpoint = `${apiUrl}/${projectKey}/me/carts`;

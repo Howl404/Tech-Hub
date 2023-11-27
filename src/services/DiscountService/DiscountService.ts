@@ -5,9 +5,8 @@ import Cookies from 'js-cookie';
 import 'toastify-js/src/toastify.css';
 import { DiscountCode } from '@src/interfaces/Discount';
 import { CartDiscount } from '@src/interfaces/Cart';
+import { apiUrl, projectKey } from '../AuthService/AuthService';
 
-const apiUrl = 'https://api.europe-west1.gcp.commercetools.com';
-const projectKey = 'ecomapp2';
 
 const getDiscountCodes = async (): Promise<DiscountCode[] | undefined> => {
   const token = Cookies.get('access-token');
