@@ -1,7 +1,7 @@
 # Project "Tech Hub"
 RS School eCommerce project - is a team task in which the team needs to develop an eCommerce application.
 
-## Deploy - https://techhub-rss.netlify.app/ (till November 25 2023)
+## Deploy - https://techhub-rss.netlify.app/ (till January 27 2024)
 
 ### Project description
 It's a web application that allows users to browse, select, add to basket and buy various digital appliances. The main goal of the project is to learn how to use frontend technologies and provide a convenient platform for buying products.
